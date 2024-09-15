@@ -1,0 +1,123 @@
+00001;Papier Ram;5;31-12-2014
+00002;Cahier de 300 pages;1;31-12-2014
+00003;Cahier de 100 pages;1;31-12-2014
+00004;Bic lexi;1;31-12-2014
+00005;Bic Schneider bleu;5;31-12-2014
+00006;Bic schneider rouge;5;31-12-2014
+00007;Bic schneider noir;5;31-12-2014
+00008;Bic cristal bleu;5;31-12-2014
+00009;Bloc éphéméride;1;31-12-2014
+00010;Encres;2;31-12-2014
+00011;Encreurs;5;31-12-2014
+00012;Agraphes;5;31-12-2014
+00014;Agrapheuses pince 24/6;1;31-12-2014
+00015;Marker bleu;2;31-12-2014
+00016;Marker rouge;2;31-12-2014
+00017;Marker noir;2;31-12-2014
+00018;Marker vert;2;31-12-2014
+00019;Surligners;2;31-12-2014
+00020;Punaise petite;2;31-12-2014
+00021;Punaise grande;2;31-12-2014
+00022;Attache lettre géante;2;31-12-2014
+00023;Trombone (en boîte);2;31-12-2014
+00024;Agenda pratique;1;31-12-2014
+00025;Agenda religieux (MEDISPAUL);1;31-12-2014
+00026;Agenda ministre;1;31-12-2014
+00027;Porte mine 0.5;2;31-12-2014
+00028;Porte mine 0.7;2;31-12-2014
+00029;Mine critérium 0.5;2;31-12-2014
+00030;Mine critérium 0.7;2;31-12-2014
+00031;Crayon à papier évolution;2;31-12-2014
+00032;Chemise à rabat carton;5;31-12-2014
+00033;Chemise à rabat plastique;5;31-12-2014
+00034;Chemise dossier;10;31-12-2014
+00035;Sous chemise;10;31-12-2014
+00036;Classeurs chronos;4;31-12-2014
+00037;Ciseaux bureautiques;1;31-12-2014
+00038;Multi prise le grand;1;31-12-2014
+00039;Correcteurs Stylo;1;31-12-2014
+00040;Correcteur classique;1;31-12-2014
+00041;Carton réluire;10;31-12-2014
+00042;Transparent réliure;10;31-12-2014
+00043;Sérédos 6 mm;5;31-12-2014
+00044;Sérédos 8-9 mm;5;31-12-2014
+00045;Sérédos  10 mm;5;31-12-2014
+00046;Posit 40*50;5;31-12-2014
+00047;Posit 75*75;5;31-12-2014
+00048;Posit 76*125;5;31-12-2014
+00049;Recharge Bloc cubique;1;31-12-2014
+00050;Gomme bureau grand;2;31-12-2014
+00051;Dateur;1;31-12-2014
+00052;Enveloppes A3;10;31-12-2014
+00053;Enveloppes A4;10;31-12-2014
+00054;Enveloppes A5;10;31-12-2014
+00055;Enveloppes A6;10;31-12-2014
+00056;Calculatrice 12 chiffres;1;31-12-2014
+00057;Souris ordinateur;1;31-12-2014
+00058;Clé USB 2 GB;1;31-12-2014
+00059;Encres HP laserject;1;31-12-2014
+00060;Encre pour copieur (SHARP AL 2020);1;31-12-2014
+00061;Perforateur;1;31-12-2014
+00062;Carnet menu dépense;10;31-12-2014
+00063;carnet de reçu;10;31-12-2014
+00064;Scotch petit;1;31-12-2014
+00065;Bon de commande;10;31-12-2014
+00066;Porte cachet 10 places;1;31-12-2014
+00067;Ampoule 0.5;5;31-12-2014
+00068;Ampoule 1.2;5;31-12-2014
+00069;Ampoules économiques  AKT(40W);5;31-12-2014
+00070;Ampoules économiques  AKT(80W);5;31-12-2014
+00071;Ampoules économiques  simples;5;31-12-2014
+00073;Transformateurs (40W);2;31-12-2014
+00074;Reglettes 0.5;2;31-12-2014
+00075;Reglettes 1.2;2;31-12-2014
+00076;Stateurs;5;31-12-2014
+00077;Inter va et viens MOSAIC LEGRAND;2;31-12-2014
+00078;Savon liquide (L);5;31-12-2014
+00079;Eau de javel (L);5;31-12-2014
+00080;Ajax (LA CROIX);1;31-12-2014
+00081;Ajax (GOOD MAID WIZ);1;31-12-2014
+00082;Essences citronnelles;1;31-12-2014
+00083;Insecticides;2;31-12-2014
+00084;Papier hygiénique;50;31-12-2014
+00085;Savon doux;50;31-12-2014
+00086;Chiffon;1;31-12-2014
+00087;Brosse grande;1;31-12-2014
+00088;Brosse petite;1;31-12-2014
+00089;Balais coco;1;31-12-2014
+00090;Tiges balais;1;31-12-2014
+00091;Sceau en plastique;2;31-12-2014
+00092;Bol de douche;2;31-12-2014
+00093;Poubelle petite de bureau;2;31-12-2014
+00094;plumier de bureau;1;31-12-2014
+00095;Drap de lit house 1 place;2;31-12-2014
+00096;Drap de lit house 2 places;2;31-12-2014
+00097;Serpières;2;31-12-2014
+00098;Tête de loup;1;31-12-2014
+00099;Désodorant;2;31-12-2014
+00100;Brosse lave voiture;1;31-12-2014
+00101;Brosse WC;1;31-12-2014
+00102;Parapheur;1;31-12-2014
+00103;Moustiquaire;5;31-12-2014
+00104;Porte document transparent;10;31-12-2014
+00105;Piles;2;31-12-2014
+00106;Eponges à récurer;3;31-12-2014
+00107;Gomme bureau petit;1;31-12-2014
+00108;Ampoules économiques  simples bis;1;31-12-2014
+00109;Transformateurs (20W);2;12-02-2015
+00110;Nappes de table;1;14-08-2015
+00111;Douille;1;29-09-2015
+00112;Sceau de nettoyage;2;26-10-2015
+00113;Brosse grillage;1;27-10-2015
+00114;Descente de lit petite;05;28-10-2015
+00115;Descente de lit grande;3;28-10-2015
+00116;Moustiquaire à quatre anneaux;02;02-11-2015
+00117;Termostar;1;12-11-2015
+00118;Insecticide RAMBO;1;17-11-2015
+00119;Insecticide RAD;1;17-11-2015
+00120;Cintre;2;23-11-2015
+00121;Sac de linges;1;23-11-2015
+00122;cache nez;2;07-12-2015
+00123;Scoth transparent 19*33;1;11-12-2015
+00124;Tampon encreur rouge;2;11-12-2015
+00125;Perles à ordures;1;17-12-2015

@@ -1,0 +1,9 @@
+1;ATROKPO Marc;Cotonou;97854213;zeou@gmail.com
+2;GBAGUIDI Julien;cotonou 01 BP 1611;98945812;ruphinos2008@yahoo.fr
+3;OKE Brice;03 BP 427 COTONOU;66564289;bolsminter@gmail.com
+4;ASSOGBA Emile;;;
+5;AKPOVO Jean de Dieu;;97225200;
+6;BOKO Jean Luc;;;
+7;COOMLAN Bernadin;;;
+8;ALIHONOU Patrice;;;
+9;Alidou Serge;Godomey;51826860;

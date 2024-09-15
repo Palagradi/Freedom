@@ -1,0 +1,11 @@
+#tab{
+	border:2px solid white;
+	font-family:Cambria;
+	background-color:#D0DCE0;
+	border-bottom: 5px solid #ffebcd; 
+	border-bottom-color: #ffebcd;
+	border-bottom-style: solid;
+	border-bottom-width: 5px;
+	margin-bottom: 15px;
+	border-radius: 15px;
+}

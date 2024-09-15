@@ -1,0 +1,121 @@
+00001;Papier Ram;5;117;Disponible
+00002;Cahier de 300 pages;1;5;Disponible
+00003;Cahier de 100 pages;1;21;Disponible
+00004;Bic lexi;1;3;Disponible
+00005;Bic Schneider bleu;5;152;Disponible
+00006;Bic schneider rouge;5;21;Disponible
+00007;Bic schneider noir;5;34;Disponible
+00008;Bic cristal bleu;5;87;Disponible
+00009;Bloc éphéméride;1;1;Stock atteint
+00010;Encres;2;28;Disponible
+00011;Encreurs;5;13;Disponible
+00012;Agraphes;5;69;Disponible
+00014;Agrapheuses pince 24/6;1;4;Disponible
+00015;Marker bleu;2;16;Disponible
+00016;Marker rouge;2;19;Disponible
+00017;Marker noir;2;24;Disponible
+00019;Surligners;2;36;Disponible
+00020;Punaise petite;2;12;Disponible
+00021;Punaise grande;2;2;Stock atteint
+00022;Attache lettre géante;2;80;Disponible
+00023;Trombone (en boîte);2;42;Disponible
+00024;Agenda pratique;1;1;Stock atteint
+00025;Agenda religieux (MEDISPAUL);1;1;Stock atteint
+00026;Agenda ministre;1;1;Stock atteint
+00027;Porte mine 0.5;2;11;Disponible
+00028;Porte mine 0.7;2;11;Disponible
+00029;Mine critérium 0.5;2;6;Disponible
+00030;Mine critérium 0.7;2;7;Disponible
+00031;Crayon à papier évolution;2;17;Disponible
+00032;Chemise à rabat carton;5;22;Disponible
+00033;Chemise à rabat plastique;5;24;Disponible
+00034;Chemise dossier;10;82;Disponible
+00035;Sous chemise;10;160;Disponible
+00036;Classeurs chronos;4;101;Disponible
+00037;Ciseaux bureautiques;1;8;Disponible
+00038;Multi prise le grand;1;1;Stock atteint
+00039;Correcteurs Stylo;1;20;Disponible
+00040;Correcteur classique;1;1;Stock atteint
+00041;Carton réluire;10;45;Disponible
+00042;Transparent réliure;10;52;Disponible
+00043;Sérédos 6 mm;5;11;Disponible
+00044;Sérédos 8-9 mm;5;13;Disponible
+00045;Sérédos  10 mm;5;24;Disponible
+00046;Posit 40*50;5;29;Disponible
+00047;Posit 75*75;5;28;Disponible
+00048;Posit 76*125;5;28;Disponible
+00049;Recharge Bloc cubique;1;12;Disponible
+00050;Gomme bureau grand;2;1;Stock atteint
+00051;Dateur;1;3;Disponible
+00052;Enveloppes A3;10;67;Disponible
+00053;Enveloppes A4;10;63;Disponible
+00054;Enveloppes A5;10;440;Disponible
+00055;Enveloppes A6;10;216;Disponible
+00056;Calculatrice 12 chiffres;1;1;Stock atteint
+00057;Souris ordinateur;1;5;Disponible
+00058;Clé USB 2 GB;1;1;Stock atteint
+00059;Encres HP laserject;1;16;Disponible
+00060;Encre pour copieur (SHARP AL 2020);1;2;Disponible
+00061;Perforateur;1;7;Disponible
+00062;Carnet menu dépense;10;87;Disponible
+00063;carnet de reçu;10;160;Disponible
+00064;Scotch petit;1;7;Disponible
+00065;Bon de commande;10;110;Disponible
+00066;Porte cachet 10 places;1;5;Disponible
+00067;Ampoule 0.5;5;20;Disponible
+00068;Ampoule 1.2;5;34;Disponible
+00069;Ampoules économiques  AKT(40W);5;9;Disponible
+00070;Ampoules économiques  AKT(80W);5;1;Stock atteint
+00071;Ampoules économiques  simples;5;40;Disponible
+00073;Transformateurs (40W);2;8;Disponible
+00074;Reglettes 0.5;2;4;Disponible
+00075;Reglettes 1.2;2;12;Disponible
+00076;Stateurs;5;90;Disponible
+00077;Inter va et viens MOSAIC LEGRAND;2;9;Disponible
+00078;Savon liquide (L);5;54;Disponible
+00079;Eau de javel (L);5;7;Disponible
+00080;Ajax (LA CROIX);1;4;Disponible
+00081;Ajax (GOOD MAID WIZ);1;1;Stock atteint
+00082;Essences citronnelles;1;17;Disponible
+00083;Insecticides;2;1;Stock atteint
+00084;Papier hygiénique;50;1636;Disponible
+00085;Savon doux;50;518;Disponible
+00086;Chiffon;1;3;Disponible
+00087;Brosse grande;1;1;Stock atteint
+00088;Brosse petite;1;1;Stock atteint
+00089;Balais coco;1;2;Disponible
+00090;Tiges balais;1;5;Disponible
+00091;Sceau en plastique;2;17;Disponible
+00092;Bol de douche;2;38;Disponible
+00093;Poubelle petite de bureau;2;11;Disponible
+00094;plumier de bureau;1;1;Stock atteint
+00095;Drap de lit house 1 place;2;10;Disponible
+00096;Drap de lit house 2 places;2;55;Disponible
+00097;Serpières;2;6;Disponible
+00098;Tête de loup;1;5;Disponible
+00099;Désodorant;2;4;Disponible
+00100;Brosse lave voiture;1;3;Disponible
+00101;Brosse WC;1;4;Disponible
+00102;Parapheur;1;3;Disponible
+00103;Moustiquaire;5;32;Disponible
+00104;Porte document transparent;10;235;Disponible
+00105;Piles;2;9;Disponible
+00106;Eponges à récurer;3;17;Disponible
+00107;Gomme bureau petit;1;16;Disponible
+00109;Transformateurs (20W);2;11;Disponible
+00110;Nappes de table;1;1;Stock atteint
+00111;Douille;1;7;Disponible
+00112;Sceau de nettoyage;2;6;Disponible
+00113;Brosse grillage;1;2;Disponible
+00114;Descente de lit petite;05;39;Disponible
+00115;Descente de lit grande;3;2;Stock atteint
+00116;Moustiquaire à quatre anneaux;02;10;Disponible
+00117;Termostar;1;4;Disponible
+00118;Insecticide RAMBO;1;1;Stock atteint
+00119;Insecticide RAD;1;10;Disponible
+00120;Cintre;2;22;Disponible
+00121;Sac de linges;1;4;Disponible
+00122;cache nez;2;13;Disponible
+00123;Scoth transparent 19*33;1;5;Disponible
+00124;Tampon encreur rouge;2;10;Disponible
+00125;Perles à ordures;1;7;Disponible

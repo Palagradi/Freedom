@@ -1,0 +1,22 @@
+1;00003;Mastic et colle d'étanchéïté;0;1;---
+2;00006;Molettes, disque diamant;0;10;---
+3;00007;Pose parquet;0;20;---
+4;00007;Pose parquet;0;25;---
+5;00007;Pose parquet;0;30;---
+6;00006;Molettes, disque diamant;0;12;---
+7;00004;Bétonnière;0;5;---
+8;00005;Trétau;0;10;---
+9;00001;Toles;5;50;---
+10;00002;Colles - Adhésifs;0;25;---
+11;00003;Mastic et colle d'étanchéïté;0;10;---
+12;00004;Bétonnière;0;40;---
+13;00005;Trétau;0;5;---
+14;00014;Pulvérisateur;0;5;---
+15;00013;Cutter, Sciage;0;23;---
+16;00012;Tréteau;0;8;---
+17;00011;Tiges filetées;0;50;---
+18;00010;Clous;0;75;---
+19;00009;Cheville métallique;0;52;---
+20;00008;Agrafe;0;25;---
+21;00007;Pose parquet;0;23;---
+22;00006;Molettes, disque diamant;0;23;---

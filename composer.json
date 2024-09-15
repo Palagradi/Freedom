@@ -1,0 +1,6 @@
+{
+    "require": {
+        "tecnickcom/tcpdf": "^6.3",
+        "tecnickcom/tc-lib-barcode": "^1.17"
+    }
+}

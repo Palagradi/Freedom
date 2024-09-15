@@ -1,0 +1,3 @@
+https://unpkg.com/sweetalert/dist/sweetalert.min.js
+
+https://sweetalert.js.org/guides/

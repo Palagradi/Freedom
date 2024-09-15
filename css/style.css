@@ -1,0 +1,372 @@
+
+<style type="text/css" media="screen">
+body{ behavior:url("csshover2.htc"); } 
+.pd_menu_01 {margin-top:0px;float:left; padding:0; margin:0;color: #0080FF;background: #FF8080;width:100%; border:solid 1px #004080;clear:both;} /*Color navigation bar normal mode*/
+.pd_menu_01  a, .pd_menu_01 a:visited {
+font-family:Arial, Helvetica, sans-serif;
+font-style:normal;
+font-weight:bold;
+font-size:12px;
+color: #551A8B;
+background-color: #FF8080;
+text-decoration: none;
+}
+.pd_menu_01 ul {list-style-type:none;padding:0; margin:0;}
+.pd_menu_01 ul li {float:left; position:relative; z-index:auto !important ; z-index:1000 ; border-right:solid 1px #004080; border-left:solid 1px #004080;}
+.pd_menu_01 ul li a {color: #551A8B;background: #FF8080;float:none !important ; float:left ; display:block; height:30px; line-height:30px; padding:0 10px 0 10px; text-decoration:none; }
+.pd_menu_01 ul li ul {display:none; border:none;color: #0080FF;background: #FF8080; width:1px}
+.pd_menu_01 ul li:hover a {background-color:#008000; text-decoration:none; color:#FFFF00;} /*Color main cells hovering mode*/
+.pd_menu_01 ul li:hover ul {display:block;  position:absolute; z-index:999; top:29px; margin-top:1px; left:0;}
+.pd_menu_01 ul li:hover ul li a {display:block; width:12em; height:auto; line-height:1.3em; margin-left:-1px; padding:5px 10px 5px 10px; border-left:solid 1px #004080; border-bottom: solid 1px #004080; background-color:#0080FF;  color:#FF8080;} /*Color subcells normal mode*/
+.pd_menu_01 ul li:hover ul li a:hover {background-color:#CA0000; text-decoration:none;color:#FFFF00;} /*Color subcells hovering mode*/
+.pd_menu_01 ul li a:hover {background-color:#008000; text-decoration:none;color:#FFFF00;} /*Color main cells hovering mode*/
+.pd_menu_01 ul li a:hover ul {display:block; width:12em; position:absolute; z-index:999; top:29px; left:0; }
+.pd_menu_01 ul li ul li a:visited { background-color:#0080FF;  color:#FF8080;} /*Color subcells normal mode*/
+.pd_menu_01 ul li a:hover ul li a {display:block; width:12em; height:1px; line-height:1.3em; padding:4px 16px 4px 16px; border-left:solid 1px #004080; border-bottom: solid 1px #004080; background-color:#0080FF;  color:#FF8080;} 
+.pd_menu_01 ul li a:hover ul li a:hover {background-color:#CA0000; text-decoration:none;color:#FFFF00;} /*Color subcells hovering mode*/
+
+
+#container:hover{color:black; line-height:20px; }
+#container1:hover{color:white; line-height:20px;}
+#container2:hover{color:white; line-height:20px;}
+#moncercle{
+  background:green;
+  border-radius:50%;
+  width:80px;
+  height:20px;
+  border:1px dotted black;
+}
+.menu:hover
+{	background-color: white; /*couleur de fond qui change*/
+	cursor: pointer; /*pointeur qui change*/
+}
+
+tr.rouge:hover {
+    background-color:yellow;
+    }
+tr.rouge1:hover {
+    background-color:#EFECCA;
+    }
+	table.rouge1:hover {
+    background-color:white;
+    }
+tr.rouge2:hover {
+    background-color:#3EB27B;
+    }
+tr.rouge3:hover {
+    background-color:#EFECCA;
+    }	
+tr.rouge5:hover {
+    background-color:#FF0000;
+    }
+a.info {	   
+position: relative;
+   color: black;
+   text-decoration: none;
+   border-bottom: 1px gray none; /* On souligne le texte. */
+}
+a.info span {
+   display: none; /* On masque l'infobulle. */
+}
+a.info:hover {
+   background: none; /* Correction d'un bug d'Internet Explorer. */
+   z-index: 500; /* On définit une valeur pour l'ordre d'affichage. */
+   cursor: pointer; /* On change le curseur par défaut par un curseur d'aide. */
+   text-decoration:none;
+}
+a.info:hover span {
+   display: inline; /* On affiche l'infobulle. */
+   position: absolute;
+   white-space: nowrap; /* On change la valeur de la propriété white-space pour qu'il n'y ait pas de retour à la ligne non désiré. */
+   top: 25px; /* On positionne notre infobulle. */
+   left: 20px;
+   background: white;
+   color: green;
+   padding: 3px;
+   border: 1px solid green;
+   border-left: 4px solid green;
+   border-radius: 5px;-moz-border-radius: 5px;-webkit-border-radius: 5px;
+}
+
+a.info1 {position: relative;
+   color: black;
+   text-decoration: none;
+   border-bottom: 1px gray none; /* On souligne le texte. */
+}
+a.info1 span {
+   display: none; /* On masque l'infobulle. */
+}
+a.info1:hover {
+   background: none; /* Correction d'un bug d'Internet Explorer. */
+   z-index: 500; /* On définit une valeur pour l'ordre d'affichage. */
+   cursor: pointer; /* On change le curseur par défaut par un curseur d'aide. */
+   text-decoration:none;
+}
+a.info1:hover span {
+   display: inline; /* On affiche l'infobulle. */
+   position: absolute;
+   white-space: nowrap; /* On change la valeur de la propriété white-space pour qu'il n'y ait pas de retour à la ligne non désiré. */
+   top: 25px; /* On positionne notre infobulle. */
+   left: 20px;
+   background: white;
+   color: orange;
+   padding: 3px;
+   border: 1px solid green;
+   border-left: 4px solid green;
+   border-radius: 5px;-moz-border-radius: 5px;-webkit-border-radius: 5px;
+   
+}
+
+a.info2 {position: relative;
+   color: black;
+   text-decoration: none;
+   border-bottom: 1px gray none; /* On souligne le texte. */
+}
+a.info2 span {
+   display: none; /* On masque l'infobulle. */
+}
+a.info2:hover {
+   background: none; /* Correction d'un bug d'Internet Explorer. */
+   z-index: 500; /* On définit une valeur pour l'ordre d'affichage. */
+   cursor: pointer; /* On change le curseur par défaut par un curseur d'aide. */
+   text-decoration:none;
+}
+a.info2:hover span {
+   display: inline; /* On affiche l'infobulle. */
+   position: absolute;
+   white-space: nowrap; /* On change la valeur de la propriété white-space pour qu'il n'y ait pas de retour à la ligne non désiré. */
+   top: 25px; /* On positionne notre infobulle. */
+   right: 5px;
+   background: white;
+   color: black;
+   padding: 3px;
+   border: 1px solid green;
+   border-left: 0px solid green;
+   border-radius: 5px;-moz-border-radius: 5px;-webkit-border-radius: 5px;
+}
+a.info3 {position: relative;
+   color: black;
+   text-decoration: none;
+   border-bottom: 1px gray none; /* On souligne le texte. */
+}
+a.info3 span {
+   display: none; /* On masque l'infobulle. */
+}
+a.info3:hover {
+   background: none; /* Correction d'un bug d'Internet Explorer. */
+   z-index: 500; /* On définit une valeur pour l'ordre d'affichage. */
+   text-decoration:none;
+}
+a.info3:hover span {
+   display: inline; /* On affiche l'infobulle. */
+   position: absolute;
+   white-space: nowrap; /* On change la valeur de la propriété white-space pour qu'il n'y ait pas de retour à la ligne non désiré. */
+   top: -5px; /* On positionne notre infobulle. */
+   left: 65px;
+   background: white;
+   color: black;
+   padding: 3px;
+   border: 1px solid green;
+   border-left: 0px solid green;
+   border-radius: 5px;-moz-border-radius: 5px;-webkit-border-radius: 5px;
+}
+a.info4 {position: relative;
+   color: black;
+   text-decoration: none;
+   border-bottom: 1px gray none; /* On souligne le texte. */
+}
+a.info4 span {
+   display: none; /* On masque l'infobulle. */
+}
+a.info4:hover {
+   background: none; /* Correction d'un bug d'Internet Explorer. */
+   z-index: 500; /* On définit une valeur pour l'ordre d'affichage. */
+   text-decoration:none;
+}
+a.info4:hover span {
+   display: inline; /* On affiche l'infobulle. */
+   position: absolute;
+    white-space: nowrap; /*On change la valeur de la propriété white-space pour qu'il n'y ait pas de retour à la ligne non désiré. */
+   top: -5px; /* On positionne notre infobulle. */
+   background: white;
+   color: black;
+   padding: 3px;
+   border: 1px solid green;
+   border-left: 0px solid green;
+   border-radius: 5px;-moz-border-radius: 5px;-webkit-border-radius: 5px;
+}
+
+
+a.info5 {position: relative;
+   color: black;
+   text-decoration: none;
+   border-bottom: 1px gray none; /* On souligne le texte. */
+}
+a.info5 span {
+   display: none; /* On masque l'infobulle. */
+}
+a.info5:hover {
+   background: none; /* Correction d'un bug d'Internet Explorer. */
+   z-index: 500; /* On définit une valeur pour l'ordre d'affichage. */
+   text-decoration:none;
+}
+a.info5:hover span {
+   display: inline; /* On affiche l'infobulle. */
+   position: absolute;
+   /* white-space: nowrap; On change la valeur de la propriété white-space pour qu'il n'y ait pas de retour à la ligne non désiré. */
+   top: -5px; /* On positionne notre infobulle. */
+   background: white;
+   color: black;
+   padding: 3px;
+   border: 1px solid green;
+   border-left: 1px solid green;
+   border-radius: 5px;-moz-border-radius: 5px;-webkit-border-radius: 5px;
+}
+
+
+.boutonA{			
+	cursor:pointer;color:blue;background-color:orange;
+	}
+	.bouton1 {
+	padding:2px 0 2px 0;
+	font:Bold 13px Arial;
+	background:#d34836;
+	color:#fff;
+	width:120px;
+	border-radius:2px;
+	border:none;
+	cursor : pointer;
+}
+.bouton2 {
+	padding:6px 0 6px 0;
+	font:bold 13px Arial;
+	background:#478bf9;
+	color:#fff;
+	border-radius:2px;
+	width:100px;
+	border:none;
+}
+.bouton3 {
+	padding:6px 0 6px 0;
+	font:bold 13px Arial;
+	background:#f5f5f5;
+	color:#555;
+	border-radius:2px;
+	width:100px;
+	border:1px solid #ccc;
+}
+.bouton4 {
+	padding:6px 0 6px 0;
+	font:bold 13px Arial;
+	background:#f5f5f5;
+	color:#555;
+	border-radius:2px;
+	width:100px;
+	border:1px solid #ccc;
+	box-shadow:1px 1px 3px #999;
+}
+.bouton5 {
+	border-radius:12px 0 12px 0;
+	background: #d34836;
+	border:none;
+	color:#fff;
+	font:bold 12px Verdana;
+	padding:6px 0 6px 0;
+}
+.bouton6 {
+	border-radius:12px 0 12px 0;
+	background: #478bf9;
+	border:none;
+	color:#fff;
+	font:bold 12px Verdana;
+	padding:6px 0 6px 0;
+}
+.bouton7 {
+	border-radius:12px 0 12px 0;
+	background: #f5f5f5;
+	border:none;
+	color:#555;
+	font:bold 12px Verdana;
+	padding:6px 0 6px 0;
+	border:1px solid #ccc;
+}
+.bouton8 {
+	border-radius:12px 0 12px 0;
+	background: #f5f5f5;
+	border:none;
+	color:#555;
+	font:bold 12px Verdana;
+	padding:6px 0 6px 0;
+	box-shadow:1px 1px 3px #999;
+}
+.bouton13 {
+	border:none;
+	padding:6px 0 6px 0;
+	border-radius:8px;
+	background:#d34836;
+	font:bold 13px Arial;
+	color:#fff;
+}
+.bouton14 {
+	border:none;
+	padding:6px 0 6px 0;
+	border-radius:50%;
+	background:#478bf9;
+	font:bold 13px Arial;
+	color:#fff;
+	width:160px;
+}
+.bouton15 {
+	border:none;
+	padding:6px 0 6px 0;
+	border-radius:75%;
+	border-bottom:3px solid #4753f3;
+	font:bold 13px Arial;
+	color:#555;
+	background:#fff;
+}
+.bouton16 {
+	border:none;
+	padding:6px 0 6px 0;
+	border-radius:75%;
+	border-bottom:7px solid #4753f3;
+	font:bold 13px Arial;
+	color:#555;
+	background:#fff;
+	box-shadow:2px 2px 3px #999;
+	border-top:2px solid #59cd27;
+}
+	
+	
+	.mybutton {
+	border:none;
+	padding:1px 1px 1px 1px;
+	border-radius:75%;
+	-moz-border-radius: 75%;-webkit-border-radius: 75%;
+	border-bottom:6px solid #59cd27;border-top:4px solid #4753f3;
+	font:bold 13px Arial;
+	color:#555;
+	background:#fff;
+	box-shadow:2px 2px 3px #999;
+	
+}
+.info_2:hover {font-size:1.1em; text-decoration:none;color:#59cd27;}
+#info_3 {color:#AEA69F;}
+#info_3:hover {color:blue;}
+
+.bouton2 {
+	border-radius:12px 0 12px 0;
+	background: white;
+	border:2px solid #B1221C;
+	color:#B1221C;
+	font:bold 12px Verdana;
+	height:auto;font-family:cambria;font-size:0.9em;
+}
+.bouton2:hover{color:white;
+	cursor:pointer;background-color: #B1221C;border:2px solid #B1221C;
+}
+
+
+
+
+</style>

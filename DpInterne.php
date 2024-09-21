@@ -115,7 +115,7 @@
 	else if(isset($ap)) //Ici le bar
 	{
 	 if($ap==0){
-		$reqX="SELECT * FROM boisson,config_boisson,conditionnement,QteBoisson,casier WHERE QteBoisson.id=boisson.Qte AND conditionnement.id=boisson.Conditionne AND config_boisson.id=boisson.Categorie AND casier.id=boisson.pc AND pc<>0 AND numero='".$adp."' AND Depot = '1'";
+		echo $reqX="SELECT * FROM boisson,config_boisson,conditionnement,QteBoisson,casier WHERE QteBoisson.id=boisson.Qte AND conditionnement.id=boisson.Conditionne AND config_boisson.id=boisson.Categorie AND casier.id=boisson.pc AND pc<>0 AND numero='".$adp."' AND Depot = '1'";
 		$result0=mysqli_query($con,$reqX);$response=mysqli_fetch_object($result0);
 		$numero2=$response->numero2;$pc=$response->pc;
 		$Categorie=$response->Categorie;$Qte=$response->Qte;
@@ -169,9 +169,9 @@
 /* 			if($_POST['pvc']==2)  //Modification de Pack de boissons
 			{   $PrixPack=$PrixUnitaire; $PrixUnitaire=0; */
 			if($update2!=0){
-				$rek2="UPDATE boisson SET Categorie='".$categorie."', designation='".$designation."',Qte='".$Qte."',Conditionne='".$Conditionne."',pc='".$pack."',PrixUnitaire='".$PrixUnitaire."',Seuil='".$Seuil."',PrixPack='".$PrixPack."',QteStock='".$QteStock."',dateUpdate='".$Jour_actuel."' WHERE numero='".$update2."' AND Depot = '2'";	
+				$rek2="UPDATE boisson SET Categorie='".$categorie."', designation='".$designation."',Qte='".$Qte."',Conditionne='".$Conditionne."',pc='".$pack."',PrixUnitaire='".$PrixUnitaire."',Seuil='".$Seuil."',PrixPack='".$PrixPack."',dateUpdate='".$Jour_actuel."' WHERE numero='".$update2."' AND Depot = '2'";	
 			}
-				$rek="UPDATE boisson SET Categorie='".$categorie."', designation='".$designation."',Qte='".$Qte."',Conditionne='".$Conditionne."',pc='".$pack."',PrixUnitaire='".$PrixUnitaire."',Seuil='".$Seuil."',PrixPack='".$PrixPack."',QteStock='".$QteStock."',dateUpdate='".$Jour_actuel."' WHERE numero='".$update."' AND Depot = '1'";
+				$rek="UPDATE boisson SET Categorie='".$categorie."', designation='".$designation."',Qte='".$Qte."',Conditionne='".$Conditionne."',pc='".$pack."',PrixUnitaire='".$PrixUnitaire."',Seuil='".$Seuil."',PrixPack='".$PrixPack."',dateUpdate='".$Jour_actuel."' WHERE numero='".$update."' AND Depot = '1'";
 			
 			$query = mysqli_query($con,$rek) or die (mysqli_error($con));$query = mysqli_query($con,$rek2) or die (mysqli_error($con));
 				

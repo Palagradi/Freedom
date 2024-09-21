@@ -1,5 +1,5 @@
 ﻿<?php
-include_once'menu.php';  //if(isset($_SESSION['quantify'])) echo $_SESSION['quantify'];
+include_once 'menu.php';  //if(isset($_SESSION['quantify'])) echo $_SESSION['quantify'];
 // https://www.youtube.com/watch?v=xYc4AO_wQgM
 //https://sweetalert.js.org/docs/#content
 	$reqsel=mysqli_query($con,"SELECT * FROM RTables");
@@ -76,9 +76,7 @@ include_once'menu.php';  //if(isset($_SESSION['quantify'])) echo $_SESSION['quan
 		<link rel="stylesheet" href="js/alertify.js/themes/alertify.default.css" id="toggleCSS" />
 			
 		<script type="text/javascript" src="js/fonctions_utiles.js"></script>
-		<script src="js/sweetalert.min.js"></script>
-		
-
+		<script src="js/sweetalert.min.js"></script>	
 
 		<style>
 		.alertify-log-custom {
@@ -117,60 +115,61 @@ include_once'menu.php';  //if(isset($_SESSION['quantify'])) echo $_SESSION['quan
 		}
 
 
- .button {
-  background-color: blue;
-  border: none;
-  color: white;font-weight:bold;
-  padding-left: 10px; padding-right: 10px;  padding-top: 2px; padding-bottom: 0px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 25px;
-  margin: 4px 2px;cursor: pointer;
-}
+		 .button {
+		  background-color: blue;
+		  border: none;
+		  color: white;font-weight:bold;
+		  padding-left: 10px; padding-right: 10px;  padding-top: 2px; padding-bottom: 0px;
+		  text-align: center;
+		  text-decoration: none;
+		  display: inline-block;
+		  font-size: 25px;
+		  margin: 4px 2px;cursor: pointer;
+		}
 
-.button5 {border-radius: 50%;}
+		.button5 {border-radius: 50%;}
 
- .buttonT {
-  background-color: red;
-  border: none;
-  color: white;font-weight:bold;
-  padding: 0px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 25px;
-  margin: 4px 2px;cursor: pointer;
-}
+		 .buttonT {
+		  background-color: red;
+		  border: none;
+		  color: white;font-weight:bold;
+		  padding: 0px;
+		  text-align: center;
+		  text-decoration: none;
+		  display: inline-block;
+		  font-size: 25px;
+		  margin: 4px 2px;cursor: pointer;
+		}
 
- .button7 {
-  background-color: orange;
-  border: none;
-  color: white;font-weight:bold;
-  text-align: center;
-  text-decoration: none;display: inline-block;
-  font-size: 22px;
-  padding-left:2px;padding-right:2px;
-  margin: 0px 0px;cursor: pointer;
-}
-.button6 {border-radius: 40%;}
+		 .button7 {
+		  background-color: orange;
+		  border: none;
+		  color: white;font-weight:bold;
+		  text-align: center;
+		  text-decoration: none;display: inline-block;
+		  font-size: 22px;
+		  padding-left:2px;padding-right:2px;
+		  margin: 0px 0px;cursor: pointer;
+		}
+		.button6 {border-radius: 40%;}
 
-#full  {-webkit-transition: all 1s ease; /* Safari and Chrome */
-    -moz-transition: all 1s ease; /* Firefox */
-    -ms-transition: all 1s ease; /* IE 9 */
-    -o-transition: all 1s ease; /* Opera */
-    transition: all 1s ease;}
-#full:hover{   -webkit-transform:scale(1.25); /* Safari and Chrome */
-    -moz-transform:scale(1.25); /* Firefox */
-    -ms-transform:scale(1.25); /* IE 9 */
-    -o-transform:scale(1.25); /* Opera */
-     transform:scale(1.25);}
+		#full  {-webkit-transition: all 1s ease; /* Safari and Chrome */
+			-moz-transition: all 1s ease; /* Firefox */
+			-ms-transition: all 1s ease; /* IE 9 */
+			-o-transition: all 1s ease; /* Opera */
+			transition: all 1s ease;}
+		#full:hover{   -webkit-transform:scale(1.25); /* Safari and Chrome */
+			-moz-transform:scale(1.25); /* Firefox */
+			-ms-transform:scale(1.25); /* IE 9 */
+			-o-transform:scale(1.25); /* Opera */
+			 transform:scale(1.25);}
 		</style>
 			<script type="text/javascript" >
 				function edition1() { options = "Width=800,Height=450" ; window.open( "tableP.php", "edition", options ) ; }
 				function edition2() { options = "Width=800,Height=400" ; window.open( "ServP.php", "edition", options ) ; }
 				//function edition3() { options = "Width=800,Height=450" ; window.open( "receipt2.php", "edition", options ) ; }
 				function edition4() { options = "Width=800,Height=450" ; window.open( "frameFood.php", "edition", options ) ; }
+				function edition9() { options = "Width=800,Height=450" ; window.open( "framePFood.php", "edition", options ) ; }
 				function edition5() { options = "Width=800,Height=450" ; window.open( "frameDrink.php", "edition", options ) ; }
 				function edition8() { options = "Width=800,Height=450" ; window.open( "framePDrink.php", "edition", options ) ; }
 				function edition6() { options = "Width=auto,Height=auto" ; window.open( "receipt2.php", "edition", options ) ; }
@@ -217,12 +216,6 @@ include_once'menu.php';  //if(isset($_SESSION['quantify'])) echo $_SESSION['quan
 					  //swal(`Nom client : ${value}`);
 					  document.getElementById('Nomclt').value=value;   var table = document.getElementById('NameTable').value;  var cv = document.getElementById('cv').value;
 					  document.location.href='servir.php?menuParent=<?php echo $_SESSION['menuParenT']; ?>&clt='+value+'&table='+table+'&cv='+cv;
-/* 					  //swal(`Nom client : ${value}`);
-					  //document.getElementById('Nomclt').value=value;
-					   var table = document.getElementById('NameTable').value;  var cv = document.getElementById('cv').value;
-					  //document.location.href='serv.php%20%20?menuParent=<?php echo $_SESSION['menuParenT']; ?>&clt='+value+'&table='+table+'&cv='+cv;
-					   //if(!empty(value)) <?php  $_SESSION['clt']=value; ?> */
-					   //document.getElementById('Nomclt').value=value;
 					});
 				}
 

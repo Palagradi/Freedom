@@ -3,7 +3,7 @@ require("config.php");
 $footer= substr($_SERVER['PHP_SELF'], strrpos($_SERVER['PHP_SELF'], '/'));
 
 if($footer!="/proforma.php"){
-$req=mysqli_query($con,"DROP table SalleTempon");
+$req=mysqli_query($con,"DROP table IF EXISTS SalleTempon");
 }
 
 
@@ -124,6 +124,17 @@ href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="styl
 			.alertify-log-custom {
 				background: blue;
 			}
+			.footer {
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            background-color: #84CECC;
+            color: white;
+            text-align: center;
+            padding: 5px 0;
+			font-size:0.8em;
+        }
 		</style>
 	</head>
 
@@ -134,10 +145,10 @@ href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="styl
   <?php
 
 	?>
-    <nav class="navbar header-top fixed-top navbar-expand-lg navbar-dark bg-dark" style='font-weight:bold;font-family:kanit semibold;'>
+    <nav class="navbar header-top fixed-top navbar-expand-lg navbar-dark bg-dark" style='font-weight:bold;font-family:calibri;'>
 	  <?php
 	  	$rZ=mysqli_query($con,"SELECT * FROM menu_tempon");
-		$d1=mysqli_fetch_assoc($rZ);$mParent=isset($d1['menu'])?$d1['menu']:NULL;
+		$d1=mysqli_fetch_assoc($rZ);$mParent=isset($d1['menu'])?trim($d1['menu']):NULL;
 		//$mod;
 		$reqsel=mysqli_query($con,"SELECT * FROM module WHERE Etat='1' AND Name='RESTAURATION'");
 		if(mysqli_num_rows($reqsel)>0){
@@ -149,23 +160,24 @@ href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="styl
 		// if(mysqli_num_rows($reqsel)>0){
 		// 	echo "<a class='navbar-brand' href='menu.php' title='ECONOMAT'><i class='fas fa-home'></i></a>";
 		// }
-		else
-			echo "<a class='navbar-brand' href='menu.php' ><i class='fas fa-home'></i></a>";
+		else {
+/* 			echo "<a class='navbar-brand' href='menu.php' ><i class='fas fa-home'></i></a>";
 			if(isset($_GET['module'])&&($_GET['module']=='RESTAURATION'))
-			{  echo "<a class='navbar-brand' href='menu.php?module=HEBERGEMENT' title='HEBERGEMENT'><i class='fas fa-home'></i></a>";
+			{  echo "<a class='navbar-brand' href='menu.php?module=HEBERGEMENT' title='PASSEZ EN MODE HEBERGEMENT'><i class='fas fa-home'></i></a>";
 				$role="roleR"; $_SESSION['module']=1;
 			}
 			if(isset($_GET['module'])&&($_GET['module']=='HEBERGEMENT'))
 			{
-				echo "<a class='navbar-brand' href='menu.php?module=RESTAURATION' title='RESTAURATION'><i class='fas fa-home'></i></a>";
+				echo "<a class='navbar-brand' href='menu.php?module=RESTAURATION' title='PASSEZ EN MODE RESTAURATION'><i class='fas fa-home'></i></a>";
 				$role="roleH"; $_SESSION['module']=2;
-			}
+			} */	
+		}
 
 		mysqli_query($con,"SET NAMES 'utf8'");
 		$reqsel=mysqli_query($con,"SELECT DISTINCT menuParent,logo FROM ".$role.",affectationrole WHERE ".$role.".nomrole=affectationrole.nomrole AND ".$role.".nomrole <> 'Administration' AND Profil='".$_SESSION['poste']."' ORDER BY menuParent");
 		//$nbreReq=mysqli_num_rows($reqsel);
 			while($data=mysqli_fetch_array($reqsel))
-				{   $menuParent=$data['menuParent'];
+				{   $menuParent=trim($data['menuParent']);
 					$logo=$data['logo'];
 					mysqli_query($con,"SET NAMES 'utf8'");
 					$reqselB=mysqli_query($con,"SELECT chemin,target FROM ".$role.",affectationrole WHERE menuParent='".$menuParent."'");
@@ -177,7 +189,7 @@ href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="styl
 					{//if($_SESSION['poste']=="Super administrateur")
 						//echo "<a class='navbar-brand' href='".$chemin."?menuParent=".$menuParent."' style='font-size:95%;";
 				    // else
-						 echo "<a class='navbar-brand' href='menu.php?menuParent=".$menuParent."' style='font-family:kanit semibold;font-size:100%;";
+						 echo "<a class='navbar-brand' href='menu.php?menuParent=".$menuParent."' style='font-family:calibri;font-size:105%;";
 
 						if(empty($cheminP))  {if($mParent==$menuParent) echo "color:yellow; ";   }
 						echo "'>".$menuParent."</a>";
@@ -185,7 +197,7 @@ href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="styl
 					}else { //if($_SESSION['poste']=="Super administrateur") //$chemin="../".$chemin;
 								//echo "<a class='navbar-brand' id='navbar-brand' href='#' style='font-size:95%;";
 							//else
-								echo "<a class='navbar-brand' id='navbar-brand' href='".$chemin."?chemin=".$chemin."&lien=".$menuParent."' style='font-family:kanit semibold;font-size:100%";
+								echo "<a class='navbar-brand' id='navbar-brand' href='".trim($chemin)."?chemin=".$chemin."&lien=".$menuParent."' style='font-family:calibri;font-size:100%";
 					if(empty($menuParenT)) {if(!empty($cheminP) && ($cheminP==$chemin )) echo "color:yellow; ";  }
 					echo "' >".$menuParent."</a>";
 					}
@@ -250,10 +262,10 @@ href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="styl
 				$mod=isset($_SESSION['serveurname'])?$_SESSION['serveurname']:"FREEDOM"; 
 				$tab = str_split($mod,1);
  				for($i=0;$i<count($tab);$i++)
-				{	//echo "<span align='center' style='font-size:1.2em;width:100%;font-family:kanit semibold;color:#444739;align:center;'>";
+				{	//echo "<span align='center' style='font-size:1.2em;width:100%;font-family:calibri;color:#444739;align:center;'>";
 					if((count($tab)<10)&& ($i==0)) echo "<br/>";
 					//echo $tab[$i];
-					echo "<H2 ALIGN='center' style='color:#444739;font-family:kanit semibold ;'><b><span style='font-size:200%;color:white;font-family: kanit semibold ;'>".$tab[$i]."</span></h2>";
+					echo "<H2 ALIGN='center' style='color:#444739;font-family:calibri ;'><b><span style='font-size:200%;color:white;font-family: calibri ;'>".$tab[$i]."</span></h2>";
 					//echo "</span><br/>"; if(count($tab)<10) echo "<br/>";
 				} //echo "&Alpha;";
 
@@ -302,7 +314,7 @@ href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="styl
 
 	<?php
 	if($footer!="/food.php"){
-			$reqselz=mysqli_query($con,"DROP TABLE ListeProduits");
+			$reqselz=mysqli_query($con,"DROP TABLE IF EXISTS ListeProduits");
 	}
 		  $footer= substr($_SERVER['PHP_SELF'], strrpos($_SERVER['PHP_SELF'], '/'));
 		if($footer=="/menu.php"){
@@ -311,17 +323,17 @@ href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="styl
 			$logo=$data['logo'];$title="e-Freedom";
 			$logo="logo/Sesy.png";
 			echo "<center><img src='".$logo."' style='margin-top:0px;filter:alpha(opacity=25);opacity: 0.25;-moz-opacity:0.95;'/></center>";
-		echo " <br/>";
-		echo "<H2 ALIGN='center' style='color:#444739;font-family:kanit semibold ;'><b><span style='font-size:200%;color:green;font-family:kanit semibold;'>H</span>EBERGEMENT - <span style='font-size:200%;color:teal;font-family:kanit semibold;'>R</span>ESTAURATION -
-		<span style='font-size:200%;color:red;font-family:kanit semibold;'>E</span>CONOMAT </b> -
-		<span style='font-size:200%;color:yellow;font-family:kanit semibold;'>I</span>MMOBLIER </b>
-		</H2>	<div style ='font-family:kanit semibold;'>
-			<br/>
+		//echo " <br/>";
+/* 		echo "<H2 ALIGN='center' style='color:#444739;font-family:calibri ;'><b><span style='font-size:200%;color:green;font-family:calibri;'>H</span>EBERGEMENT - <span style='font-size:200%;color:teal;font-family:calibri;'>R</span>ESTAURATION -
+		<span style='font-size:200%;color:red;font-family:calibri;'>E</span>CONOMAT </b> -
+		<span style='font-size:200%;color:yellow;font-family:calibri;'>I</span>MMOBLIER </b>
+		</H2>	<div style ='font-family:calibri;'>"; */
+/* 		echo "<br/>
 			<div style ='text-align:center;bottom:0;'><span class='Style3'>".$title." - Version 2.0 (Juillet 2016) </span></div>
 			<div style ='text-align:center;bottom:0;'><span class='Style3'>Copyright : GIS Informatique</span>&nbsp;&nbsp;&nbsp;<span class='Style3'>Tous droits reservés</span></div>
 		<br/>
 		<p>&nbsp;</p>";
-		echo "</div>";
+		echo "</div>"; */
 		}
 		?>
 	<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
@@ -389,14 +401,24 @@ href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="styl
 } else {
 		?>
 
-	<table align='center' width='45%' height='auto' border='0' cellpadding='0' cellspacing='0' style='margin-top:90px;border:2px solid teal;font-family:kanit semibold;background-color:#f5f5dc;'>
-		<tr>
-			<td align='center' ><h3>eFREEDOM Version 1.0 (Juillet 2020) <br/><br/> AUCUN MODULE N'EST INSTALLE.  <br/><br/>CONTACTEZ LE SUPER ADMINISTRATEUR</h3></td>
-		</tr>
-
-	</table>
 
 	<?php
 
 	}
+	}
+
+	$reqsel=mysqli_query($con,"SELECT backupDate FROM backup WHERE backup='".$previousDay."'");
+	if(mysqli_num_rows($reqsel)==0) include 'backup.php'; 
+	
+	?>
+	
+<div class='footer'>
+	<?php
+		if($footer=="/menu.php"){
+		echo "<h2 ALIGN='center' style='color:#444739;font-family:calibri;margin-bottom:0px;'><b><span style='font-size:200%;color:green;font-family:calibri;'>H</span>EBERGEMENT - <span style='font-size:200%;color:yellow;font-family:calibri;'>R</span>ESTAURATION -
+		<span style='font-size:200%;color:red;font-family:calibri;'>E</span>CONOMAT - <span style='font-size:200%;color:teal;font-family:calibri;'>I</span>MMOBILIER</b>"; 
+		echo "</h2>";
 		}
+	?>	
+<span style='font-weight:normal;'>Copyright © eFREEDOM Version 1.0 (Juillet 2020)</span>		
+</div>

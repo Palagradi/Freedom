@@ -1,5 +1,5 @@
 <?php
-include_once'menu.php';  //$req = mysqli_query($con,"DELETE FROM QteBoisson WHERE qte='Hhhh'");
+	include_once'menu.php';  //$req = mysqli_query($con,"DELETE FROM QteBoisson WHERE qte='Hhhh'");
 
 
 	$plat=isset($_POST['plat'])?$_POST['plat']:NULL;
@@ -7,9 +7,9 @@ include_once'menu.php';  //$req = mysqli_query($con,"DELETE FROM QteBoisson WHER
 	$update=isset($_GET['update'])?$_GET['update']:NULL;
 	$delete=isset($_GET['delete'])?$_GET['delete']:NULL;
 
-	$sqlF=mysqli_query($con,"SELECT DISTINCT CategoriePlat FROM plat ");
+	//$sqlF=mysqli_query($con,"SELECT DISTINCT CategoriePlat FROM plat ");
 	if(!empty($plat)){
-	$sqlPi=mysqli_query($con,"SELECT numero,designation,prix FROM plat  WHERE numero='".$plat."'");
+	$sqlPi=mysqli_query($con,"SELECT numero,designation,prix,ListeProduits FROM plat  WHERE numero='".$plat."'");
 	$data = mysqli_fetch_object($sqlPi);
 	}
 	if(isset($update)){
@@ -35,6 +35,7 @@ include_once'menu.php';  //$req = mysqli_query($con,"DELETE FROM QteBoisson WHER
 			echo "<script language='javascript'>";
 			echo 'alertify.success(" Portion enrégistrée avec succès !");';
 			echo "</script>";
+			unset($plat);
 			//echo '<meta http-equiv="refresh" content="1; url=DpInterne.php?menuParent='.$_SESSION['menuParenT'].'" />';
 			}
 		}
@@ -58,7 +59,7 @@ include_once'menu.php';  //$req = mysqli_query($con,"DELETE FROM QteBoisson WHER
 		<title><?php echo $title; ?></title>
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 		<link rel="Stylesheet" href='css/table.css' />
-		<link rel="Stylesheet" type="text/css"  href='css/input.css' />
+		<link rel="Stylesheet" type="text/css"  href='css/input.css'/>
 		<link rel="stylesheet" media="screen" type="text/css" title="design" href="design.css"/>
 		<link href="fontawesome/web-fonts-with-css/css/fontawesome-all.min.css" rel="stylesheet">
 		<link rel="stylesheet" href="js/alertify.js/themes/alertify.core.css" />
@@ -66,7 +67,8 @@ include_once'menu.php';  //$req = mysqli_query($con,"DELETE FROM QteBoisson WHER
 		
 		<link href="js/datatables/dataTables.bootstrap4.css" rel="stylesheet">
 		
-		<link href="js/editableSelect/jquery-editable-select.min.css" rel="stylesheet">
+		<link href="js/select2/select2.min.css" rel="stylesheet" />
+		<script src="js/select2/select2.min.js"></script>
 		
 		<script src="js/sweetalert.min.js"></script>
 		<meta name="viewport" content="width=device-width">
@@ -93,6 +95,11 @@ include_once'menu.php';  //$req = mysqli_query($con,"DELETE FROM QteBoisson WHER
 		}
 		</style>
 		<script type="text/javascript" src="js/fonctions_utiles.js"></script>
+		<script type="text/javascript" >				
+			$(document).ready(function() {
+				$('.js-example-basic-multiple').select2();
+			});
+		</script>
 	</head>
 	<body bgcolor='azure' style="overflow: visible;" >
 	<div class="container">
@@ -125,7 +132,7 @@ include_once'menu.php';  //$req = mysqli_query($con,"DELETE FROM QteBoisson WHER
 			echo 'alertify.error(" L\'opération a été annulée !");';
 			echo "</script>";
 		}
-		
+	$rowspan=4;if((isset($data->ListeProduits)&&(!empty($data->ListeProduits)))) $rowspan=5;	
 		
 	$rand1=rand(1,30); $rand2=rand(1,30);
 	$arrayPortion = array('amandes','ananas','banane','cabillaud','camenbert','carotte','clementine','concombres','crevettes','epinards','fraises','framboise','haricots blancs','haricots verts','jambon','kiwi','noisettes','orange','pain','pates','petits pois','petits suisses','pois chiche','pomme','poulet','prune','riz','sardines','tomate','yaourt'); 
@@ -135,8 +142,8 @@ include_once'menu.php';  //$req = mysqli_query($con,"DELETE FROM QteBoisson WHER
 							<h2 style='text-align:right; font-family:Cambria;color:maroon;font-weight:bold;'>DEFINITION D'UNE PORTION DE PLAT</h2>
 						</td>
 				</tr>
-				<tr>
-					<td rowspan='4' align='left'>
+				<tr> 
+					<td rowspan='".$rowspan."' align='left'>
 						<img title='' src='logo/food/portion/".$rand1.".png' width='200' height='175'/> 
 						<p style='padding-left:75px;font-family:calibri;color:gray;font-size:0.9em;'>".ucfirst($arrayPortion[$rand1-1])."</p>
 					</td>";
@@ -157,7 +164,7 @@ include_once'menu.php';  //$req = mysqli_query($con,"DELETE FROM QteBoisson WHER
 							}						
 				echo "</select>
 				</td>
-					<td rowspan='4' align='right' style='padding-left:25px;'>
+					<td rowspan='5' align='right' style='padding-left:25px;'>
 								<img title='' src='logo/food/portion/".$rand2.".png' width='200' height='175'/> 
 								<p style='padding-right:75px;font-family:calibri;color:gray;font-size:0.9em;'>".ucfirst($arrayPortion[$rand2-1])."</p>
 					</td>
@@ -167,7 +174,7 @@ include_once'menu.php';  //$req = mysqli_query($con,"DELETE FROM QteBoisson WHER
 				<td  style='padding-left:50px;' >Prix du plat  &nbsp;:&nbsp;&nbsp;&nbsp;&nbsp;</td>
 				<td  style=''><input type='text' id='' name='Prix' style='height:25px;font-size:1em;background-color:#D3D3D3;width:300px;' readonly 
 				<?php  
-				if(!empty($data->prix)) echo "value='".$data->prix."'";
+				if(!empty($data->prix)&&(!empty($plat))) echo "value='".$data->prix."'";
 				?>
 				/></td>
 			</tr>
@@ -176,7 +183,7 @@ include_once'menu.php';  //$req = mysqli_query($con,"DELETE FROM QteBoisson WHER
 				<td>
 				<select <?php //if(empty($data->libellePortion))  echo "id='editable-select'"; ?>  name='portion' style="width:300px;background:#fff;font-family:sans-serif;font-size:100%;border:1px solid gray;">
 					 <?php
-					 		$separators = "/[;,\-+]| aux | au | et | avec /";
+					 		$separators = "/[;,\-+]| aux | au | et | plus | avec /";
 							if(!empty($data->libellePortion)) 
 								echo "<option value ='".$data->libellePortion."'>".$data->libellePortion."</option>";
 							else 
@@ -243,6 +250,32 @@ include_once'menu.php';  //$req = mysqli_query($con,"DELETE FROM QteBoisson WHER
 
 				</td>
 			</tr>
+			<?php
+			if((isset($data->ListeProduits)&&(!empty($data->ListeProduits)))) {
+				echo "<tr>"; 
+				echo "<td  style='padding-left:50px;'>Produits alimentaires :&nbsp;&nbsp;&nbsp;<span class='rouge'></span></td>
+					<td >";						
+
+						 $ListeProduits = explode("|",$data->ListeProduits);
+						
+						echo "<select class='js-example-basic-multiple' name='ListeProduits[]' multiple='multiple' style='font-family:sans-serif;border:1px solid gray;width:300px;'>";
+												
+						for($i=0;$i<count($ListeProduits);$i++) {
+							if(($ListeProduits[$i])!="")
+							{
+								$req=mysqli_query($con,"SELECT Num,Designation FROM produits WHERE Num='".$ListeProduits[$i]."'");	
+								$data0 =  mysqli_fetch_object($req);
+								echo "<option value ='".$data0->Num."'> ".$data0->Designation."</option>";
+							}
+						}
+						echo "</select>
+						<a href='#' class='info2' style='color:#B83A1B;'><span style='font-size:0.9em;font-style:normal;color:green;'>
+						Pour un suivi rigoureux du <g style='color:red;'>stock des produits <br/> alimentaires</g>, ajoutez ici les différents produits<br/>entrant dans la préparation de la portion.<br/><br/>
+						Vous pouvez vous limiter aux <g style='color:red;'>produits</g> dont vous<br/> voulez connaitre <g style='color:red;'>l'état réel du stock</g>.</span><i class='fa fa-info-circle' aria-hidden='true'></i></a>
+					</td>
+				</tr>";
+			}						
+			?>
 			<tr>
 				<td  style='padding-left:50px;' >Prix de la portion  &nbsp;:&nbsp;&nbsp;&nbsp;<span class='rouge'>*</span></td>
 				<td  style=''><input type='text' id='' name='Prixvente' style='height:25px;font-size:1em;width:300px;' required='required' <?php echo "placeholder='".$devise."'"; ?> onkeypress='testChiffres(event);'
@@ -271,18 +304,18 @@ include_once'menu.php';  //$req = mysqli_query($con,"DELETE FROM QteBoisson WHER
 <thead>
 <tr><td colspan='6' > <span style="float:left;font-family:Cambria;font-weight:bold;font-size:1.3em;margin-bottom:5px;color:#4C767A;" >Liste des portions disponibles  </span></td></tr>
 		<tr  style='background-color:#3EB27B;color:white;font-size:1.2em; padding-bottom:5px;'>
-			<td style="border-right: 2px solid #ffffff" align="center" >Type de repas<span style='font-size:0.8em;'></span></td>
-			<td style="border-right: 2px solid #ffffff" align="center" >Catégorie du plat<span style='font-size:0.8em;'></span></td>
-			<td style="border-right: 2px solid #ffffff" align="center" >Désignation du plat<span style='font-size:0.8em;'></span></td>
-			<td style="border-right: 2px solid #ffffff" align="center" >Désignation de la portion<span style='font-size:0.8em;'></span></td>
-			<td style="border-right: 2px solid #ffffff" align="center" >Prix de vente<span style='font-size:0.8em;'></span></td>
-			<td align="center" >Actions</td>
+			<td style="border-right: 1px solid #ffffff;border-top: 1px solid #ffffff;border-left: 1px solid #ffffff;" align="center" >Type de repas<span style='font-size:0.8em;'></span></td>
+			<td style="border-right: 1px solid #ffffff;border-top: 1px solid #ffffff;" align="center" >Catégorie du plat<span style='font-size:0.8em;'></span></td>
+			<td style="border-right: 1px solid #ffffff;border-top: 1px solid #ffffff;" align="center" >Désignation du plat<span style='font-size:0.8em;'></span></td>
+			<td style="border-right: 1px solid #ffffff;border-top: 1px solid #ffffff;" align="center" >Désignation de la portion<span style='font-size:0.8em;'></span></td>
+			<td style="border-right: 1px solid #ffffff;border-top: 1px solid #ffffff;" align="center" >Prix de vente<span style='font-size:0.8em;'></span></td>
+			<td style="border-right: 1px solid #ffffff;border-top: 1px solid #ffffff;"  align="center" >Actions</td>
 		</tr>
 </thead>
 <tbody id="">
 <?php
 	mysqli_query($con,"SET NAMES 'utf8'");
-	$result=mysqli_query($con,"SELECT  * FROM plat,portion,categorieplat,menu WHERE categorieplat.id=plat.categPlat AND menu.id=plat.categMenu AND plat.numero = portion.numPlat");
+	$result=mysqli_query($con,"SELECT * FROM plat,portion,categorieplat,menu WHERE categorieplat.id=plat.categPlat AND menu.id=plat.categMenu AND plat.numero = portion.numPlat");
 	$cpteur=1;
     // parcours et affichage des résultats
     while( $data = mysqli_fetch_object($result))
@@ -305,7 +338,7 @@ include_once'menu.php';  //$req = mysqli_query($con,"DELETE FROM QteBoisson WHER
 				<td style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'>&nbsp; <?php echo $data->catPlat; ?></td>
 				<td align='' style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'>&nbsp;<?php echo ucfirst($data->designation); ?></td>
 				<?php 	
-					echo "<td style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff' align='left'>&nbsp;".ucfirst($data->libellePortion)."</td>
+					echo "<td style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff' align='left'>".ucfirst($data->libellePortion)."</td>
 						<td style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff' align='center'> ".$data->prixPortion."&nbsp;<span style='font-size:0.6em;'>".$devise."</span></td>";
 						echo "<td align='center' style='border-right: 0px solid #ffffff; border-top: 2px solid #ffffff'> 
 						&nbsp;<a class='info2' href='CompoPlat.php?menuParent=".$_SESSION['menuParenT']."&update=".$data->id."'  style='color:#FC7F3C;'><img src='logo/b_edit.png' alt='' width='16' height='16' border='0'><span style='color:#FC7F3C;font-size:0.9em;'>Modifier</span></a>";
@@ -321,10 +354,6 @@ include_once'menu.php';  //$req = mysqli_query($con,"DELETE FROM QteBoisson WHER
 	</table>
 </div>	
 
-		<script src="js/editableSelect/jquery-1.12.4.min.js"></script>
-		<script src="js/editableSelect/jquery-editable-select.min.js"></script>
-		<script src="js/editableSelect/script.js"></script>
-		
 		<script src="js/datatables/jquery.dataTables.js"></script>
         <script src="js/datatables/dataTables.bootstrap4.js"></script>
         <!-- Custom scripts for all pages-->

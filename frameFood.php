@@ -30,7 +30,7 @@ if(($numero>0)&&($Qte>0)){echo "&nbsp;";
 			$req1 = mysqli_query($con,$pre_sql1) or die (mysqli_error($con));
 		}
 		else {
-			$pre_sql1="INSERT INTO tableEnCours VALUES(NULL,'".$numero."','".$table."','".$data['designation']."','1','".$data['Qte']."','".$data['prix']."','".$Qte."','','','".$Jour_actuel."','".$Heure_actuelle."','".$tva."','')";
+			$pre_sql1="INSERT INTO tableEnCours VALUES(NULL,'".$numero."','".$table."','".$data['designation']."','1','','".$data['prix']."','".$Qte."','','','".$Jour_actuel."','".$Heure_actuelle."','".$tva."')";
 			$req1 = mysqli_query($con,$pre_sql1) or die (mysqli_error($con));	
 		}
 
@@ -39,13 +39,13 @@ if(($numero>0)&&($Qte>0)){echo "&nbsp;";
 		$re="INSERT INTO operation VALUES(NULL,'".$ref."','Vente ','".$numero."','".$Qte_Stock."','".$Qte."','".$quantiteF."','".$Jour_actuel."','".$Heure_actuelle."','','".$Qte."')";
 		$req=mysqli_query($con,$re);
 
-		$update="UPDATE plat SET NbreC=NbreC+'".$Qte."',Nbre=Nbre-'".$Qte."' WHERE numero='".$_GET['numero']."' AND state=1 ";
+		echo $update="UPDATE plat SET NbreC=NbreC+'".$Qte."',Nbre=Nbre-'".$Qte."' WHERE numero='".$_GET['numero']."' AND state=1 ";
 		$Query=mysqli_query($con,$update);
 		
-/*   		echo "<script language='javascript'>";
+  		echo "<script language='javascript'>";
 		echo "window.close();";
 		echo "window.opener.location.reload();";
-		echo "</script>";   */
+		echo "</script>";   
 	}
 }
 
@@ -186,9 +186,9 @@ a.info {
 		<tr><td> &nbsp;&nbsp;</td></tr>
 		<tr  style='background-color:gray;color:white;font-size:1.2em; padding-bottom:5px;'>
 			<td style="border:2px solid #ffffff" align="center">#</td>
-			<td style="padding:2px;border:2px solid #ffffff" align="center" >Catégorie plat<span style='font-size:0.8em;'></td>
-			<td style="padding:2px;border:2px solid #ffffff" align="center" >Désignation<span style='font-size:0.8em;'></td>
-			<td style="padding:2px;border:2px solid #ffffff" align="center" >Nbre de plats<br/>&nbsp;disponibles<span style='font-size:0.8em;'></td>
+			<td style="padding:2px;border:2px solid #ffffff" align="center" >Catégorie <span style='font-size:0.8em;'></td>
+			<td style="padding:2px;border:2px solid #ffffff" align="center" >Désignation du plat<span style='font-size:0.8em;'></td>
+			<td style="padding:2px;border:2px solid #ffffff" align="center" >Quantité<br/>&nbsp;disponible<span style='font-size:0.8em;'></td>
 			<td style="padding:2px;border:2px solid #ffffff" align="center" >Prix de vente<span style='font-size:0.8em;'></td>
 			<td style='padding:2px;border:2px solid #ffffff;' align="center" >Actions</td>
 		</tr>
@@ -217,7 +217,7 @@ a.info {
 			  <td align='center' style='padding:7px;border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'><?php echo $j; ?>.</td>
 				<td style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'><?php echo $data->catPlat; ?> </td>
 				<td style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'> <?php echo $data->designation; ?></td>
-				<td align='center'  style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'> <?php echo $data->NbreJ; ?></td>
+				<td align='center'  style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'> <?php echo $data->Nbre; ?></td>
 				<td align='center'  style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'> <?php echo $data->prix; ?></td>				
 				<td align='center'  style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'> 
 				<a class='info' onclick='JSalertQte(<?php echo $data->numero ?>);return false;' 

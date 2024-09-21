@@ -258,7 +258,7 @@
 					  &nbsp;&nbsp;&nbsp;<a class='info' <?php if((!empty($table))||(!empty($vt)))  echo "onclick='edition8();return false;'"; else echo "onclick='Alert();return false;'";?> style='color:maroon;' > <span style='font-size:0.9em;font-style:normal;color:maroon;'>Ajouter un pack/casier de boissons </span>	<i style='font-size:2.3em;' class='fas fa-cart-plus' aria-hidden='true'></i></a>
 					   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 					   <a class='info2' <?php if((!empty($table))||(!empty($vt)))  echo "onclick='edition4();return false;'"; else echo "onclick='Alert();return false;'";?> style='color:#FF00FF;' > <span style='font-size:0.9em;font-style:normal;color:#FF00FF;'>Ajouter un plat </span>	<i style='font-size:2.3em;' class='fas fa-cart-plus' aria-hidden='true'></i></a>
-					  &nbsp;&nbsp;&nbsp;<a class='info2' <?php if((!empty($table))||(!empty($vt)))  echo "onclick='edition4();return false;'"; else echo "onclick='Alert();return false;'";?> style='color:#6495ed;' > <span style='font-size:0.9em;font-style:normal;color:#6495ed;'>Ajouter une portion de plat</span>	<i style='font-size:2.3em;' class='fas fa-cart-plus' aria-hidden='true'></i></a>
+					  &nbsp;&nbsp;&nbsp;<a class='info2' <?php if((!empty($table))||(!empty($vt)))  echo "onclick='edition9();return false;'"; else echo "onclick='Alert();return false;'";?> style='color:#6495ed;' > <span style='font-size:0.9em;font-style:normal;color:#6495ed;'>Ajouter une portion de plat</span>	<i style='font-size:2.3em;' class='fas fa-cart-plus' aria-hidden='true'></i></a>
 
 					   
 					</span>

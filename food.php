@@ -1,6 +1,6 @@
 <?php
-include_once'menu.php';
-	$reqsel=mysqli_query($con,"SELECT * FROM plat ");
+	include_once'menu.php';
+	$reqsel=mysqli_query($con,"SELECT * FROM plat");
 	$nbreplat=mysqli_num_rows($reqsel);$nbre=$nbreplat+1;
 	if(($nbre>=0)&&($nbre<=9)) $nbre="00000".$nbre ; else if(($nbre>=10)&&($nbre <=99)) $nbre="0000".$nbre ;else $nbre="00".$nbre ;
 	
@@ -25,14 +25,14 @@ include_once'menu.php';
 		$reqk=mysqli_query($con,"SELECT * FROM plat,categorieplat,menu WHERE categorieplat.id=plat.categPlat AND menu.id=plat.categMenu AND numero='".$update."'");
 		while($dataP = mysqli_fetch_object($reqk)){
 			$nbre = $dataP->numero;$CategorieMenu=$dataP->TypeMenu;$CategoriePlat=$dataP->catPlat;
-			$CategMenu=$dataP->categMenu;$CategPlat=$dataP->categPlat;
-			$designation=$dataP->designation;$prix=$dataP->prix;$ListeProduits=$dataP->ListeProduits;
+			$CategMenu=$dataP->categMenu;$CategPlat=$dataP->categPlat;$designation=$dataP->designation;
+			$designation2=$dataP->designation2;$prix=$dataP->prix;$ListeProduits=$dataP->ListeProduits;
 		}
 	if(($nbre>=0)&&($nbre<=9)) $nbre="00000".$nbre ; else if(($nbre>=10)&&($nbre <=99)) $nbre="0000".$nbre ;else $nbre="00".$nbre ;	
 	}
 if(isset($_POST['ENREGISTRER'])){
 
-	$categorie=$_POST['Libmenu'];$designation=trim(addslashes($_POST['designation']));	$CategoriePlat=$_POST['categorie'];$Prix=$_POST['Prixvente'];  $TPS_2=isset($_POST['TPS_2'])?$_POST['TPS_2']:1; //$NbrePers=$_POST['NbrePers'];
+	$categorie=$_POST['Libmenu'];$designation=trim(addslashes($_POST['designation']));	$designation2=trim(addslashes($_POST['designation2'])); $CategoriePlat=$_POST['categorie'];$Prix=$_POST['Prixvente'];  $TPS_2=isset($_POST['TPS_2'])?$_POST['TPS_2']:1; //$NbrePers=$_POST['NbrePers'];
 	//if(!empty($designation)&&isset($_POST['designation'])){
 	$dataT="";
     if (isset($_POST['ListeProduits']) && is_array($_POST['ListeProduits'])) {
@@ -42,7 +42,7 @@ if(isset($_POST['ENREGISTRER'])){
         }
     }
 	if($_POST['ENREGISTRER']=="Enrégistrer"){
-	$sql="INSERT INTO `plat`(`numero`, `CategMenu`, `CategPlat`, `designation`, `ListeProduits`, `composition`, `prix`, `NbreJ`, `NbreC`, `Nbre`, `state`, `RegimeTVA`, `created_at`, `updated_at`) VALUES (NULL,'".$categorie."','".$CategoriePlat."','".$designation."','".$dataT."',NULL,'".$Prix."',0, 0,0,NULL,'".$TPS_2."','" . $Jour_actuel. "','" . $Heure_actuelle. "')";
+	$sql="INSERT INTO `plat`(`numero`, `CategMenu`, `CategPlat`, `designation`, `designation2`, `ListeProduits`, `composition`, `prix`, `NbreJ`, `NbreC`, `Nbre`, `state`, `RegimeTVA`, `created_at`, `updated_at`) VALUES (NULL,'".$categorie."','".$CategoriePlat."','".$designation."','".$designation2."','".$dataT."',NULL,'".$Prix."',0, 0,0,NULL,'".$TPS_2."','" . $Jour_actuel. "','" . $Heure_actuelle. "')";
  	$query = mysqli_query($con,$sql);
 		if($query){ $designation="";
 		echo "<script language='javascript'>";
@@ -160,17 +160,17 @@ if(isset($_POST['ENREGISTRER'])){
 		}
 			echo "	<tr>
 						<td colspan='8'>
-							<h2 style='text-align:center; font-family:Cambria;color:Maroon;font-weight:bold;'>"; if(isset($update)) echo "MISE A JOUR D'INFORMATIONS SUR UN PLAT"; else "ENREGISTREMENT DES PLATS"; echo "</h2>
+							<h2 style='text-align:center; font-family:Cambria;color:Maroon;font-weight:bold;'>"; if(isset($update)) echo "MISE A JOUR D'INFORMATIONS SUR UN PLAT"; else echo "ENREGISTREMENT DES PLATS"; echo "</h2>
 						</td>
 					</tr>
 
 				<tr>
-					<td rowspan='6' align='left'>
+					<td rowspan='7' align='left'>
 						<img title='' src='logo/food/".rand(1,36).".png' width='250' height='300'/>
 					</td>
 					<td colspan='2' style='padding-left:25px;' >N° d'enrég. : &nbsp;&nbsp;&nbsp;<span class='rouge'></span></td>
 					<td colspan='2'><input type='text' id='code' name='code' style='width:250px;' readonly value='".$nbre."' onkeyup='myFunction()'/> </td>
-					<td rowspan='6' align='right' style='padding-left:25px;'>
+					<td rowspan='7' align='right' style='padding-left:25px;'>
 						<img title='' src='logo/food/".rand(1,36).".png' width='250' height='300'/>
 					</td>
 				</tr>
@@ -182,7 +182,6 @@ if(isset($_POST['ENREGISTRER'])){
 						$req=mysqli_query($con,"SELECT Num,Designation FROM produits WHERE Type='".$_SESSION['menuParenT1']."' order by Designation");
 	
 						echo "<select class='js-example-basic-multiple' name='ListeProduits[]' multiple='multiple' style='font-family:sans-serif;border:1px solid gray;width:250px;'>";
-						//echo "<optgroup>TEST</optgroup>";
 						while($data = mysqli_fetch_array($req)){
 								echo "<option value ='".$data['Num']."'> ".$data['Designation']."</option>";
 								}
@@ -225,17 +224,25 @@ if(isset($_POST['ENREGISTRER'])){
 
 				</td>
 			</tr>
-		<tr>
-				<td colspan='2' style='padding-left:25px;'>Désignation du plat :&nbsp;&nbsp;<span class='rouge'>*</span>&nbsp;</td>
+			<tr>
+				<td colspan='2' style='padding-left:25px;'>Nom complet du plat :&nbsp;&nbsp;<span class='rouge'>*</span>&nbsp;</td>
 				<td colspan='2'><input type='text' id='' name='designation' value='".$designation."' style='width:250px;font-family:sans-serif;font-size:90%;' required='required' onblur='ucfirst(this);' onkeypress=''/>
 				<a class='info2' href='#' style='color:#B83A1B;'>
 				<span style='font-size:0.9em;font-style:normal;color:green;'>Veuillez donner ci-possible des noms qui vous permettront <br/>d'avoir des différentes portions d'un même plat.<br/>
-				Dans la désignation du plat, utilisez des séparateurs comme : 
+				Dans le Nom complet du plat, utilisez des séparateurs comme : 
 				<br/><b style='color:red;'>avec&nbsp;&nbsp;et&nbsp;&nbsp;au  &nbsp;&nbsp;aux &nbsp;&nbsp; + &nbsp;&nbsp; ; &nbsp;&nbsp;,&nbsp;&nbsp; -</b> 
-				<br/>Exemples de plats : Riz <g style='color:red;'>au</g> poulet, Tartine de pain <g style='color:red;'>avec</g> 5 g de 
-				<br/>confiture, Pâte noire <g style='color:red;'>+</g> poisson,	etc, 			
+				<br/>Exemples : Riz <g style='color:red;'>au</g> poulet, Tartine de pain <g style='color:red;'>avec</g> 5 g de 
+				confiture,<br/> Pâte noire <g style='color:red;'>+</g> poisson,	etc, 			
 				</span>
 				<i class='fa fa-info-circle' aria-hidden='true'></i></a></td>
+			</tr>
+			<tr>
+				<td colspan='2' style='padding-left:25px;'>Désignation du plat :&nbsp;&nbsp;<span class='rouge'></span>&nbsp;</td>
+				<td colspan='2'><input type='text' id='' name='designation2' value='".$designation2."' style='width:250px;font-family:sans-serif;font-size:90%;'  onblur='ucfirst(this);' onkeypress=''/>
+				<a class='info2' href='#' style='color:#B83A1B;'>
+				<span style='font-size:0.9em;font-style:normal;color:green;'>Cette information est optionnelle. Si vous<br/> ne renseignez pas ce champ,
+				le <g style='color:red;'>Nom complet<br/> du plat</g> sera considéré pas défaut.</span>
+				<i class='fa fa-info-circle' style='color:gray;' aria-hidden='true'></i></a></td>
 			</tr>
 			<tr>
 				<td colspan='2' style='padding-left:25px;'>Prix de vente :&nbsp;&nbsp;&nbsp;<span class='rouge'>*</span></td>
@@ -256,14 +263,15 @@ if(isset($_POST['ENREGISTRER'])){
 <div class="table-responsive">
 	<table id="dataTable"  align='center' width='100%' border='0' cellspacing='1' style='margin-top:0px;border-collapse: collapse;font-family:Cambria;'>
 <thead>
-<tr><td colspan='6' > <span style="float:left;font-family:Cambria;font-weight:bold;font-size:1.3em;margin-bottom:5px;color:#4C767A;" >Liste des plats | repas  </span></td></tr>
+<tr><td colspan='7' > <span style="float:left;font-family:Cambria;font-weight:bold;font-size:1.3em;margin-bottom:5px;color:#4C767A;" >Liste des plats | repas  </span></td></tr>
 		<tr  style='background-color:#3EB27B;color:white;font-size:1.2em; padding-bottom:5px;'>
-			<td style="border-right: 2px solid #ffffff" align="center" >N° d'Enrég.<span style='font-size:0.8em;'></span></td>
-			<td style="border-right: 2px solid #ffffff" align="center" >Type de repas<span style='font-size:0.8em;'></span></td>
-			<td style="border-right: 2px solid #ffffff" align="center" >Catégorie plat<span style='font-size:0.8em;'></span></td>
-			<td style="border-right: 2px solid #ffffff" align="center" >Désignation<span style='font-size:0.8em;'></span></td>
-			<td style="border-right: 2px solid #ffffff" align="center" >Prix de vente<span style='font-size:0.8em;'></span></td>
-			<td align="center" >Actions</td>
+			<td style="border-right: 1px solid #ffffff;border-top: 1px solid #ffffff;border-left: 1px solid #ffffff;" align="center" >N° d'Enrég.<span style='font-size:0.8em;'></span></td>
+			<td style="border-right: 1px solid #ffffff;border-top: 1px solid #ffffff;" align="center" >Type de repas<span style='font-size:0.8em;'></span></td>
+			<td style="border-right: 1px solid #ffffff;border-top: 1px solid #ffffff;" align="center" >Catégorie plat<span style='font-size:0.8em;'></span></td>
+			<td style="border-right: 1px solid #ffffff;border-top: 1px solid #ffffff;" align="center" >Nom complet du plat<span style='font-size:0.8em;'></span></td>
+			<td style="border-right: 1px solid #ffffff;border-top: 1px solid #ffffff;" align="center" >Désignation<span style='font-size:0.8em;'></span></td>
+			<td style="border-right: 1px solid #ffffff;border-top: 1px solid #ffffff;" align="center" >Prix de vente<span style='font-size:0.8em;'></span></td>
+			<td style="border-right: 1px solid #ffffff;border-top: 1px solid #ffffff;" align="center" >Actions</td>
 		</tr>
 </thead>
 <tbody id="">
@@ -288,10 +296,10 @@ if(isset($_POST['ENREGISTRER'])){
 	if(($nbre>=0)&&($nbre<=9)) $nbre="0000".$nbre ; else if(($nbre>=10)&&($nbre <=99)) $nbre="000".$nbre ;else $nbre="00".$nbre ;
     ?>
 		 	<tr class='rouge1' bgcolor=' <?php echo $bgcouleur; ?>'>
-				<td align="center" style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'><?php echo $nbre;  ?> </td>
-				<td style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'><?php echo $data->TypeMenu; ?> </td>
-				<td style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'> <?php echo $data->catPlat; ?></td>
-				<td align='' style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'>
+				<td align="center" style='border-right: 1px solid #ffffff;border-top: 1px solid #ffffff;; border-top: 2px solid #ffffff'><?php echo $nbre;  ?> </td>
+				<td style='border-right: 1px solid #ffffff;border-top: 1px solid #ffffff;; border-top: 2px solid #ffffff'><?php echo $data->TypeMenu; ?> </td>
+				<td style='border-right: 1px solid #ffffff;border-top: 1px solid #ffffff;; border-top: 2px solid #ffffff'> <?php echo $data->catPlat; ?></td>
+				<td align='' style='border-right: 1px solid #ffffff;border-top: 1px solid #ffffff;; border-top: 2px solid #ffffff'>
 				<?php  
 				if(!empty($data->ListeProduits))
 				echo "<a class='info2' href='#' style=''>
@@ -319,7 +327,8 @@ if(isset($_POST['ENREGISTRER'])){
 				 <i class='fa fa-plus-square' aria-hidden='true'></i></span>	";
 				?>				
 				</td>
-				<td style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php echo $data->prix; echo "&nbsp;<span style='font-size:0.6em;'>".$devise."</span>";?></td>
+					<td style='border-right: 1px solid #ffffff;border-top: 1px solid #ffffff;; border-top: 2px solid #ffffff'> &nbsp;<?php echo !empty($data->designation2)?$data->designation2:$data->designation; echo "</span>";?></td>
+				<td style='border-right: 1px solid #ffffff;border-top: 1px solid #ffffff;; border-top: 2px solid #ffffff'> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php echo $data->prix; echo "&nbsp;<span style='font-size:0.6em;'>".$devise."</span>";?></td>
 				<?php
 				echo "<td align='center' style='border-right: 0px solid #ffffff; border-top: 2px solid #ffffff'> 
 				&nbsp;<a class='info2' href='food.php?menuParent=".$_SESSION['menuParenT']."&update=".$nbre."'  style='color:#FC7F3C;'><img src='logo/b_edit.png' alt='' width='16' height='16' border='0'><span style='color:#FC7F3C;font-size:0.9em;'>Modifier</span></a>";

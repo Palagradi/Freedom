@@ -8,11 +8,13 @@
 		$date->setTimezone($tz);
 		$Heure_actuelle= $date->format("H") .":". $date->format("i").":". $date->format("s");
 		$Jour_actuel= $date->format("Y") ."-". $date->format("m")."-". $date->format("d");
+		$previousDay= date('Y-m-d', strtotime('-1 day', strtotime($Jour_actuel)));
 		$Jour_actuelp= $date->format("Y") ."-". $date->format("m")."-". $date->format("d");
 		$Date_actuel= $date->format("d") ."/". $date->format("m")."/". $date->format("Y");
 		$Date_actueli= $date->format("Y") ."/". $date->format("m")."/". $date->format("d");
 		$Date_actuel2= $date->format("d") ."-". $date->format("m")."-". $date->format("Y");   // echo gmdate('d-m-Y');
 		$Heureactuelle= $date->format("H") .":". $date->format("i");
+		$Heure_actuelle2= $date->format("H") ."-". $date->format("i")."-". $date->format("s");
 		$Heureh= $date->format("H") ;
 		$datej=$date->format("d") ;$month=$date->format("m") ; $year=$date->format("Y") ;
 
@@ -82,7 +84,7 @@
 						$_SESSION['lien']= getURI();
 						 $cx=getURI();
 						 //if($cx="/SYGHOG/planning.php")
-							{$re="UPDATE utilisateur SET etatconnect='".getURI()."' WHERE login='".$_SESSION['login']."'";
+							{$re="UPDATE utilisateur SET etatconnect='".utf8_decode(getURI())."' WHERE login='".$_SESSION['login']."'";
 							 $ret=mysqli_query($con,$re);
 							 }
 						//header("Location: index.php");
@@ -307,6 +309,7 @@ $reqsel=mysqli_query($con,"SELECT * FROM roleh,affectationrole WHERE roleh.nomro
 	$_SESSION['AdresseEn']=utf8_decode("Siège C/647 Qtier Saint Jean - Cotonou");
 	$_SESSION['TelEn']="97027766/60100014";
 	$_SESSION['devise']="F CFA";  */
-  
+	
+ 
 
 ?>

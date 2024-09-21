@@ -167,14 +167,15 @@ if (mysqli_num_rows($reqsel) > 0) {
 </head>
 
 <body style='overflow:hidden;background-image: url("<?php
-													if ($role == "HEBERGEMENT") echo "logo/background/" . rand(11, 11) . ".jpg";
-													else if ($role == "ECONOMAT") echo "logo/background/" . rand(21, 21) . ".jpg";
-													else if ($role == "RESTAURATION") echo "logo/background/" . rand(11, 11) . ".jpg";
-													else echo "logo/background/" . rand(11, 11) . ".jpg"; ?>");'>
+				if ($role == "HEBERGEMENT") echo "logo/background/" . rand(11, 11) . ".jpg";
+				else if ($role == "ECONOMAT") echo "logo/background/" . rand(21, 21) . ".jpg";
+				else if ($role == "RESTAURATION") echo "logo/background/" . rand(11, 11) . ".jpg";
+				else echo "logo/background/" . rand(11, 11) . ".jpg"; ?>");'>
 	<p>
-	<h1 align='center' class="tlt" style='<?php if ($role == "HEBERGEMENT") echo "color:#573E39;";
-											else if ($role == "ECONOMAT") echo "color:black;";
-											else echo "color:pick;"; ?>'>
+	<h1 align='center' class="tlt" style='<?php 
+			if ($role == "HEBERGEMENT") echo "color:#573E39;";
+			else if ($role == "ECONOMAT") echo "color:black;";
+			else echo "color:pick;"; ?>'>
 		<font size='200'> <!--#573E39;  !-->
 			<ul class="texts">
 				<li data-out-effect="fadeIn"><?php

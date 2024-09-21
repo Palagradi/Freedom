@@ -144,13 +144,13 @@ if(isset($_POST['ENREGISTRER'])&& ($_POST['ENREGISTRER']=="Modifier")){
 		.bouton2 {
 			border-radius:12px 0 12px 0;
 			background: white;
-			border:1px solid #B1221C;
+			border:2px solid #B1221C;
 			color:#B1221C;
 			font:bold 12px Verdana;
 			height:auto;font-family:cambria;font-size:0.9em;width:130px;
 		}
 		.bouton2:hover{color:white;
-			cursor:pointer;background-color: #B1221C;border:1px solid #B1221C;
+			cursor:pointer;background-color: #B1221C;border:2px solid #B1221C;
 		}
 
 		</style>
@@ -177,7 +177,7 @@ if(isset($_POST['ENREGISTRER'])&& ($_POST['ENREGISTRER']=="Modifier")){
 					.then((value) => {
 					  //swal(`Nom client : ${value}`);
 					  //document.getElementById('Nomclt').value=value;   var table = document.getElementById('NameTable').value;  var cv = document.getElementById('cv').value;
-					  document.location.href='products.php?menuParent=<?php echo $_SESSION['menuParenT']; ?>&qte='+value;
+					  document.location.href='product.php?menuParent=<?php echo $_SESSION['menuParenT']; ?>&qte='+value;
 					});
 				}
 			</script>
@@ -235,13 +235,15 @@ if(isset($_POST['ENREGISTRER'])&& ($_POST['ENREGISTRER']=="Modifier")){
 		</style>
 	</head>
 	<body bgcolor='azure' style="" >
-	<div class="">
-		<?php
+	<div class="container">
+			<form action="product.php?menuParent=<?php echo $_SESSION['menuParenT']; if(isset($_GET['ap'])) echo "&ap=".$_GET['ap'];?> " method="POST" name="formulaire">
+			<table align='center'width="75%" <?php  if($NbrePrdts>=10) echo "height='550'"; else if($NbrePrdts>=8) echo "height='450'"; else echo "height='400'";; ?> border="0" cellpadding="0" cellspacing="0" id="tab">
+	<?php
 		if(!empty($_GET['delete'])){ $_SESSION['delete']=$_GET['delete'];
 			echo "<script language='javascript'>";
 			echo 'swal("Cette action est irréversible. Voulez-vous continuer ?", {
 			  dangerMode: true, buttons: true,
-			}).then((value) => { var Es = value;  document.location.href="products.php?menuParent='.$_SESSION['menuParenT'].'&test2="+Es;
+			}).then((value) => { var Es = value;  document.location.href="product.php?menuParent='.$_SESSION['menuParenT'].'&test2="+Es;
 			}); ';
 			echo "</script>";
 		} 
@@ -265,7 +267,7 @@ if(isset($_POST['ENREGISTRER'])&& ($_POST['ENREGISTRER']=="Modifier")){
 			      },
 				  })
 					.then((value) => {
-					  document.location.href="products.php?menuParent='.$_SESSION['menuParenT'].'&qte="+value;
+					  document.location.href="product.php?menuParent='.$_SESSION['menuParenT'].'&qte="+value;
 					}); ';
 			echo "</script>";
 		}
@@ -274,7 +276,7 @@ if(isset($_POST['ENREGISTRER'])&& ($_POST['ENREGISTRER']=="Modifier")){
 			echo "<script language='javascript'>";
 			echo 'swal("Cette action est irréversible. Voulez-vous continuer ?", {
 			  dangerMode: true, buttons: true,
-			}).then((value) => { var Es = value;  document.location.href="products.php?menuParent='.$_SESSION['menuParenT'].'&test="+Es;
+			}).then((value) => { var Es = value;  document.location.href="product.php?menuParent='.$_SESSION['menuParenT'].'&test="+Es;
 			}); ';
 			echo "</script>";
 		}  //https://sweetalert.js.org/docs/#configuration
@@ -297,133 +299,170 @@ if(isset($_POST['ENREGISTRER'])&& ($_POST['ENREGISTRER']=="Modifier")){
 			echo 'alertify.error(" L\'opération a été annulée !");';
 			echo "</script>";
 		}
-		
-	?>	
-	<div class="table-responsive" style=''>
-		<table id="dataTable"  align='center' width='a' border='0' cellspacing='1' style='margin-top:0px;border-collapse: collapse;font-family:Cambria;'>
-	<thead>
-	<tr><td colspan='6' > <span style="float:left;font-family:Cambria;font-weight:bold;font-size:1.3em;margin-bottom:5px;color:#4C767A;" >Liste des produits <?php  if($_SESSION['menuParenT1']=="Restauration") echo "alimentaires"; ?>  </span>
 
-	</td></tr>
-	<?php
-	//mysqli_query($con,"SET NAMES 'utf8'");
-	//$result =   mysqli_query($con, 'SELECT *  FROM boisson	LIMIT 0,10' );
-		$reqsel=mysqli_query($con,"SELECT * FROM produits WHERE Type='".$_SESSION['menuParenT1']."'");
-	$nbrePalimentaire=mysqli_num_rows($reqsel);
-	$PalimentairesParPage=25; //Nous allons afficher 5 contribuable par page.
-	$nombreDePages=ceil($nbrePalimentaire/$PalimentairesParPage); //Nous allons maintenant compter le nombre de pages.
+		//}else{
+			//if(isset($_POST['change'])) echo "<script language='javascript'> alert('Vous devez cocher un champ d'abord'); </script>";
+			echo "	<tr>
+						<td colspan='2'>
+							<h2 style='text-align:center; font-family:Cambria;color:Maroon;font-weight:bold;'>";
+							 if(isset($update)) echo "MISE A JOUR - DE PRODUIT"; else {  if(isset($ap)) echo "APPROVISIONNEMENT DE LA CUISINE"; else if($_SESSION['menuParenT1']=="Restauration") echo "ENREGISTRER UN PRODUIT ALIMENTAIRE"; else { } 
+							} 
+							echo "</h2>
+						</td>
+					</tr>
 
-	if(isset($_GET['page'])) // Si la variable $_GET['page'] existe...
-	{
-		  $pageActuelle=intval($_GET['page']);
+				<tr> <input type='hidden'  name='menuParenT' readonly value='".$_SESSION['menuParenT1']."'/>";
+				if(isset($update)) echo "<input type='hidden'  name='update' readonly value='".$update."'/> ";
 
-		 if($pageActuelle>$nombreDePages) // Si la valeur de $pageActuelle (le numéro de la page) est plus grande que $nombreDePages...
-		 {
-			   $pageActuelle=$nombreDePages;
-		 }
-	}
-	else // Sinon
-	{
-		  $pageActuelle=1; // La page actuelle est la n°1
-	}
-	 $premiereEntree=($pageActuelle-1)*$PalimentairesParPage;
-	$res=mysqli_query($con,"SELECT * FROM produits WHERE Type='".$_SESSION['menuParenT1']."' ");
-	$nbre1=mysqli_num_rows($res);
+					echo "<td  style='padding-left:150px;' >N° d'enrég. : &nbsp;&nbsp;&nbsp;<span class='rouge'></span></td>
+					<td ><input type='text' id='code' name='code' style='width:250px;' readonly value='".$nbre."' onkeyup='myFunction()'/> </td>
 
- ?>
-</span>
+				</tr>";
 
-		<tr  style='background-color:#3EB27B;color:white;font-size:1.2em; padding-bottom:5px;'>
-			<td rowspan='2' style="border-right: 1px solid #ffffff;border-top: 1px solid #ffffff;" align="center" >&nbsp;N° d'Enrég.<span style='font-size:0.8em;'></span></td>
-			<?php if($Famille==1)  { ?> <td rowspan='2' style="border-right: 1px solid #ffffff;border-top: 1px solid #ffffff;" align="center" >&nbsp;Famille<span style='font-size:0.8em;'></span></td> <?php } ?>
-			<td rowspan='2' style="border-right: 1px solid #ffffff;border-top: 1px solid #ffffff;" align="center" >&nbsp;Désignation<span style='font-size:0.8em;'></span></td>
-			<?php if($UnitStockage==1)  { ?> <td rowspan='2' style="border-right: 1px solid #ffffff;border-top: 1px solid #ffffff;" align="center" >&nbsp;Unité de<br/> Stockage<span style='font-size:0.8em;'></span></td><?php } ?>
-			<?php if($PoidsNet1==1)  { ?> <td rowspan='2' style="border-right: 1px solid #ffffff;border-top: 1px solid #ffffff;" align="center" >&nbsp;Poids<br/> Net<span style='font-size:0.8em;'></span></td><?php } ?>
-			<td rowspan='2' style="border-right: 1px solid #ffffff;border-top: 1px solid #ffffff;" align="center" >&nbsp;Qté en <br/>Stock<span style='font-size:0.8em;'></span></td>
-			<td rowspan='2' style="border-right: 1px solid #ffffff;border-top: 1px solid #ffffff;" align="center" >✔</td>
-			<?php if($StockAlerte==1)  { ?> <td rowspan='2' style="border-right: 1px solid #ffffff;border-top: 1px solid #ffffff;" align="center" >&nbsp;Seuil&nbsp;<span style='font-size:0.8em;'></span></td><?php } ?>
-			<?php if($DatePeremption==1)  { ?>
-			<td colspan='<?php  $sum=$DatePeremption+$DateService; if($sum==2)  echo 2; else echo 1; ?>' style="border-right: 1px solid #ffffff;border-top: 1px solid #ffffff;" align="center" >
-			&nbsp;Date de <span style='font-size:0.8em;'></span>
-			</td>
-			<?php } ?>
-			<?php if($PrixFournisseur1==1)  { ?> <td rowspan='2' style="border-right: 1px solid #ffffff;border-top: 1px solid #ffffff;" align="center" >&nbsp;Prix de <br/>Livraison<span style='font-size:0.8em;'></span></td><?php } ?>
-			<?php if($PrixVente==1)  { ?> <td rowspan='2' style="border-right: 1px solid #ffffff;border-top: 1px solid #ffffff;" align="center" >&nbsp;Prix de<br/> Vente<span style='font-size:0.8em;'></span></td><?php } ?>
-			<td rowspan='2' style="border-right: 1px solid #ffffff;border-top: 1px solid #ffffff;" align="center" align="center" >Actions</td>
-		</tr>
-		<tr  style='background-color:#3EB27B;color:white;font-size:1.2em; padding-bottom:5px;'>
-			<?php if($DatePeremption==1)  { ?>
-			<td style="border-right: 1px solid #ffffff;border-top: 1px solid #ffffff;" align="center" >
-			&nbsp;Péremption<span style='font-size:0.8em;'></span>
-			</td>
-			<?php }
-			if($DateService==1) {
-			?>
-			<td style="border-right: 1px solid #ffffff;border-top: 1px solid #ffffff;" align="center" >
-			&nbsp;Mise en Service<span style='font-size:0.8em;'></span>
-			</td>
-			<?php
-			}
-			?>
-		</tr>
-</thead>
-<tbody id="">
-<?php
-	mysqli_query($con,"SET NAMES 'utf8'");
-	$query="SELECT * FROM produits,categorieproduit WHERE categorieproduit.catPrd = produits.Famille AND produits.Type='".$_SESSION['menuParenT1']."' ";
-	$result=mysqli_query($con,$query);
-	$cpteur=1;
-    // parcours et affichage des résultats
-    while( $data = mysqli_fetch_object($result))
-    {
-		if($cpteur == 1)
-			{
-				$cpteur = 0;
-				$bgcouleur = "#DDEEDD"; $color = "#FC7F3C";
-			}
-			else
-			{
-				$cpteur = 1;
-				$bgcouleur = "#dfeef3";$color = "#FC7F3C";
-			}
-	$nbre=$data->Num2;
-	if(($nbre>=0)&&($nbre<=9)) $nbre="0000".$nbre ; else if(($nbre>=10)&&($nbre <=99)) $nbre="000".$nbre ;else $nbre="00".$nbre ;
-    ?>
-		 	<tr class='rouge1' bgcolor=' <?php echo $bgcouleur; ?>'>
-				 <td align="center" style='border-right: 1px solid #ffffff; border-top: 1px solid #ffffff'><?php echo $nbre;  ?> </td>
-				<?php if($Famille==1)  { ?>  <td style='border-right: 1px solid #ffffff; border-top: 1px solid #ffffff'><?php echo $data->Famille; ?> </td> <?php } ?>
-				<td style='border-right: 1px solid #ffffff; border-top: 1px solid #ffffff'> <?php echo $data->Designation; ?></td>
-				<?php if($UnitStockage==1)  { ?> <td align='' style='border-right: 1px solid #ffffff; border-top: 1px solid #ffffff'>&nbsp;&nbsp;&nbsp;&nbsp; <?php echo $data->UniteStockage; ?></td><?php } ?>
-				<?php if($PoidsNet1==1)  { ?> <td align="center"  style='border-right: 1px solid #ffffff; border-top: 1px solid #ffffff'> <?php echo $data->PoidsNet; ?></td><?php } ?>
-				 <td align="right"  style='border-right: 1px solid #ffffff; border-top: 1px solid #ffffff'> <?php echo $data->Qte_Stock; 				 
-				 echo "&nbsp;&nbsp;<a class='info2' href='products.php?menuParent=".$_SESSION['menuParenT']."&aj=".$data->Num."' style='color:".$color."'><i class='fa fa-plus-square'></i><span style='color:green;font-size:1em;'>Augmenter la quantité <br/>de <g style='color:red;'>".$data->Designation."</g></span></a>";
-				 ?>&nbsp;&nbsp;&nbsp;&nbsp;</td>
-				<?php echo "<td align='center' style='border-right: 1px solid #ffffff; border-top: 1px solid #ffffff;'>";
-				if($_SESSION['module']=="RESTAURATION")
-					echo "<a class='info' href='product.php?menuParent=".$_SESSION['menuParenT']."&ap=".$data->Num."'  style='color:red;'>
-							<img title='' src='logo/resto/11.png' width='25' height='25' style=''/>
-							<span style='color:green;'>Approvisionner<br/> la Cuisine en <g style='color:red;'>".$data->Designation."</g></span> </a>";
-				echo "</td>";
+				if($Famille==1)
+				{	echo "<tr>
+					<td  style='padding-left:150px;'>Catégorie :&nbsp;&nbsp;&nbsp;<span class='rouge' style='color:red;'>*</span></td>
+					<td  style=''>";
 				?>
-				<?php if($StockAlerte==1)  { ?> <td align="center" style='border-right: 1px solid #ffffff; border-top: 1px solid #ffffff'> <?php echo $data->Seuil; ?></td><?php } ?>
-				<?php if($DatePeremption==1)  { ?> <td align="center" style='border-right: 1px solid #ffffff; border-top: 1px solid #ffffff'> <?php $datePeremption = $data->datePeremption ?? '';  echo substr($datePeremption,8,2).'-'.substr($datePeremption,5,2).'-'.substr($datePeremption,0,4); ?></td><?php } ?>
-				<?php if($DateService==1)  { ?> <td align="center" style='border-right: 1px solid #ffffff; border-top: 1px solid #ffffff'> <?php $DatService = $data->DateService ?? ''; echo substr($DatService,8,2).'-'.substr($DatService,5,2).'-'.substr($DatService,0,4); ?></td><?php } ?>
-				<?php if($PrixFournisseur1==1)  { ?> <td align="center" style='border-right: 1px solid #ffffff; border-top: 1px solid #ffffff'> <?php echo $data->PrixFrs; ?></td><?php } ?>
-				<?php if($PrixVente==1)  { ?> <td align="center" style='border-right: 1px solid #ffffff; border-top: 1px solid #ffffff'> <?php echo $data->PrixV; ?></td><?php } ?>
+				<input name='famille' type='hidden' id='famille'  <?php if(isset($_GET['nom'])) echo $_GET['nom']; ?> style='font-family:sans-serif;font-size:90%;width:250px;' required='required' onkeyup="ajax_showOptions(this,'getCountriesByLetters',event)"
+				onchange="ajax_showOptions(this,'getCountriesByLetters',event)" autocomplete='OFF' value='<?php if(isset($famille)) echo $famille; ?>'/>
+				<select id='editable-select'  name='portion' style="background:#fff;font-family:sans-serif;font-size:100%;border:1px solid gray;width:250px;">
+				<?php 
+				$req="SELECT * FROM categorieproduit WHERE Type like '".$_SESSION['menuParenT1']."'";
+				$reqki=mysqli_query($con,$req);
+				while($dataPi = mysqli_fetch_object($reqki)){
+					echo "<option value ='".$dataPi->Num."'>".$dataPi->catPrd."</option>";
+				}
+				?>
+				</select>
 
-				<?php
-				echo "<td align='center' style='border-right: 1px solid #ffffff; border-top: 1px solid #ffffff'>
-				 &nbsp;<a class='info2' href='products.php?menuParent=".$_SESSION['menuParenT']."&update=".$data->Num."'  style='color:#FC7F3C;'><img src='logo/b_edit.png' alt='' width='16' height='16' border='0'><span style='color:#FC7F3C;font-size:0.9em;'>Modifier</span></a>";
-				echo "&nbsp;&nbsp;&nbsp;&nbsp;<a class='info2' href='products.php?menuParent=".$_SESSION['menuParenT']."&delete=".$data->Num."'  style='color:#B83A1B;'><img src='logo/b_drop.png' alt='Supprimer' width='16' height='16' border='0'><span style='color:#B83A1B;font-size:0.9em;'>Supprimer</span></a>
+				</td>
+				<?php echo "</tr> ";	}
+			echo "<tr>
+				<td  style='padding-left:150px;'>Désignation  :&nbsp;&nbsp;&nbsp;<span class='rouge' style='color:red;'> *</span></td>
+				<td ><input type='text' id='' name='designation' style='width:250px;font-family:sans-serif;font-size:90%;' required='required' onKeyup='ucfirst(this)' value='"; if(isset($designation)) echo $designation;  echo "'/></td>
+			</tr>";
+			echo "<tr>
+				<td  style='padding-left:150px;'>Type de produit  :&nbsp;&nbsp;&nbsp;<span class='rouge' style='color:red;'> *</span></td>
+				<td >
+				<select name='TypePrdts' required='required' style='font-family:sans-serif;font-size:90%;width:250px;border:1px solid gray;'>";
+				if(isset($TypeP))echo "<option value='".$TypeP."'>".$TypeP."</option>";
+				echo "<option></option>
+				<option value='1'> Vendable </option>
+				<option></option>
+				<option value='2'> Non Vendable </option>
+				</select>
+				</td>
+			</tr>";
+
+			if($UnitStockage==1)
+				{	echo "<tr>
+				<td style='padding-left:150px;'>Unité de Stockage :&nbsp;&nbsp;&nbsp;<span class='rouge'></span></td>
+				<td  style=''><select name='UniteStockage' style='font-family:sans-serif;font-size:90%;width:250px;border:1px solid gray;'>";
+
+		        if(isset($UniteStockage))  echo "<option value='".$UniteStockage."'>".$UniteStockage." </option>"; else echo "<option value=''> </option>";
+				$req = mysqli_query($con,"SELECT * FROM UniteStockage") or die (mysqli_error($con));
+				while($data=mysqli_fetch_array($req))
+				{
+					echo" <option value ='".$data['catPrd']."'> ".ucfirst($data['catPrd'])."&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</option>
+					<option></option> ";
+				}
+			echo "</select><a class='info' href='' style='color:#B83A1B;' onclick='JSalert();return false;' ><span style='font-size:0.8em;font-style:normal;'>Ajouter une nouvelle Unité</span>	 <i class='fa fa-plus-square' aria-hidden='true'></i></a>
 				</td></tr>";
-	}
-	?>			
-			</tbody>
-		<tfoot></tfoot>
-	</table>
+				}
+			if($PoidsNet1==1)
+				{	echo "<tr>
+					<td  style='padding-left:150px;'>Poids Net :&nbsp;&nbsp;&nbsp;<span class='rouge'></span></td>
+					<td ><input type='text' id='' name='Poids' style='width:250px;font-family:sans-serif;font-size:90%;'  onkeypress='testChiffres(event);' value='"; if(isset($PoidsNet)) echo $PoidsNet;  echo "'/></td>
+					</tr>";
+				}
+			if($DatePeremption==1)
+				{	echo "<tr>
+					<td  style='padding-left:150px;'>Date de péremption :&nbsp;&nbsp;&nbsp;<span class='rouge'></span></td>
+					<td><input type='date' id='' name='dateP' style='width:250px;border:1px solid gray;font-family:sans-serif;font-size:90%;'  value='";
+					if(isset($dateP)) echo $dateP;  echo "'/></td>
+					</tr>";
+				}
+			if($StockAlerte==1)
+				{echo "<tr>
+					<td  style='padding-left:150px;'>Stock d'alerte | critique :&nbsp;&nbsp;&nbsp;<span class='rouge'></span></td>
+					<td ><input type='text' id='' name='Seuil' style='width:250px;font-family:sans-serif;font-size:90%;'  onkeypress='testChiffres(event);' value='";
+					if(isset($Seuil)) echo $Seuil;  echo "'/></td>
+					</tr>";
+				}
+			if($DateService==1)
+				{	echo "<tr>
+					<td  style='padding-left:150px;'>Date de mise en Service :&nbsp;&nbsp;&nbsp;<span class='rouge'></span></td>
+					<td><input type='date' id='' name='dateS' style='border:1px solid gray;width:250px;font-family:sans-serif;font-size:90%;'  value='";
+					if(isset($dateS)) echo $dateS;  echo "'/></td>
+					</tr>";
+				}
+			if($Fournisseur1==1)
+				{	echo "<tr>
+				<td  style='padding-left:150px;'>Fournisseur :&nbsp;&nbsp;&nbsp;<span class='rouge'></span></td>
+				<td >";
+		/* 		if(isset($Fournisseur)){
+					echo "<input type='text' id='' name='frs' style='width:250px;' value='".$Fournisseur."' readonly/>";
+				}
+				else{ */
+				echo "<select name='Fournisseur' style='font-family:sans-serif;font-size:90%;width:250px;border:1px solid gray;' ";
+		        //if(isset($RaisonSociale))  echo "<option value='".$RaisonSociale."'>".$RaisonSociale." </option>"; else echo "<option value=''> </option>";
+				echo "<option value=''> </option>";
+				$req = mysqli_query($con,"SELECT * FROM fournisseurs") or die (mysqli_error($con));	//$t=0;
+				while($data=mysqli_fetch_array($req))
+				{    //$t++; if($t==1)
+					if(isset($Fournisseur)) echo "<option value='".$Fournisseur."'>".$Fournisseur."</option>"; else echo "<option value=''> </option>";
+					echo" <option value ='".$data['RaisonSociale']."'> ".ucfirst($data['RaisonSociale'])."&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</option> ";
+				}
+				echo "</select>
+				<a class='info' href='' style='color:#4C433B;' onclick='fournisseurs();return false;'><span style='font-size:0.8em;font-style:normal;'>Ajouter un nouveau fournisseur</span>	 <i class='fa fa-plus-square' aria-hidden='true'></i></a>";
+				//}
+
+				echo "</td>	</tr>";
+				}
+			if($PrixFournisseur1==1) {echo "<tr>
+				<td  style='padding-left:150px;'>Prix Fournisseur :&nbsp;&nbsp;&nbsp;<span class='rouge'></span></td>
+				<td ><input type='text' id='' name='Prix' style='width:250px;' value='"; if(isset($PrixFrs)) echo $PrixFrs;  echo "' onkeypress='testChiffres(event);' placeholder='"; if(isset($devise)) echo $devise; echo " '/></td>
+			</tr>";
+			}
+			if($PrixVente==1) {echo "<tr>
+				<td  style='padding-left:150px;'>Prix de vente | Cession :&nbsp;&nbsp;&nbsp;<span class='rouge'></span></td>
+				<td ><input type='text' id='' name='PrixV' style='width:250px;font-family:sans-serif;font-size:90%;' value='"; if(isset($PrixV)) echo $PrixV;  echo "' onkeypress='testChiffres(event);' placeholder='"; if(isset($devise)) echo $devise; echo " '/></td>
+			</tr>";
+			}
+/* 			if(isset($update)){
+			 echo "<tr>
+					<td  style='padding-left:150px;'>Quantité en Stock :&nbsp;&nbsp;&nbsp;<span class='rouge'></span></td>
+					<td ><input type='text' id='' value='"; if(isset($Qte_Stock)) echo $Qte_Stock;  echo "' name='qte' style='width:50px;' readonly='readonly' onkeypress='testChiffres(event);'/>
+					&nbsp;&nbsp;Qté à Ajouter : &nbsp;
+					<input type='number' id='' name='QteAj' style='width:75px;border:1px;font-family:sans-serif;font-size:90%;' min='0' max=''/>
+					</td>
+				</tr>";
+			} */
+			if(isset($ap)){ $StockCuisine=isset($StockCuisine)?$StockCuisine:0;
+			 echo "<tr>
+					<td  style='padding-left:150px;'>Stock actuel de la cuisine :&nbsp;&nbsp;&nbsp;<span class='rouge'></span></td>
+					<td ><input type='text' id='' value='".$StockCuisine."' name='qte' style='width:50px;font-family:sans-serif;font-size:90%;' readonly='readonly' onkeypress='testChiffres(event);'/>
+					&nbsp;&nbsp;&nbsp;&nbsp;Qté à affecter : &nbsp;
+					<input type='number' id='' name='QteAf' style='width:75px;' min='0' max=''/>
+					</td>
+				</tr>";
+			}
+			echo "<tr>
+			<td colspan='4' align='center' ><br/><input type='submit' value='"; if(isset($update)) echo "Modifier"; else if(isset($ap)) echo "Approvisionner"; else  echo "Enrégistrer";
+			echo "' id='' class='bouton2'  name='"; //if(isset($ap)) echo "Enregistrer"; else
+			echo "ENREGISTRER"; echo "' style=''/>
+			&nbsp;&nbsp;<input type='reset' value='Annuler' id='' class='bouton2'  name='ANNULER' style=''/> <br/>&nbsp;</td>
+		</tr>";
+		//}
+	?>
+		</form>
+		</table>
+<br/>
+
+
 </div>
-</div>
-				<script src="js/editableSelect/jquery-1.12.4.min.js"></script>
+		<script src="js/editableSelect/jquery-1.12.4.min.js"></script>
 		<script src="js/editableSelect/jquery-editable-select.min.js"></script>
 		<script src="js/editableSelect/script.js"></script>
 		

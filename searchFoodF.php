@@ -58,8 +58,8 @@ else
 		<tr  style='background-color:gray;color:white;font-size:1.2em; padding-bottom:5px;'>
 			<td style="border:2px solid #ffffff" align="center">#</td>
 			<td style="padding:2px;border:2px solid #ffffff" align="center" >Catégorie plat<span style='font-size:0.8em;'></td>
-			<td style="padding:2px;border:2px solid #ffffff" align="center" >Désignation<span style='font-size:0.8em;'></td>
-			<td style="padding:2px;border:2px solid #ffffff" align="center" >Nbre de plats<br/>&nbsp;disponibles<span style='font-size:0.8em;'></td>
+			<td style="padding:2px;border:2px solid #ffffff" align="center" >Désignation du plat<span style='font-size:0.8em;'></td>
+			<td style="padding:2px;border:2px solid #ffffff" align="center" >Quantité<br/>&nbsp;disponible<span style='font-size:0.8em;'></td>
 			<td style="padding:2px;border:2px solid #ffffff" align="center" >Prix de vente<span style='font-size:0.8em;'></td>
 			<td style='padding:2px;border:2px solid #ffffff;' align="center" >Actions</td>
 		</tr>
@@ -88,7 +88,7 @@ else
 			  <td align='center' style='padding:7px;border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'><?php echo $j; ?>.</td>
 				<td style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'><?php echo $data->catPlat; ?> </td>
 				<td style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'> <?php echo $data->designation; ?></td>
-				<td align='center'  style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'> <?php echo $data->NbreJ; ?></td>
+				<td align='center'  style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'> <?php echo $data->Nbre; ?></td>
 				<td align='center'  style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'> <?php echo $data->prix; ?></td>	
 				
 				<td align='center'  style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'> 

@@ -125,7 +125,7 @@
 		$PrixPack=$response->PrixPack;				
 		$QteStock=0;$QteStockPack=0;$QteStockPack=0;$Seuil=0;$StockReel=0;
 		$RegimeTVA=$response->RegimeTVA;
-		$rek1="INSERT INTO boisson SET numero2='".$numero2."',Categorie='".$Categorie."',pc='".$pc."',designation='".$designation."',Qte='".$Qte."',Conditionne='".$Conditionne."',PrixUnitaire='".$PrixUnitaire."',PrixPack='".$PrixPack."',Seuil='".$Seuil."',QteStock='".$QteStock."',StockReel='".$QteStock."',dateCreation='".$Jour_actuel."',dateUpdate='".$Jour_actuel."',Depot = '2',RegimeTVA='".$RegimeTVA."'";	
+		$rek1="INSERT INTO boisson SET numero2='".$numero2."',Categorie='".$Categorie."',pc='".$pc."',designation='".$designation."',Qte='".$Qte."',Conditionne='".$Conditionne."',PrixUnitaire='".$PrixUnitaire."',PrixPack='".$PrixPack."',Seuil='".$Seuil."',QteStock='".$QteStock."',StockReel='".$QteStock."',created_at='".$Jour_actuel."',updated_at='".$Jour_actuel."',Depot = '2',RegimeTVA='".$RegimeTVA."'";	
 		$query = mysqli_query($con,$rek1) or die (mysqli_error($con));
 		$reqX="SELECT numero FROM boisson WHERE numero2='".$numero2."' AND Depot = '2'";
 		$result1 = mysqli_query($con,$reqX) or die (mysqli_error($con));$response2=mysqli_fetch_object($result1);
@@ -169,16 +169,16 @@
 /* 			if($_POST['pvc']==2)  //Modification de Pack de boissons
 			{   $PrixPack=$PrixUnitaire; $PrixUnitaire=0; */
 			if($update2!=0){
-				$rek2="UPDATE boisson SET Categorie='".$categorie."', designation='".$designation."',Qte='".$Qte."',Conditionne='".$Conditionne."',pc='".$pack."',PrixUnitaire='".$PrixUnitaire."',Seuil='".$Seuil."',PrixPack='".$PrixPack."',dateUpdate='".$Jour_actuel."' WHERE numero='".$update2."' AND Depot = '2'";	
+				$rek2="UPDATE boisson SET Categorie='".$categorie."', designation='".$designation."',Qte='".$Qte."',Conditionne='".$Conditionne."',pc='".$pack."',PrixUnitaire='".$PrixUnitaire."',Seuil='".$Seuil."',PrixPack='".$PrixPack."',updated_at='".$Jour_actuel."' WHERE numero='".$update2."' AND Depot = '2'";	
 			}
-				$rek="UPDATE boisson SET Categorie='".$categorie."', designation='".$designation."',Qte='".$Qte."',Conditionne='".$Conditionne."',pc='".$pack."',PrixUnitaire='".$PrixUnitaire."',Seuil='".$Seuil."',PrixPack='".$PrixPack."',dateUpdate='".$Jour_actuel."' WHERE numero='".$update."' AND Depot = '1'";
+				$rek="UPDATE boisson SET Categorie='".$categorie."', designation='".$designation."',Qte='".$Qte."',Conditionne='".$Conditionne."',pc='".$pack."',PrixUnitaire='".$PrixUnitaire."',Seuil='".$Seuil."',PrixPack='".$PrixPack."',updated_at='".$Jour_actuel."' WHERE numero='".$update."' AND Depot = '1'";
 			
 			$query = mysqli_query($con,$rek) or die (mysqli_error($con));$query = mysqli_query($con,$rek2) or die (mysqli_error($con));
 				
-				//$rek2="UPDATE boisson SET categorie='".$categorie."', designation='".$designation."',Qte='".$Qte."',Conditionne='".$Conditionne."',pc='".$pack."',PrixPack='".$PrixPack."',QteStock='".$QteStock."',dateUpdate='".$Jour_actuel."' WHERE numero='".$update."' AND Depot = '2'";
+				//$rek2="UPDATE boisson SET categorie='".$categorie."', designation='".$designation."',Qte='".$Qte."',Conditionne='".$Conditionne."',pc='".$pack."',PrixPack='".$PrixPack."',QteStock='".$QteStock."',updated_at='".$Jour_actuel."' WHERE numero='".$update."' AND Depot = '2'";
 	/* 		}else {
-				$rek="UPDATE boisson SET categorie='".$categorie."', designation='".$designation."',Qte='".$Qte."',Conditionne='".$Conditionne."',PrixUnitaire='".$PrixUnitaire."',Seuil='".$Seuil."',QteStock='".$QteStock."',dateUpdate='".$Jour_actuel."' WHERE numero='".$update."' AND Depot = '1'";
-				$rek2="UPDATE boisson SET categorie='".$categorie."', designation='".$designation."',Qte='".$Qte."',Conditionne='".$Conditionne."',PrixUnitaire='".$PrixUnitaire."',Seuil='".$Seuil."',QteStock='".$QteStock."',dateUpdate='".$Jour_actuel."' WHERE numero='".$update."' AND Depot = '2'";
+				$rek="UPDATE boisson SET categorie='".$categorie."', designation='".$designation."',Qte='".$Qte."',Conditionne='".$Conditionne."',PrixUnitaire='".$PrixUnitaire."',Seuil='".$Seuil."',QteStock='".$QteStock."',updated_at='".$Jour_actuel."' WHERE numero='".$update."' AND Depot = '1'";
+				$rek2="UPDATE boisson SET categorie='".$categorie."', designation='".$designation."',Qte='".$Qte."',Conditionne='".$Conditionne."',PrixUnitaire='".$PrixUnitaire."',Seuil='".$Seuil."',QteStock='".$QteStock."',updated_at='".$Jour_actuel."' WHERE numero='".$update."' AND Depot = '2'";
 			} */
 			
 
@@ -310,8 +310,8 @@
 			else 
 				echo '<meta http-equiv="refresh" content="0; url=DpInterne.php?menuParent='.$_SESSION['menuParenT'].'&ok=3&checkpvc='.$_GET['checkpvc'].'" />'; 
 		}else{
-		 $rek ="INSERT INTO boisson SET numero2='".$code."',categorie='".$categorie."',pc='".$pack."',designation='".$designation."',Qte='".$Qte."',Conditionne='".$Conditionne."',PrixUnitaire='".$PrixUnitaire."',PrixPack='".$PrixPack."',Seuil='".$Seuil."',QteStock='".$QteStock."',StockReel='".$QteStock."',dateCreation='".$Jour_actuel."',dateUpdate='".$Jour_actuel."',Depot = '1',RegimeTVA='".$TPS_2."'";
-		 $rek1="INSERT INTO boisson SET numero2='".$code."',categorie='".$categorie."',pc='".$pack."',designation='".$designation."',Qte='".$Qte."',Conditionne='".$Conditionne."',PrixUnitaire='".$PrixUnitaire."',PrixPack='".$PrixPack."',Seuil='".$Seuil."',QteStock='".$QteStock."',StockReel='".$QteStock."',dateCreation='".$Jour_actuel."',dateUpdate='".$Jour_actuel."',Depot = '2',RegimeTVA='".$TPS_2."'";
+		 $rek ="INSERT INTO boisson SET numero2='".$code."',categorie='".$categorie."',pc='".$pack."',designation='".$designation."',Qte='".$Qte."',Conditionne='".$Conditionne."',PrixUnitaire='".$PrixUnitaire."',PrixPack='".$PrixPack."',Seuil='".$Seuil."',QteStock='".$QteStock."',StockReel='".$QteStock."',created_at='".$Jour_actuel."',updated_at='".$Jour_actuel."',Depot = '1',RegimeTVA='".$TPS_2."'";
+		 $rek1="INSERT INTO boisson SET numero2='".$code."',categorie='".$categorie."',pc='".$pack."',designation='".$designation."',Qte='".$Qte."',Conditionne='".$Conditionne."',PrixUnitaire='".$PrixUnitaire."',PrixPack='".$PrixPack."',Seuil='".$Seuil."',QteStock='".$QteStock."',StockReel='".$QteStock."',created_at='".$Jour_actuel."',updated_at='".$Jour_actuel."',Depot = '2',RegimeTVA='".$TPS_2."'";
 		 $query = mysqli_query($con,$rek) or die (mysqli_error($con)); $query = mysqli_query($con,$rek1) or die (mysqli_error($con));
 			if($query){
 			echo "<script language='javascript'>";

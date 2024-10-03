@@ -16,7 +16,7 @@
 		
 		if($Qte<=$param){
 				//Pour la ligne des Pack
-				$result=mysqli_query($con,"SELECT * FROM boisson,config_boisson,conditionnement,QteBoisson,casier WHERE QteBoisson.id=boisson.Qte AND conditionnement.id=boisson.Conditionne AND config_boisson.id=boisson.Categorie AND casier.id=boisson.pc AND pc<>0 AND Depot = '1' AND numero='".$numero."'");
+				$result=mysqli_query($con,"SELECT * FROM boisson,config_boisson,conditionnement,QteBoisson,casier WHERE QteBoisson.id=boisson.Qte AND conditionnement.id=boisson.Conditionne AND config_boisson.id=boisson.Categorie AND casier.id=boisson.pc AND pc<>0 AND Depot = '2' AND numero='".$numero."'");
 				//Pour vérifier si la ligne unitaire existe
 				$result0=mysqli_query($con,"SELECT * FROM boisson,config_boisson,conditionnement,QteBoisson WHERE QteBoisson.id=boisson.Qte AND conditionnement.id=boisson.Conditionne AND config_boisson.id=boisson.Categorie AND pc=0 AND Depot = '2' AND numero2='".$numero2."'");
 				$data=mysqli_fetch_object($result);
@@ -35,7 +35,7 @@
 					 $query = mysqli_query($con,$rek1) or die (mysqli_error($con));
 				}else {
 					$data2=mysqli_fetch_object($result0); $QteStock+=$data2->QteStock; $numero3=$data2->numero;
-					 $rek="UPDATE boisson SET QteStock='".$QteStock."' WHERE numero='".$numero3."' AND pc='0' AND Depot = '2' ";
+					  $rek="UPDATE boisson SET QteStock='".$QteStock."' WHERE numero='".$numero3."' AND pc='0' AND Depot = '2' ";
 					$query = mysqli_query($con,$rek) or die (mysqli_error($con));
 				}
 				$rek="UPDATE boisson SET QteStock='".$QteStockPack."' WHERE numero='".$numero."' AND pc<>'0' AND Depot = '1' "; 
@@ -46,7 +46,7 @@
 				echo 'alertify.success("Conversion effectuée avec succès !");';
 				echo "</script>";
 				echo '<meta http-equiv="refresh" content="1; url=Bar.php?menuParent='.$_SESSION['menuParenT'].'" />';
-				} 
+				}  
 		}		
 	}
 			
@@ -177,7 +177,7 @@
 <?php
 	mysqli_query($con,"SET NAMES 'utf8'");
 	if(!empty($pvc)&&($pvc==2)) 
-	$result=mysqli_query($con,"SELECT * FROM boisson,config_boisson,conditionnement,QteBoisson,casier WHERE QteBoisson.id=boisson.Qte AND conditionnement.id=boisson.Conditionne AND config_boisson.id=boisson.Categorie AND casier.id=boisson.pc AND pc<>0 AND Depot = '1' order by numero2 ");
+	$result=mysqli_query($con,"SELECT * FROM boisson,config_boisson,conditionnement,QteBoisson,casier WHERE QteBoisson.id=boisson.Qte AND conditionnement.id=boisson.Conditionne AND config_boisson.id=boisson.Categorie AND casier.id=boisson.pc AND pc<>0 AND Depot = '2' order by numero2 ");
 	else 
 		$result=mysqli_query($con,"SELECT * FROM boisson,config_boisson,conditionnement,QteBoisson WHERE QteBoisson.id=boisson.Qte AND conditionnement.id=boisson.Conditionne AND config_boisson.id=boisson.Categorie AND pc=0 AND Depot = '2' order by numero2 ");
 	$cpteur=1;

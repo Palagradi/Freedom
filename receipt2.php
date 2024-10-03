@@ -2,7 +2,7 @@
 include 'config.php';
 require ('vendor/autoload.php');
 
-	 // Instantiate the library class
+/* 	 // Instantiate the library class
 	 $barcode = new \Com\Tecnick\Barcode\Barcode();
 	 $dir = "qr-code/";
 
@@ -34,12 +34,22 @@ require ('vendor/autoload.php');
 
 
 
-
+ */
+ 
+	
 $table=(isset($_SESSION['Ntable'])&&(!empty($_SESSION['Ntable']))) ? $_SESSION['Ntable']:NULL; $num_facture=isset($_SESSION['numFact'])?$_SESSION['numFact']:NULL;
-if(isset($num_facture))
-	{ echo $req="SELECT * FROM factureResto,tableEnCours WHERE tableEnCours.num_facture=factureResto.num_facture AND factureResto.num_facture='".trim($num_facture)."' ";
-	  $reqselRTables=mysqli_query($con,$req);
+    if (isset($_GET['param0'])) {
+        $param0 = $_GET['param0'];
+		$req="SELECT * FROM factureResto,tableEnCours WHERE tableEnCours.num_facture=factureResto.num_facture AND factureResto.id='".htmlspecialchars($param0)."' ";
+		$reqselRTables=mysqli_query($con,$req);
+    } else if(isset($num_facture)) {
+        echo $req="SELECT * FROM factureResto,tableEnCours WHERE tableEnCours.num_facture=factureResto.num_facture AND factureResto.num_facture='".trim($num_facture)."' ";
+		$reqselRTables=mysqli_query($con,$req);
+    }	
+	else
+	{ 
 	}
+	
 /* else
 	{  $req="SELECT * FROM factureResto,tableEnCours WHERE tableEnCours.numTable=factureResto.numTable AND factureResto.numTable='".$table."' AND date_emission ='".$Jour_actuel."'  ";
 	  //$reqselRTables=mysqli_query($con,$req);
@@ -50,12 +60,9 @@ if(isset($num_facture))
 	while($data1=mysqli_fetch_array($factureResto)){ $Net=$data1['montant_ttc']-$data1['Remise'];
 	$SommePayee=$data1['somme_paye']; $monnaie=$SommePayee-$Net;$remise=$data1['Remise'];
 	 $NomClient=!empty($data1['NomClient'])?$data1['NomClient']:"<i>Non renseigné</i>";
-	 $heure=$data1['heure_emission'];
+	 $heure=$data1['heure_emission'];$numRecu=$data1['num_facture'];
 	}
 $moisT = array("Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Aôut","Septembre","Octobre","Novembre","Décembre");
-
-
-	//if(($numFact>=0)&&($numFact<=9))  $numRecu="0000".$numFact."/".substr(date('Y'),2,2);	else if(($numFact>=10)&&($numFact <=99))	 $numRecu="000".$numFact."/".substr(date('Y'),2,2);	else if(($numFact>=100)&&($numFact<=999))	 $numRecu="00".$numFact."/".substr(date('Y'),2,2);	else if(($numFact>=1000)&&($numFact<=1999)) $numRecu="0".$numFact."/".substr(date('Y'),2,2);else $numRecu=$numFact."/".substr(date('Y'),2,2);
 
 ?>
 <link href="css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
@@ -98,7 +105,7 @@ $moisT = array("Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Aôut
 				<div class="receipt-header receipt-header-mid">
 					<div class="col-xs-8 col-sm-8 col-md-8 text-left">
 						<div class="receipt-right">
-							<h5><small><?php 	if(!empty($Date_actuel)) echo date('d')." ". $moisT[date('m')-1]." ".date('Y');  ?>    |    <?php echo $heure; ?></small></h5>
+							<h5><small><?php 	if(!empty($Date_actuel)) echo date('d')." ". $moisT[date('m')-1]." ".date('Y');  ?>  |  <?php echo $heure; ?></small></h5>
 							<p>Client  &nbsp;&nbsp;&nbsp;&nbsp;:  <?php echo $NomClient; ?></p>
 							<p>Caissier : <?php echo "<i>". $_SESSION["nom"]." ".$_SESSION["prenom"]."</i>"; ?> </p>
 						</div>
@@ -113,7 +120,7 @@ $moisT = array("Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Aôut
 
             <div>
                 <table class="table table-bordered">
-                    <thead style=''>
+                    <thead style='background-color:gray;'>
                         <tr>
 							<th style='text-align:center;'>#</th>
                             <th>Désignation</th>
@@ -180,7 +187,7 @@ $moisT = array("Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Aôut
 
 							<div style='float:left;border:1px solid maroon;'>
 							<?php
-							echo '<img style="" src="'.$dir . $timestamp.'".png" width="100px" height="100px">';
+							//echo '<img style="" src="'.$dir . $timestamp.'".png" width="100px" height="100px">';
 							//echo $_SESSION["nom"]." ".$_SESSION["prenom"];?></div>
 							<!--<h5 style="color: rgb(140, 140, 140);">Merci pour la visite!</h5> !-->
 							<div style=''>&nbsp;&nbsp;&nbsp;&nbsp; MECeF NIM :

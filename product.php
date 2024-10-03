@@ -328,7 +328,7 @@ if(isset($_POST['ENREGISTRER'])&& ($_POST['ENREGISTRER']=="Modifier")){
 				onchange="ajax_showOptions(this,'getCountriesByLetters',event)" autocomplete='OFF' value='<?php if(isset($famille)) echo $famille; ?>'/>
 				<select id='editable-select'  name='portion' style="background:#fff;font-family:sans-serif;font-size:100%;border:1px solid gray;width:250px;">
 				<?php 
-				$req="SELECT * FROM categorieproduit WHERE Type like '".$_SESSION['menuParenT1']."'";
+				$req="SELECT * FROM categorieproduit WHERE Type like '".$_SESSION['menuParenT1']."' order by catPrd";
 				$reqki=mysqli_query($con,$req);
 				while($dataPi = mysqli_fetch_object($reqki)){
 					echo "<option value ='".$dataPi->Num."'>".$dataPi->catPrd."</option>";

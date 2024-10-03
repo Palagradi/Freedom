@@ -7,7 +7,17 @@
 	$update=isset($_GET['update'])?$_GET['update']:NULL;
 	$delete=isset($_GET['delete'])?$_GET['delete']:NULL;
 	$typeR=isset($_GET['typeR'])?$_GET['typeR']:NULL;
-	$catR=isset($_GET['catR'])?$_GET['catR']:NULL;    				
+	$catR=isset($_GET['catR'])?$_GET['catR']:NULL;   
+
+		if(isset($_GET['ok'])){ 
+		echo "<script language='javascript'>";  
+			if($_GET['ok']==1){
+			echo 'alertify.success("Enrégistrement effectué avec succès !");';
+			}
+			if($_GET['ok']==2){
+			echo 'alertify.success("Modifications effectuées avec succès !");';
+			}
+		}	
 	
 	if(isset($typeR)&&(!empty($typeR))&&($typeR!="null")) {
 		$categorie=ucfirst(trim($typeR));
@@ -42,17 +52,24 @@ if(isset($_POST['ENREGISTRER'])){
         }
     }
 	if($_POST['ENREGISTRER']=="Enrégistrer"){
-	$sql="INSERT INTO `plat`(`numero`, `CategMenu`, `CategPlat`, `designation`, `designation2`, `ListeProduits`, `composition`, `prix`, `NbreJ`, `NbreC`, `Nbre`, `state`, `RegimeTVA`, `created_at`, `updated_at`) VALUES (NULL,'".$categorie."','".$CategoriePlat."','".$designation."','".$designation2."','".$dataT."',NULL,'".$Prix."',0, 0,0,NULL,'".$TPS_2."','" . $Jour_actuel. "','" . $Heure_actuelle. "')";
+	$sql="INSERT INTO `plat`(`numero`, `CategMenu`, `CategPlat`, `designation`, `designation2`, `ListeProduits`, `composition`, `prix`, `NbreJ`, `NbreC`, `Nbre`, `state`, `RegimeTVA`, `created_at`, `updated_at`) VALUES (NULL,'".$categorie."','".$CategoriePlat."','".$designation."','".$designation2."','".$dataT."',NULL,'".$Prix."',0,0,0,NULL,'".$TPS_2."','" . $Jour_actuel. "','".$Jour_actuel."')";
  	$query = mysqli_query($con,$sql);
 		if($query){ $designation="";
 		echo "<script language='javascript'>";
 		echo 'alertify.success(" Enrégistrement effectué avec succès");';
 		echo "</script>";
-		echo '<meta http-equiv="refresh" content="1; url=food.php?menuParent=Enrégistrement" />'; 
+		//echo '<meta http-equiv="refresh" content="1; url=food.php?menuParent=Enrégistrement />'; 
+		echo '<meta http-equiv="refresh" content="0; url=food.php?menuParent='.$_SESSION['menuParenT'].'" />';
 	}
 	}
-	if($_POST['ENREGISTRER']=="Modifier"){
-		echo 23;
+	if($_POST['ENREGISTRER']=="Modifier"){ $update=(int)$update;
+			$rek="UPDATE plat SET CategMenu='".$categorie."',CategPlat='".$CategoriePlat."',designation='".$designation."',designation2='".$designation2."',ListeProduits='".$dataT."',prix='".$Prix."',updated_at ='".$Jour_actuel."' WHERE numero='".$update."'";			
+			$query = mysqli_query($con,$rek) or die (mysqli_error($con)); 
+			echo "<script language='javascript'>";
+			echo 'alertify.success("Modifications effectuées avec succès");';
+			echo "</script>";
+			//echo '<meta http-equiv="refresh" content="1; url=food.php?menuParent=Enrégistrement />'; 
+			echo '<meta http-equiv="refresh" content="0; url=food.php?menuParent='.$_SESSION['menuParenT'].'" />';
 	}
 //}
 }
@@ -171,22 +188,34 @@ if(isset($_POST['ENREGISTRER'])){
 					<td colspan='2' style='padding-left:25px;' >N° d'enrég. : &nbsp;&nbsp;&nbsp;<span class='rouge'></span></td>
 					<td colspan='2'><input type='text' id='code' name='code' style='width:250px;' readonly value='".$nbre."' onkeyup='myFunction()'/> </td>
 					<td rowspan='7' align='right' style='padding-left:25px;'>
-						<img title='' src='logo/food/".rand(1,36).".png' width='250' height='300'/>
+						<img title='' src='logo/food/".rand(1,36).".png' width='250' height='300'/>;
 					</td>
 				</tr>
 				<tr>
 					<td colspan='2' style='padding-left:25px;'>Produits alimentaires :&nbsp;&nbsp;&nbsp;<span class='rouge'></span></td>
 					<td colspan='2'>";
-						//echo "<input type='text'  name='ListeProduits' style='width:250px;font-family:sans-serif;font-size:90%;' readonly value='";   if($NbreP>0) echo "(".$NbreP.") produits";  echo "' onkeypress='testChiffres(event);'/>";
+						echo "<select class='js-example-basic-multiple' name='ListeProduits[]' multiple='multiple' style='font-family:sans-serif;border:1px solid gray;width:250px;' default='23'>";
+					
 						mysqli_query($con,"SET NAMES 'utf8'");
-						$req=mysqli_query($con,"SELECT Num,Designation FROM produits WHERE Type='".$_SESSION['menuParenT1']."' order by Designation");
-	
-						echo "<select class='js-example-basic-multiple' name='ListeProduits[]' multiple='multiple' style='font-family:sans-serif;border:1px solid gray;width:250px;'>";
-						while($data = mysqli_fetch_array($req)){
-								echo "<option value ='".$data['Num']."'> ".$data['Designation']."</option>";
-								}
-						echo "</select>
-						<a href='#' class='info2' style='color:#B83A1B;'><span style='font-size:0.9em;font-style:normal;color:green;'>
+						if(isset($ListeProduits)&&(!empty($ListeProduits))){
+						$ListeProduits = explode("|",$ListeProduits);
+				/* 		for($i=0;$i<count($ListeProduits);$i++) {
+							if(($ListeProduits[$i])!="")
+							{
+								$req=mysqli_query($con,"SELECT Num,Designation FROM produits WHERE Num='".$ListeProduits[$i]."'");	
+								$data0 =  mysqli_fetch_object($req);
+								echo "<option value ='".$data0->Num."' selected> ".$data0->Designation."</option>";								
+							}
+							} */
+						}else $ListeProduits=[];
+						$req=mysqli_query($con,"SELECT Num,Designation FROM produits WHERE Type='".$_SESSION['menuParenT1']."' order by Designation");							
+						while($data = mysqli_fetch_array($req)){ 
+								$selected = in_array($data['Num'], $ListeProduits) ? 'selected' : '';
+								echo "<option value ='".$data['Num']."' $selected > ".$data['Designation']."</option>";
+						}
+						echo "</select>";
+					
+						echo "<a href='#' class='info2' style='color:#B83A1B;'><span style='font-size:0.9em;font-style:normal;color:green;'>
 						Pour un suivi rigoureux du <g style='color:red;'>stock des produits <br/> alimentaires</g>, ajoutez ici les différents produits<br/>entrant dans la préparation du plat.<br/><br/>
 						Vous pouvez vous limiter aux <g style='color:red;'>produits</g> dont vous<br/> voulez connaitre <g style='color:red;'>l'état réel du stock</g>.</span><i class='fa fa-info-circle' aria-hidden='true'></i></a>
 					</td>
@@ -320,11 +349,10 @@ if(isset($_POST['ENREGISTRER'])){
 				echo "</g>				
 				</span>"; 
 				
-				?> 
-				<?php echo ucfirst($data->designation);
+				 echo ucfirst($data->designation);
 					if(!empty($data->ListeProduits)) echo "</a>
 				<span style='float:right;color:gray;'>
-				 <i class='fa fa-plus-square' aria-hidden='true'></i></span>	";
+				 <i class='fa fa-plus-square' aria-hidden='true'></i></span>";
 				?>				
 				</td>
 					<td style='border-right: 1px solid #ffffff;border-top: 1px solid #ffffff;; border-top: 2px solid #ffffff'> &nbsp;<?php echo !empty($data->designation2)?$data->designation2:$data->designation; echo "</span>";?></td>

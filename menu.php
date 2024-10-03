@@ -234,9 +234,13 @@ href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="styl
 					//echo "<a class='nav-link' href='".$chemin."' title='Cart'> <i class='fas fa-cart-plus'></i><span class='ttip'>".$menu."</span></a>";
 				if(strpos($chemin,"menuParent")==11) $post="";  else $post="?menuParent=".$menuParenT;
 					echo "<li class='nav-item'>
-							<a class='nav-link' href='".$chemin." ".$post."' title=''> <i class='".$target."' style='color:".$bgcouleur.";'></i><span class='ttip'>".$menu."</span></a>
+							<a class='nav-link' href='".$chemin." ".$post."' title=''>"; 
+							if(substr($target, (strlen($target) - 3), strlen($target))=='png')
+								echo "<img title='' src='logo/Resto/".$target."' width='35' height='35' style=''/>	";
+							else
+								echo "<i class='".$target."' style='color:".$bgcouleur.";'></i>";
+							echo "<span class='ttip'>".$menu."</span></a>
 						 </li>";
-						//}
 				}
 		}else {		//$reqsel1=mysqli_query($con,"SELECT * FROM ".$role.",affectationrole WHERE ".$role.".nomrole=affectationrole.nomrole AND Profil='".$_SESSION['poste']."' AND menuParent='$lien'");
 					//$data1=mysqli_fetch_assoc($reqsel1);$target=$data1['target']; if(empty($target)) $target="fas fa-cart-plus";

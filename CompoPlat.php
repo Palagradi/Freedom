@@ -9,12 +9,12 @@
 
 	//$sqlF=mysqli_query($con,"SELECT DISTINCT CategoriePlat FROM plat ");
 	if(!empty($plat)){
-	$sqlPi=mysqli_query($con,"SELECT numero,designation,prix,ListeProduits FROM plat  WHERE numero='".$plat."'");
+	$sqlPi=mysqli_query($con,"SELECT numero,designation,prix,ListeProduits FROM plat WHERE numero='".$plat."'");
 	$data = mysqli_fetch_object($sqlPi);
 	}
 	if(isset($update)){
 	mysqli_query($con,"SET NAMES 'utf8'");
-	$sql = "SELECT  * FROM plat,portion WHERE plat.numero = portion.numPlat AND id='".$update."'";
+	$sql = "SELECT * FROM plat,portion WHERE plat.numero = portion.numPlat AND id='".$update."'";
 	$result=mysqli_query($con,$sql);
 	$data = mysqli_fetch_object($result);
 	}
@@ -29,7 +29,14 @@
 			echo "</script>";
 		}
 		else {
-			$pre_sql1="INSERT INTO portion VALUES(NULL,'".$_POST['plat']."','".$_POST['portion']."','".$_POST['Prixvente']."')";
+			$dataT="";
+			if (isset($_POST['ListeProduits']) && is_array($_POST['ListeProduits'])) {
+				$selectedStates = $_POST['ListeProduits'];
+				foreach ($selectedStates as $state) {
+					$dataT.="|".htmlspecialchars($state);
+				}
+			}	
+			$pre_sql1="INSERT INTO portion SET numPlat='".$_POST['plat']."',libellePortion='".$_POST['portion']."',prixPortion='".$_POST['Prixvente']."',ListeProduitsP='".$dataT."'";
 			$req1 = mysqli_query($con,$pre_sql1) or die (mysqli_error($con));	
 			if($req1){
 			echo "<script language='javascript'>";
@@ -181,7 +188,7 @@
 			<tr>
 				<td  style='padding-left:50px;'>Portion alimentaire :&nbsp;&nbsp;&nbsp;<span class='rouge'>*</span></td>
 				<td>
-				<select <?php //if(empty($data->libellePortion))  echo "id='editable-select'"; ?>  name='portion' style="width:300px;background:#fff;font-family:sans-serif;font-size:100%;border:1px solid gray;">
+				<select <?php //if(empty($data->libellePortion))  echo "id='editable-select'"; ?>  name='portion' style="width:300px;background:#fff;font-family:sans-serif;font-size:100%;border:1px solid gray;" required>
 					 <?php
 					 		$separators = "/[;,\-+]| aux | au | et | plus | avec /";
 							if(!empty($data->libellePortion)) 
@@ -194,57 +201,7 @@
 								{echo "<option value ='".$plat[$i]."'> ".ucfirst($plat[$i])."</option>
 								<option value =''>  </option>";
 								}
-							}
-/* 							$plat2 = explode("-",$data->designation);
-							for($i=0;$i<count($plat2);$i++) {
-								if($plat2[$i]!=$data->designation)
-								{echo "<option value ='".$plat2[$i]."'> ".ucfirst($plat2[$i])."</option>
-								<option value =''>  </option>";
-								}
-							}
-							$plat3 = explode(";",$data->designation);
-							for($i=0;$i<count($plat3);$i++) {
-								if($plat3[$i]!=$data->designation)
-								{echo "<option value ='".$plat3[$i]."'> ".ucfirst($plat3[$i])."</option>
-								<option value =''>  </option>";
-								}
-							}
-							$plat4 = explode(",",$data->designation);
-							for($i=0;$i<count($plat4);$i++) {
-								if($plat4[$i]!=$data->designation)
-								{echo "<option value ='".$plat4[$i]."'> ".ucfirst($plat4[$i])."</option>
-								<option value =''>  </option>";
-								}
-							}
-							$plat5 = explode(" avec ",$data->designation);
-							for($i=0;$i<count($plat5);$i++) {
-								if($plat5[$i]!=$data->designation)
-								{echo "<option value ='".$plat5[$i]."'> ".ucfirst($plat5[$i])."</option>
-								<option value =''>  </option>";
-								}
-							}
-							$plat6 = explode(" et ",$data->designation);
-							for($i=0;$i<count($plat6);$i++) {
-								if($plat6[$i]!=$data->designation)
-								{echo "<option value ='".$plat6[$i]."'> ".ucfirst($plat6[$i])."</option>
-								<option value =''>  </option>";
-								}
-							}
-							$plat7 = explode(" au ",$data->designation);
-							for($i=0;$i<count($plat7);$i++) {
-								if($plat7[$i]!=$data->designation)
-								{echo "<option value ='".$plat7[$i]."'> ".ucfirst($plat7[$i])."</option>
-								<option value =''>  </option>";
-								}
-							}
-							$plat8 = explode(" aux ",$data->designation);
-							for($i=0;$i<count($plat8);$i++) {
-								if($plat8[$i]!=$data->designation)
-								{echo "<option value ='".$plat8[$i]."'> ".ucfirst($plat8[$i])."</option>
-								<option value =''>  </option>";
-								}
-							} */
-						
+							}					
 						?>
 				</select>
 
@@ -254,23 +211,29 @@
 			if((isset($data->ListeProduits)&&(!empty($data->ListeProduits)))) {
 				echo "<tr>"; 
 				echo "<td  style='padding-left:50px;'>Produits alimentaires :&nbsp;&nbsp;&nbsp;<span class='rouge'></span></td>
-					<td >";						
-
-						 $ListeProduits = explode("|",$data->ListeProduits);
-						
+					<td >";				
+						 $ListeProduits = explode("|",$data->ListeProduits);						
 						echo "<select class='js-example-basic-multiple' name='ListeProduits[]' multiple='multiple' style='font-family:sans-serif;border:1px solid gray;width:300px;'>";
-												
+										
+					mysqli_query($con,"SET NAMES 'utf8'");
+					$result_0=mysqli_query($con,"SELECT ListeProduitsP FROM portion WHERE id='".$data->id."'");
+					$data_0 = mysqli_fetch_object($result_0);
+	
+					if((isset($data_0->ListeProduitsP)&&(!empty($data_0->ListeProduitsP)))) {
+						$ListeProduitsP = explode("|",$data_0->ListeProduitsP);
+					}else $ListeProduitsP=[];
 						for($i=0;$i<count($ListeProduits);$i++) {
 							if(($ListeProduits[$i])!="")
-							{
+							{   
 								$req=mysqli_query($con,"SELECT Num,Designation FROM produits WHERE Num='".$ListeProduits[$i]."'");	
 								$data0 =  mysqli_fetch_object($req);
-								echo "<option value ='".$data0->Num."'> ".$data0->Designation."</option>";
+								$selected = in_array($data0->Num, $ListeProduitsP) ? 'selected' : '';
+								echo "<option value ='".$data0->Num."' $selected > ".$data0->Designation."</option>";
 							}
 						}
 						echo "</select>
 						<a href='#' class='info2' style='color:#B83A1B;'><span style='font-size:0.9em;font-style:normal;color:green;'>
-						Pour un suivi rigoureux du <g style='color:red;'>stock des produits <br/> alimentaires</g>, ajoutez ici les différents produits<br/>entrant dans la préparation de la portion.<br/><br/>
+						Pour un suivi rigoureux du <g style='color:red;'>stock des produits <br/> alimentaires</g>, ajoutez ici les différents produits<br/>entrant dans la préparation de la portion.<hr/>
 						Vous pouvez vous limiter aux <g style='color:red;'>produits</g> dont vous<br/> voulez connaitre <g style='color:red;'>l'état réel du stock</g>.</span><i class='fa fa-info-circle' aria-hidden='true'></i></a>
 					</td>
 				</tr>";
@@ -315,7 +278,7 @@
 <tbody id="">
 <?php
 	mysqli_query($con,"SET NAMES 'utf8'");
-	$result=mysqli_query($con,"SELECT * FROM plat,portion,categorieplat,menu WHERE categorieplat.id=plat.categPlat AND menu.id=plat.categMenu AND plat.numero = portion.numPlat");
+	$result=mysqli_query($con,"SELECT TypeMenu,catPlat,designation,libellePortion,prixPortion,numero,ListeProduitsP,portion.id AS id FROM plat,portion,categorieplat,menu WHERE categorieplat.id=plat.categPlat AND menu.id=plat.categMenu AND plat.numero = portion.numPlat");
 	$cpteur=1;
     // parcours et affichage des résultats
     while( $data = mysqli_fetch_object($result))
@@ -338,15 +301,36 @@
 				<td style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'>&nbsp; <?php echo $data->catPlat; ?></td>
 				<td align='' style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'>&nbsp;<?php echo ucfirst($data->designation); ?></td>
 				<?php 	
-					echo "<td style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff' align='left'>".ucfirst($data->libellePortion)."</td>
-						<td style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff' align='center'> ".$data->prixPortion."&nbsp;<span style='font-size:0.6em;'>".$devise."</span></td>";
-						echo "<td align='center' style='border-right: 0px solid #ffffff; border-top: 2px solid #ffffff'> 
-						&nbsp;<a class='info2' href='CompoPlat.php?menuParent=".$_SESSION['menuParenT']."&update=".$data->id."'  style='color:#FC7F3C;'><img src='logo/b_edit.png' alt='' width='16' height='16' border='0'><span style='color:#FC7F3C;font-size:0.9em;'>Modifier</span></a>";
-						echo "&nbsp;&nbsp;&nbsp;&nbsp;<a class='info2' href='CompoPlat.php?menuParent=".$_SESSION['menuParenT']."&delete=".$data->id."'  style='color:#B83A1B;'><img src='logo/b_drop.png' alt='Supprimer' width='16' height='16' border='0'><span style='color:#B83A1B;font-size:0.9em;'>Supprimer</span></a>
-						</td>";						
-						//}$PortionT=[];						
-					//}
-					echo "</tr>";
+				echo "<td style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff' align='left'>";
+				if(!empty($data->ListeProduitsP))
+				echo "<a class='info2' href='#' style=''>
+				<span style='font-size:0.9em;font-style:normal;color:green;'>Liste des produits alimentaires constituant la portion :<br/> 
+				<g style='color:red;'>";
+				if(!empty($data->ListeProduitsP)){
+					$produits = explode("|",$data->ListeProduitsP);
+					for($i=1;$i<count($produits);$i++)
+						{
+							mysqli_query($con,"SET NAMES 'utf8'");
+							$resultP=mysqli_query($con,"SELECT Designation FROM produits WHERE Num='".$produits[$i]."'");
+							$dataP = mysqli_fetch_object($resultP);
+							echo $dataP->Designation;
+							if($i<count($produits)-1)
+								echo " ; ";							
+						}
+				}
+				echo "</g>				
+				</span>"; 				
+				 echo ucfirst($data->libellePortion);
+					if(!empty($data->ListeProduitsP)) echo "</a>
+				<span style='float:right;color:gray;'>
+				 <i class='fa fa-plus-square' aria-hidden='true'></i></span>";			 
+				echo "</td>
+				<td style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff' align='center'> ".$data->prixPortion."&nbsp;<span style='font-size:0.6em;'>".$devise."</span></td>";
+				echo "<td align='center' style='border-right: 0px solid #ffffff; border-top: 2px solid #ffffff'> 
+				&nbsp;<a class='info2' href='CompoPlat.php?menuParent=".$_SESSION['menuParenT']."&update=".$data->id."'  style='color:#FC7F3C;'><img src='logo/b_edit.png' alt='' width='16' height='16' border='0'><span style='color:#FC7F3C;font-size:0.9em;'>Modifier</span></a>";
+				echo "&nbsp;&nbsp;&nbsp;&nbsp;<a class='info2' href='CompoPlat.php?menuParent=".$_SESSION['menuParenT']."&delete=".$data->id."'  style='color:#B83A1B;'><img src='logo/b_drop.png' alt='Supprimer' width='16' height='16' border='0'><span style='color:#B83A1B;font-size:0.9em;'>Supprimer</span></a>
+				</td>";						
+				echo "</tr>";
 	}
 	?>			
 			</tbody>

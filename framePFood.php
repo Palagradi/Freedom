@@ -30,7 +30,7 @@ if(($numero>0)&&($Qte>0)){echo "&nbsp;";
 			$req1 = mysqli_query($con,$pre_sql1) or die (mysqli_error($con));
 		}
 		else {
-			$pre_sql1="INSERT INTO tableEnCours VALUES(NULL,'".$numero."','".$table."','".$data['designation']."','1','','".$data['prix']."','".$Qte."','','','".$Jour_actuel."','".$Heure_actuelle."','".$tva."')";
+			$pre_sql1="INSERT INTO tableEnCours VALUES(NULL,'".$numero."','".$table."','".$data['designation']."','1','','".$data['prix']."','".$Qte."','','','".$Jour_actuel."','".$Heure_actuelle."','".$tva."','')";
 			$req1 = mysqli_query($con,$pre_sql1) or die (mysqli_error($con));	
 		}
 
@@ -213,7 +213,6 @@ a.info {
 				$cpteur = 1;
 				$bgcouleur = "#dfeef3";
 			}  $i++;  if($i%2==0){$color="#FC7F3C";$plus="plus1"; }else {$color="maroon";$plus="plus2";}
-
     ?>
 		 	<tr class='rouge1' bgcolor=' <?=$data->NbreJ<=0?"gray":$bgcouleur; ?>'>
 			  <td align='center' style='padding:7px;border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'><?php echo $j; ?>.</td>

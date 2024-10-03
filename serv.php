@@ -26,7 +26,7 @@
 					 	$update=mysqli_query($con,"UPDATE ConfigResto SET num_fact=num_fact+1 ");
 						$reqsel=mysqli_query($con,"SELECT num_fact,numFactNorm FROM ConfigResto");
 						$data=mysqli_fetch_assoc($reqsel);
-						$numFact=$data['num_fact']."/".substr(date('Y'),2,2); $NomClient=isset($_GET['clt'])?$_GET['clt']:NULL;
+						$numFact=convertNumero(1,$data['num_fact']); $NomClient=isset($_GET['clt'])?$_GET['clt']:NULL;						
 						$numFactNorm=NumeroFacture($data['numFactNorm']); //echo $NomClient=" "; //echo $NomClient=$_SESSION[$table];  //unset($_SESSION[$table]);
 
 					  if(!empty($tk)) $table=0; $productlist=array();
@@ -34,7 +34,7 @@
 						//$reqsel=mysqli_query($con,"SELECT num_fact,numFactNorm FROM configuration_facture");
 						//$data=mysqli_fetch_object($reqsel);		$NumFact=NumeroFacture($data->num_fact);  $numFactNorm=NumeroFacture($data->numFactNorm);
 
-					  $Query="INSERT INTO factureResto SET id=NULL,numFactNorm='".$numFactNorm."',numTable = '".$table."',date_emission = '".$Jour_actuelp."', heure_emission = '".$Heure_actuelle."', receptionniste = '".$_SESSION['login']."', num_facture = '".trim($numFact)."', NomClient= '".$NomClient."',
+					  $Query="INSERT INTO factureResto SET id=NULL,numFactNorm='".$numFactNorm."',numTable = '".$table."',date_emission = '".$Jour_actuelp."', heure_emission = '".$Heure_actuelle."', receptionniste = '".$_SESSION['login']."', num_facture = '".$numFact."', NomClient= '".$NomClient."',
 					  Type = '".$type."', tva = '".$tva."', montant_ttc = '".$_POST['m']."', Remise = '".$remise."', somme_paye = '".$Mtpercu."',NbreCV='".$cv."'";
 					 $exec=mysqli_query($con,$Query);
 					 if(isset($exec)){
@@ -150,15 +150,17 @@
 			}
 			$tab=2;
 
-?>			<table class='rouge1' style='max-width:500px;border:3px solid maroon;background-color:#F4FEFE;font-family:Calibri;font-size:1em;'>
+?>			<table class='rouge1' style='width:500px;border:3px solid maroon;background-color:#F4FEFE;font-family:Calibri;font-size:1em;'>
 				<tr>
-					<td  colspan='2' style='font-weight:bold;font-size:1.1em;color:#FF0000;font-style:italic;font-family: Georgia;'>  <?php if(!empty($table)) { $_SESSION['tableS']=$table ;echo  "Table : " .$table." / ".$cv." CV" ; }if(empty($table)) echo "Commande en cours ...";?>
-					</td>
-					<td colspan='2' align='right'>
+					<td  colspan='1' style='font-weight:bold;font-size:1.1em;color:#FF0000;font-style:italic;font-family: Georgia;'>  <?php if(!empty($table)) { $_SESSION['tableS']=$table ;echo  "Table : " .$table." / ".$cv." CV" ; }if(empty($table)) echo "Commande en cours ...";
+					
+					?>
+					</td><td colspan='2' align='center'><?php echo "<span style='color:gray;font-weight:normal;font-style:normal;font-size:0.8em;'>".$Date_actuel2." ".$Heureactuelle;?></td>
+					<td colspan='1' align='right'>
 					<a class='info' href='#' style='' onclick='edition7();return false;'>
-					<span style='font-size:0.9em;font-style:normal;color:teal;'><?php  $query=mysqli_query($con,"SELECT Serveurassoc FROM tableEnCours WHERE numTable='".$table."' AND Etat<> 'Desactive'"); $data=mysqli_fetch_assoc($query); if(!empty($data['Serveurassoc'])) echo "Serveur(se) : ".$data['Serveurassoc']; else echo "Affecter un(e) serveur(se)"; ?></span>	 <i class='fas fa-plus-square' aria-hidden='true' style='font-size:140%;color:teal;'></i></a>
+					<span style='font-size:0.9em;font-style:normal;color:teal;'><?php  $query=mysqli_query($con,"SELECT Serveurassoc FROM tableenCours WHERE numTable='".$table."' AND created_at='".$Jour_actuel."' AND Etat<> 'Desactive'"); $data=mysqli_fetch_assoc($query); if(!empty($data['Serveurassoc'])) echo "Serveur(se) : ".$data['Serveurassoc']; else echo "Affecter un(e) serveur(se)"; ?></span>	 <i class='fas fa-plus-square' aria-hidden='true' style='font-size:140%;color:teal;'></i></a>
 
-					&nbsp;&nbsp;&nbsp;&nbsp;
+					&nbsp;&nbsp;
 					 <input type='hidden'	name='NameTable' id='NameTable' value='<?php echo $table; ?>'/> <input type='hidden'	name='cv' id='cv' value='<?php echo $cv; ?>'/>
 					<a class='info2' href='#' style='' onclick='JSalert();return false;'>
 					<span style='font-size:0.9em;font-style:normal;color:#FEBE89;'>
@@ -174,7 +176,7 @@
 					</a>
 					&nbsp;&nbsp;
 					<a class='info2' href='servir.php?print=1<?php if(!empty($val)) echo "&val=".$val; ?>' <?php if(!empty($val))  echo "onclick='edition6();return false;'"; else echo "onclick='Alert1();return false;'";?>style='color:black;'>
-					<span style='font-size:0.9em;font-style:normal;color:black;'>Impression</span>	 <i class='fas fa-print' aria-hidden='true' style='font-size:140%;'></i></a>
+					<span style='font-size:0.9em;font-style:normal;color:black;'>Imprimer la facture en cours</span>	 <i class='fas fa-print' aria-hidden='true' style='font-size:120%;color:red;'></i></a>
 					</td>
 				</tr>
 				<tr style='background-color:#DCDCDC;font-weight:bold;'>
@@ -212,10 +214,10 @@
 					<input type='hidden' id='total' value='".$total."' />
 				</tr>
 				<tr>
-					<td  align='left' style='font-size:1.1em;font-weight:bold;color:#A0522D;'><br>Remise accordée :		</td>
+					<td  align='left' style='font-size:1.1em;font-weight:bold;color:#A0522D;'><br>Remise accordée : </td>
 					<td  align='left'><br><input type='text' name='remise' id='remise' style='width:100px;background-color:#D3D3D3;' onkeyup='remiseR();' onchange='remiseR();' onkeypress='testChiffres(event);' autocomplete='OFF' /></td>
 
-					<td  align='right' style='font-size:1.1em;font-weight:bold;color:#A0522D;'><br>&nbsp;&nbsp;Montant reçu :		</td>
+					<td  align='right' style='font-size:1.1em;font-weight:bold;color:#A0522D;'><br>&nbsp;Montant reçu :		</td>
 					<td  align='right'><br><input type='text' name='Mtpercu' id='Mtpercu' onkeyup='monnaie();' onkeypress='testChiffres(event);' autocomplete='OFF' style='text-align:right;font-weight:bold;width:100px;background-color:#D3D3D3;border-radius: 5px;-moz-border-radius: 5px;-webkit-border-radius: 5px;'";  echo "/></td>
 				</tr>
 				<tr>
@@ -250,15 +252,16 @@
 				</tr>
 				";
 				} */
+				//<i style='font-size:2em;margin-bottom:-12px;' class='fas fa-cart-plus' aria-hidden='true'></i>
 				?>
 				<tr>
 					<td colspan='4' align='center'>
 					 <hr/> <span style='float:left;'>
-					 <a class='info' <?php if((!empty($table))||(!empty($vt)))  echo "onclick='edition5();return false;'"; else echo "onclick='Alert();return false;'";?> style='color:orange;' > <span style='font-size:0.9em;font-style:normal;color:#ff8c00;'>Ajouter une boisson</span>	<i style='font-size:2.3em;' class='fas fa-cart-plus' aria-hidden='true'></i></a>
-					  &nbsp;&nbsp;&nbsp;<a class='info' <?php if((!empty($table))||(!empty($vt)))  echo "onclick='edition8();return false;'"; else echo "onclick='Alert();return false;'";?> style='color:maroon;' > <span style='font-size:0.9em;font-style:normal;color:maroon;'>Ajouter un pack/casier de boissons </span>	<i style='font-size:2.3em;' class='fas fa-cart-plus' aria-hidden='true'></i></a>
+					 <a class='info' <?php if((!empty($table))||(!empty($vt)))  echo "onclick='edition5();return false;'"; else echo "onclick='Alert();return false;'";?> style='color:orange;' > <span style='font-size:0.9em;font-style:normal;color:maroon;'>Ajouter une boisson </span><img src='logo/Resto/add-to-cart.png' alt='' width='45' height='46' border='0'style='padding-bottom:5px;'>  </a>
+					  &nbsp;&nbsp;&nbsp;<a class='info' <?php if((!empty($table))||(!empty($vt)))  echo "onclick='edition8();return false;'"; else echo "onclick='Alert();return false;'";?> style='color:maroon;'><span style='font-size:0.9em;font-style:normal;color:maroon;'>Ajouter un pack ou <br/>casier de boissons</span><img src='logo/Resto/add.png' alt='' width='35' height='40' border='0' >  </a>
 					   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-					   <a class='info2' <?php if((!empty($table))||(!empty($vt)))  echo "onclick='edition4();return false;'"; else echo "onclick='Alert();return false;'";?> style='color:#FF00FF;' > <span style='font-size:0.9em;font-style:normal;color:#FF00FF;'>Ajouter un plat </span>	<i style='font-size:2.3em;' class='fas fa-cart-plus' aria-hidden='true'></i></a>
-					  &nbsp;&nbsp;&nbsp;<a class='info2' <?php if((!empty($table))||(!empty($vt)))  echo "onclick='edition9();return false;'"; else echo "onclick='Alert();return false;'";?> style='color:#6495ed;' > <span style='font-size:0.9em;font-style:normal;color:#6495ed;'>Ajouter une portion de plat</span>	<i style='font-size:2.3em;' class='fas fa-cart-plus' aria-hidden='true'></i></a>
+					   <a class='info2' <?php if((!empty($table))||(!empty($vt)))  echo "onclick='edition4();return false;'"; else echo "onclick='Alert();return false;'";?> style='color:#FF00FF;' > <span style='font-size:0.9em;font-style:normal;color:maroon;'>Ajouter un plat </span><img src='logo/Resto/add-soup.png' alt='' width='45' height='45' border='0'>	</a>
+					  &nbsp;&nbsp;&nbsp;<a class='info2' <?php if((!empty($table))||(!empty($vt)))  echo "onclick='edition9();return false;'"; else echo "onclick='Alert();return false;'";?> style='color:#6495ed;' > <span style='font-size:0.9em;font-style:normal;color:maroon;'>Ajouter une portion de plat</span><img src='logo/Resto/soup.png' alt='' width='40' height='45' border='0'></a>
 
 					   
 					</span>
@@ -282,3 +285,7 @@
 					</span> </td>
 				</tr>
 			</table>
+			
+
+			
+			

@@ -163,7 +163,7 @@
 					&nbsp;&nbsp;
 					 <input type='hidden'	name='NameTable' id='NameTable' value='<?php echo $table; ?>'/> <input type='hidden'	name='cv' id='cv' value='<?php echo $cv; ?>'/>
 					<a class='info2' href='#' style='' onclick='JSalert();return false;'>
-					<span style='font-size:0.9em;font-style:normal;color:#FEBE89;'>
+					<span style='font-size:0.9em;font-style:normal;color:black;'>
 					<?php
 					if(isset($_GET['table'])&&($table==$_GET['table']) && isset($_GET['clt'])) //{
 						//$tableau = array($table => $_GET['clt']); echo $tableau[$table];  $_SESSION[$table]=$_GET['clt']; }
@@ -175,9 +175,9 @@
 					<i class='fas fa-plus-square' aria-hidden='true' style='font-size:140%;color:#FEBE89;'></i>
 					</a>
 					&nbsp;&nbsp;
-					<a class='info2' href='servir.php?print=1<?php if(!empty($val)) echo "&val=".$val; ?>' <?php if(!empty($val))  echo "onclick='edition6();return false;'"; else echo "onclick='Alert1();return false;'";?>style='color:black;'>
-					<span style='font-size:0.9em;font-style:normal;color:black;'>Imprimer la facture en cours</span>	 <i class='fas fa-print' aria-hidden='true' style='font-size:120%;color:red;'></i></a>
-					</td>
+					<a class='info2' href='#' style='' onclick='edition7();return false;'>
+					<span style='font-size:0.9em;font-style:normal;color:red;'><?php  $query=mysqli_query($con,"SELECT Serveurassoc FROM tableenCours WHERE numTable='".$table."' AND created_at='".$Jour_actuel."' AND Etat<> 'Desactive'"); $data=mysqli_fetch_assoc($query); if(!empty($data['Serveurassoc'])) echo "Serveur(se) : ".$data['Serveurassoc']; else echo "Mode de règlement"; ?></span>	 <i class='fas fa-plus-square' aria-hidden='true' style='font-size:140%;color:red;'></i></a>
+					&nbsp;</td>
 				</tr>
 				<tr style='background-color:#DCDCDC;font-weight:bold;'>
 					<td style='padding-left:5px;'> Désignation</td>

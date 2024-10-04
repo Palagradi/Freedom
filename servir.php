@@ -1,5 +1,11 @@
 ﻿<?php
-include_once 'menu.php';  //if(isset($_SESSION['quantify'])) echo $_SESSION['quantify'];
+include_once 'menu.php';  
+require ('vendor/autoload.php');
+
+use Picqer\Barcode\BarcodeGeneratorHTML;
+use Picqer\Barcode\BarcodeGeneratorPNG;
+
+//if(isset($_SESSION['quantify'])) echo $_SESSION['quantify'];
 // https://www.youtube.com/watch?v=xYc4AO_wQgM
 //https://sweetalert.js.org/docs/#content
 	$reqsel=mysqli_query($con,"SELECT * FROM RTables");
@@ -176,7 +182,7 @@ include_once 'menu.php';  //if(isset($_SESSION['quantify'])) echo $_SESSION['qua
             background: linear-gradient(135deg, #ffffff, #f7f7f7);
             border-radius: 15px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            font-family: serif;
+            font-family: calibri;
             color: #333;
             margin: 20px auto;
 			
@@ -185,7 +191,7 @@ include_once 'menu.php';  //if(isset($_SESSION['quantify'])) echo $_SESSION['qua
         .header {
             text-align: center;
             border-bottom: 1px solid #ddd;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
         }
 
         .header h1 {
@@ -517,112 +523,159 @@ include_once 'menu.php';  //if(isset($_SESSION['quantify'])) echo $_SESSION['qua
 			//echo "<a href='#' class='info2' id='ticketLink-".$data['id']."' data-bs-toggle='modal' data-bs-target='#ticketModal' data-ticket-id='".$data['id']."'><span style='font-size:0.9em;font-style:normal;color:black;'>Impression</span>	 <i class='fas fa-print' style='color:".$color."' aria-hidden='true' style='font-size:100%;'></i></a>";
 		?>  
 		<a href='' class='info2'class='quickview' data-link-action='quickview'  data-bs-toggle='modal' data-bs-target='#ec_quickview_modal<?=$data['id'];?>'> <span style='font-size:0.9em;font-style:normal;color:black;'>Impression</span><i class='fas fa-print' style='color:<?=$color;?>' aria-hidden='true' style='font-size:100%;'></i></a>
-		<?php 	 
-			 echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
-		  </tr>";
-		 ?>
-              <!-- Modal -->
-                        <div class="modal fade" id="ec_quickview_modal<?=$data['id'];?>" tabindex="-1" role="dialog">
-                            <div class="modal-dialog modal-dialog-centered" role="document">
-                                <div class="modal-content">
-                                    <button type="button" class="btn-close qty_close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    <div class="modal-body">
-                                        <div class="row">
-                                            <div class="col-md-5 col-sm-12 col-xs-12">
-                                                <!-- Swiper -->
-                                                <div class="qty-product-cover">
-                                                    
-                                                </div>
-                                            </div>
-                                            <div class="col-md-7 col-sm-12 col-xs-12">
-                                                <div class="quickview-pro-content">
-                                                    <h5 class="ec-quick-title"><a href="product-left-sidebar.html">dsds</a>
-                                                    </h5>
-                                                    <div class="ec-quickview-rating">
-                                                        <i class="ecicon eci-star fill"></i>
-                                                        <i class="ecicon eci-star fill"></i>
-                                                        <i class="ecicon eci-star fill"></i>
-                                                        <i class="ecicon eci-star fill"></i>
-                                                        <i class="ecicon eci-star"></i>
-                                                    </div>
 
-                                                    <div class="ec-quickview-desc">Lorem Ipsum is simply dummy text of the printing and
-                                                        typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever
-                                                        since the 1500s,</div>
-                                                    <div class="ec-quickview-price">
-                                                 <?php //echo $data['id'];
-												 
-		$table=(isset($_SESSION['Ntable'])&&(!empty($_SESSION['Ntable']))) ? $_SESSION['Ntable']:NULL; $num_facture=isset($_SESSION['numFact'])?$_SESSION['numFact']:NULL;
-		if (isset($data['id'])) {
-			echo $req="SELECT * FROM factureResto,tableEnCours WHERE tableEnCours.num_facture=factureResto.num_facture AND factureResto.id='".htmlspecialchars($data['id'])."' ";
-			$reqselRTables=mysqli_query($con,$req);
-		} else if(isset($num_facture)) {
-			$req="SELECT * FROM factureResto,tableEnCours WHERE tableEnCours.num_facture=factureResto.num_facture AND factureResto.num_facture='".trim($num_facture)."' ";
-			$reqselRTables=mysqli_query($con,$req);
-		}	
-		else
-		{ 
-		}
-		$factureResto=mysqli_query($con,$req);
-		while($data1=mysqli_fetch_array($factureResto)){ $Net=$data1['montant_ttc']-$data1['Remise'];
-		$SommePayee=$data1['somme_paye']; $monnaie=$SommePayee-$Net;$remise=$data1['Remise'];
-		 $NomClient=!empty($data1['NomClient'])?$data1['NomClient']:"<i>Non renseigné</i>";
-		 $heure=$data1['heure_emission'];$numRecu=$data1['num_facture'];
-		} 												 
-												 ?>
-                                                    </div>
-
-                                                    <div class="ec-quickview-qty">
-                                                        <div class="qty-plus-minus">
-                                                            <input class="qty-input" type="text" name="ec_qtybtn" value="1" />
-                                                        </div>
-                                                        <div class="ec-quickview-cart ">
-
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Modal end -->
+		<!-- Modal -->
+    <div class="modal fade" id="ec_quickview_modal<?=$data['id'];?>" tabindex="-1" role="dialog" aria-labelledby="ticketModalLabel" aria-hidden="true">			
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ticketModalLabel">Ticket de Restaurant</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Contenu du ticket de restaurant -->
+                <div class="ticket" id="printable-ticket">
+                    <div class="header">
+						<div style="float:left;">
+								<img class="img-responsive" alt="" src="<?php if(!empty($_SESSION['logo'])) echo $_SESSION['logo']; ?>" style="width:90px;height:90px;">
+						</div>
+						<div>
+            			<h5><?php 	
+						if(!empty($nomHotel)) echo $nomHotel;  echo "</h5>";
+						if(!empty($Apostale))
+							echo  "<p>".$Apostale."</p> ";
+						if(!empty($NumUFI))
+							echo  "<p>N° IFU: ".$NumUFI."</p> ";
+	/* 					if(!empty($NumBancaire))
+							echo  "<p>Compte Bancaire: ".$NumBancaire."</p>  ";
+						else {
+						} */
+					?>
+					<p> <i class="fa fa-phone"></i>&nbsp;<?php echo $telephone1." - ".$telephone2; ?></p>
+					<p><?php echo $Email; ?></p>
 						
-		<?php 	
+					<?php
+							
+					$table=(isset($_SESSION['Ntable'])&&(!empty($_SESSION['Ntable']))) ? $_SESSION['Ntable']:NULL; $num_facture=isset($_SESSION['numFact'])?$_SESSION['numFact']:NULL;
+					if (isset($data['id'])) {
+						$param0 = $data['id'];
+						$req="SELECT * FROM factureResto,tableEnCours WHERE tableEnCours.num_facture=factureResto.num_facture AND factureResto.id='".htmlspecialchars($param0)."' ";
+						$reqselRTables=mysqli_query($con,$req);
+					} else if(isset($num_facture)) {
+						$req="SELECT * FROM factureResto,tableEnCours WHERE tableEnCours.num_facture=factureResto.num_facture AND factureResto.num_facture='".trim($num_facture)."' ";
+						$reqselRTables=mysqli_query($con,$req);
+					}	
+					else
+					{ 
+					}
+					$factureResto=mysqli_query($con,$req);
+					while($data1=mysqli_fetch_array($factureResto)){ $Net=$data1['montant_ttc']-$data1['Remise'];
+					$SommePayee=$data1['somme_paye']; $monnaie=$SommePayee-$Net;$remise=$data1['Remise'];
+					 $NomClient=!empty($data1['NomClient'])?$data1['NomClient']:"<g>Non renseigné</g>";
+					 $heure=$data1['heure_emission'];$numRecu=$data1['num_facture'];
+					}	
+					?>
+				</div>
+			</div>
+
+			  <div class="info">
+					<small><?php if(!empty($Date_actuel)) echo date('d')."-". date('m')."-".date('Y');  ?> à <?php echo $heure="18:55"; ?></small>
+					<center>
+							<h6 style='font-weight:bold;background-color:#e5e5e5;'> Ticket N°: <?php echo $numRecu; ?> </h6>
+					</center>
+					<div>
+						<p style='float:left;'>Client  :  <?php echo $NomClient; ?>	</p>
+						
+						<p style='float:right;'>Caissier : <?php echo $_SESSION["nom"]." ".$_SESSION["prenom"]; ?> </p>
+					</div>	
+
+				</div>
+  <div class="content">
+						
+	<table style='font-size:0.9em;'>
+    <tr style='background-color:#e5e5e5;font-weight:bold;'>
+	   <td style=''>Désignation</td>
+		<td align='right'>Prix</td>
+		<td style='text-align:center;'>Qté</td>
+		<td style='text-align:right;'>Montant</td>
+    </tr>			
+		<?php
+		if(isset($reqselRTables)){$total=0;$num=0;//$mt=0;
+			while($data1=mysqli_fetch_array($reqselRTables)){ $num++;
+			$mt=$data1['qte']*$data1['prix'];$total+=$mt;
+				echo "<tr>
+					<td class='' >".ucfirst($data1['LigneCde'])." ".$data1['QteInd']."</td>
+					<td align='right' class=''> ".$data1['prix']."</td>
+					<td align='center' class=''> ".$data1['qte']."</td>
+					<td  align='right' class=''> ".$mt."</td>
+				</tr>";
+			}
+		   }
+		   
+			  echo 	"
+			  <tr>
+		<td colspan='1' rowspan='4' align='left'><strong> Total TVA [18%] : 123455 </strong></td>
+			  </tr>
+			  <tr>
+				<td  colspan='2' align='right'> <strong> Montant Total : </strong>  ";
+				if($remise>0)
+					echo "<br/><strong> Remise accordée : </strong>";
+
+				echo "<br/><strong> Net à payer :</strong>
+				<br/><strong> Somme payée :</strong> ";
+				if($monnaie>0)
+					echo "<br/><strong> Monnaie : </strong> </td>";
+					?>
+					<td align='right' style=''><strong><i class=""></i> <?php echo $total;?>
+					<br/><?php echo $Net;?><br/>	<?php echo $SommePayee;?></strong>									
+
+				<?php
+				if($remise>0)
+					echo " <br/><strong><i class=''></i> ". $remise."</strong> ";
+
+				if($monnaie>0)
+					echo "<br/><strong><i class=''></i> ". $monnaie."</strong> </td>
+			</tr>";
+
+				//QRcode::png('code data text', 'filename.png'); // creates file
+				//QRcode::png('some othertext 1234'); // creates code image and outputs it directly into browser
+	 ?>
+	
+	</table>
+
+				</div>
+				
+				<div class="total" style='background-color:#e5e5e5;'>
+				<span style='font-weight:normal;font-size:0.9em;float:left;padding-left:5px;'>Mode de règlement : <?php echo $mode="Espèce";?></span>
+				<span style='padding-right:5px;'>Total encaissé : <strong><?php echo $total;?></strong></span>
+				</div>
+
+				<div class="footerT">
+					<center>
+					<?php $generator = new BarcodeGeneratorHTML();
+						echo $generator->getBarcode($numRecu, $generator::TYPE_CODE_128);?><br/>
+						Merci de votre visite !</center>
+				</div>				
+					
+                </div>
+            </div>
+        </div>
+    </div>
+	</div>
+	<!-- Modal end -->
+						
+		<?php 
+		echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+		  </tr>";		
 		}							
-		echo "</tbody></table>	";
-		
-		
-		
-/* 		$table=(isset($_SESSION['Ntable'])&&(!empty($_SESSION['Ntable']))) ? $_SESSION['Ntable']:NULL; $num_facture=isset($_SESSION['numFact'])?$_SESSION['numFact']:NULL;
-		if (isset($_GET['param0'])) {
-			$param0 = $_GET['param0'];
-			$req="SELECT * FROM factureResto,tableEnCours WHERE tableEnCours.num_facture=factureResto.num_facture AND factureResto.id='".htmlspecialchars($param0)."' ";
-			$reqselRTables=mysqli_query($con,$req);
-		} else if(isset($num_facture)) {
-			$req="SELECT * FROM factureResto,tableEnCours WHERE tableEnCours.num_facture=factureResto.num_facture AND factureResto.num_facture='".trim($num_facture)."' ";
-			$reqselRTables=mysqli_query($con,$req);
-		}	
-		else
-		{ 
-		}
-		$factureResto=mysqli_query($con,$req);
-		while($data1=mysqli_fetch_array($factureResto)){ $Net=$data1['montant_ttc']-$data1['Remise'];
-		$SommePayee=$data1['somme_paye']; $monnaie=$SommePayee-$Net;$remise=$data1['Remise'];
-		 $NomClient=!empty($data1['NomClient'])?$data1['NomClient']:"<i>Non renseigné</i>";
-		 $heure=$data1['heure_emission'];$numRecu=$data1['num_facture'];
-		} */
+		echo "</tbody></table>";
 	} 
 ?>
 
 
-
-
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-/*     // Détecter l'ouverture de la modale et lancer l'impression
+     // Détecter l'ouverture de la modale et lancer l'impression
     const ticketModal = document.getElementById('ticketModal');
     ticketModal.addEventListener('shown.bs.modal', () => {
         // Imprimer le contenu du ticket
@@ -632,7 +685,7 @@ include_once 'menu.php';  //if(isset($_SESSION['quantify'])) echo $_SESSION['qua
     });
 	
 	
-
+/*
 // Sélectionner tous les liens qui ouvrent la modale avec `data-bs-target='#ticketModal'`
 document.querySelectorAll("[data-bs-target='#ticketModal']").forEach(link => {
     link.addEventListener('click', function() {

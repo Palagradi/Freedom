@@ -7,6 +7,10 @@ namespace Composer\Autoload;
 class ComposerStaticInit24b6bd2bee59d158f8fae524e188b6c7
 {
     public static $prefixLengthsPsr4 = array (
+        'P' => 
+        array (
+            'Picqer\\Barcode\\' => 15,
+        ),
         'C' => 
         array (
             'Com\\Tecnick\\Color\\' => 18,
@@ -15,6 +19,10 @@ class ComposerStaticInit24b6bd2bee59d158f8fae524e188b6c7
     );
 
     public static $prefixDirsPsr4 = array (
+        'Picqer\\Barcode\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/picqer/php-barcode-generator/src',
+        ),
         'Com\\Tecnick\\Color\\' => 
         array (
             0 => __DIR__ . '/..' . '/tecnickcom/tc-lib-color/src',

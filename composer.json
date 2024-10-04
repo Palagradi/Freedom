@@ -1,6 +1,7 @@
 {
     "require": {
         "tecnickcom/tcpdf": "^6.3",
-        "tecnickcom/tc-lib-barcode": "^1.17"
+        "tecnickcom/tc-lib-barcode": "^1.17",
+        "picqer/php-barcode-generator": "^2.4"
     }
 }

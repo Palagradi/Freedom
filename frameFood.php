@@ -21,8 +21,8 @@ if(($numero>0)&&($Qte>0)){echo "&nbsp;";
 		echo "swal('Quantité demandée supérieure à la quantité en stock')";
 		echo "</script>";
 
-	}else {
-		$rk="SELECT * FROM tableEnCours WHERE LigneCde='".$data['designation']."' AND LigneType='1' AND numTable='".$table."' AND created_at='".$Jour_actuel."' AND Etat <> 'Desactive'";
+	}else {$designation=!empty($data['designation2'])?$data['designation2']:$data['designation'];
+		$rk="SELECT * FROM tableEnCours WHERE LigneCde='".$designation."' AND LigneType='1' AND numTable='".$table."' AND created_at='".$Jour_actuel."' AND Etat <> 'Desactive'";
 		$req1 = mysqli_query($con,$rk) or die (mysqli_error($con));
 		if(mysqli_num_rows($req1)>0){
 			$data0=mysqli_fetch_assoc($req1); $Qte0=$Qte+$data0['qte'];
@@ -30,7 +30,21 @@ if(($numero>0)&&($Qte>0)){echo "&nbsp;";
 			$req1 = mysqli_query($con,$pre_sql1) or die (mysqli_error($con));
 		}
 		else {
-			$pre_sql1="INSERT INTO tableEnCours VALUES(NULL,'".$numero."','".$table."','".$data['designation']."','1','','".$data['prix']."','".$Qte."','','','".$Jour_actuel."','".$Heure_actuelle."','".$tva."','')";
+			//$pre_sql1="INSERT INTO tableEnCours VALUES(NULL,'".$numero."','".$table."','".$designation."','1','','".$data['prix']."','".$Qte."','','','".$Jour_actuel."','".$Heure_actuelle."','".$tva."','')";
+			$pre_sql1="INSERT INTO tableEnCours SET 
+			Num=NULL,
+			Num2='".$numero."',
+			numTable='".$table."',
+			LigneCde='".$designation."',
+			LigneType=1,
+			QteInd='',
+			prix='".$data['prix']."',
+			qte='".$Qte."', 
+			Etat='',
+			serveur=0,
+			created_at='".$Jour_actuel."',
+			updated_at='".$Heure_actuelle."',
+			TVA='".$tva."'";
 			$req1 = mysqli_query($con,$pre_sql1) or die (mysqli_error($con));	
 		}
 
@@ -39,7 +53,7 @@ if(($numero>0)&&($Qte>0)){echo "&nbsp;";
 		$re="INSERT INTO operation VALUES(NULL,'".$ref."','Vente ','".$numero."','".$Qte_Stock."','".$Qte."','".$quantiteF."','".$Jour_actuel."','".$Heure_actuelle."','','".$Qte."')";
 		$req=mysqli_query($con,$re);
 
-		echo $update="UPDATE plat SET NbreC=NbreC+'".$Qte."',Nbre=Nbre-'".$Qte."' WHERE numero='".$_GET['numero']."' AND state=1 ";
+		$update="UPDATE plat SET NbreC=NbreC+'".$Qte."',Nbre=Nbre-'".$Qte."' WHERE numero='".$_GET['numero']."' AND state=1 ";
 		$Query=mysqli_query($con,$update);
 		
   		echo "<script language='javascript'>";
@@ -169,7 +183,7 @@ a.info {
 <form class="ajax" action="" method="get">
 	<p align='center'>
 		 <input style='text-align:center;font-size:1.5em;background-color:#EFFBFF;width:500px;padding:3px;border:1px solid #aaa;-moz-border-radius:7px;-webkit-border-radius:7px;border-radius:7px;height:35px;line-height:22px;' type="text" name="qt" id="qt" 
-		 placeholder="Rechercher parmi la liste des plats du <?php echo $Jour_actuel; ?>"/> 
+		 placeholder="Rechercher parmi la liste des plats du <?php echo substr($Jour_actuel,8,2)."-".substr($Jour_actuel,5,2)."-".substr($Jour_actuel,0,4); ?>"/> 
 	</p>
 </form>
 <!--fin du formulaire-->

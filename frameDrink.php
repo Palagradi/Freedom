@@ -26,7 +26,21 @@ if(($numero>0)&&($Qte>0)){echo "&nbsp;";
 			$req1 = mysqli_query($con,$pre_sql1) or die (mysqli_error($con));
 		}
 		else {
-		    $pre_sql1="INSERT INTO tableEnCours VALUES(NULL,'".$numero."','".$table."','".$data['designation']."','0','".$data['LibQte']."','".$data['PrixUnitaire']."','".$Qte."','','','".$Jour_actuel."','".$Heure_actuelle."','".$tva."','')";
+		    //$pre_sql1="INSERT INTO tableEnCours VALUES(NULL,'".$numero."','".$table."','".$data['designation']."','0','".$data['LibQte']."','".$data['PrixUnitaire']."','".$Qte."','','','".$Jour_actuel."','".$Heure_actuelle."','".$tva."','')";
+			$pre_sql1="INSERT INTO tableEnCours SET 
+			Num=NULL,
+			Num2='".$numero."',
+			numTable='".$table."',
+			LigneCde='".$data['designation']."',
+			LigneType=0,
+			QteInd='".$data['LibQte']."',
+			prix='".$data['PrixUnitaire']."',
+			qte='".$Qte."', 
+			Etat='',
+			serveur=0,
+			created_at='".$Jour_actuel."',
+			updated_at='".$Heure_actuelle."',
+			TVA='".$tva."'";
 			$req1 = mysqli_query($con,$pre_sql1) or die (mysqli_error($con));	
 		}
 

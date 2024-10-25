@@ -180,7 +180,15 @@
 		if(($numero>=0)&&($numero<=9))  $numRecu="0000".$numero."/".substr(date('Y'),2,2);	else if(($numero>=10)&&($numero <=99))	 $numRecu="000".$numero."/".substr(date('Y'),2,2);	else if(($numero>=100)&&($numero<=999))	 $numRecu="00".$numero."/".substr(date('Y'),2,2);	else if(($numero>=1000)&&($numero<=1999)) $numRecu="0".$numero."/".substr(date('Y'),2,2);else $numRecu=$numero."/".substr(date('Y'),2,2);
 		return $numRecu;	
 	}
-	
+	function modePayement($modeReglement){
+		if($modeReglement==1) $mode="Espèce"; 
+		else if($modeReglement==2) $mode="Chèque";
+		else if($modeReglement==3) $mode="Virement"; 
+		else if($modeReglement==4) $mode="Carte Bancaire";
+		else if($modeReglement==5) $mode="Mobile Money";	
+		else if($modeReglement==6) $mode="Autre";
+		return $mode;
+	}
 	//Pour le numero des factures du Resto
 	if(($numFact>=0)&&($numFact<=9))  $numRecu="0000".$numFact."/".substr(date('Y'),2,2);	else if(($numFact>=10)&&($numFact <=99))	 $numRecu="000".$numFact."/".substr(date('Y'),2,2);	else if(($numFact>=100)&&($numFact<=999))	 $numRecu="00".$numFact."/".substr(date('Y'),2,2);	else if(($numFact>=1000)&&($numFact<=1999)) $numRecu="0".$numFact."/".substr(date('Y'),2,2);else $numRecu=$numFact."/".substr(date('Y'),2,2);
 

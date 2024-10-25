@@ -8,12 +8,12 @@
  	$table=(isset($_SESSION['table'])&&(!empty($_SESSION['table']))) ? $_SESSION['table']:0;	
 	$Qte = isset($_GET['Qte'])?$_GET['Qte']:0;   
 	$numero = !empty($_GET['numero'])?$_GET['numero']:0;
-
+	$pId = !empty($_GET['pId'])?$_GET['pId']:0;
 	
 if(($numero>0)&&($Qte>0)){echo "&nbsp;";
-	$rek="SELECT * FROM plat WHERE numero='".$numero."'";
+	$rek="SELECT * FROM plat,portion WHERE portion.numPlat=plat.numero AND numero='".$numero."' AND portion.id='".$pId."'";
 	$query = mysqli_query($con,$rek) or die (mysqli_error($con));$data=mysqli_fetch_assoc($query); $Qte_Stock=$data['NbreJ'];
-	if(!empty($TPS_2)&&($TPS_2==1))  $tva=0 ; else $tva=round($data['prix']/(1+$TvaD)*$TvaD);
+	if(!empty($TPS_2)&&($TPS_2==1))  $tva=0 ; else $tva=round($data['prixPortion']/(1+$TvaD)*$TvaD);
 	
 	if (($Qte>$Qte_Stock)||($Qte_Stock==0))
 	{	echo "<script src='js/sweetalert.min.js'></script>";
@@ -22,7 +22,7 @@ if(($numero>0)&&($Qte>0)){echo "&nbsp;";
 		echo "</script>";
 
 	}else {
-		$rk="SELECT * FROM tableEnCours WHERE LigneCde='".$data['designation']."' AND LigneType='1' AND numTable='".$table."' AND created_at='".$Jour_actuel."' AND Etat <> 'Desactive'";
+		$rk="SELECT * FROM tableEnCours WHERE LigneCde='".$data['libellePortion']."' AND LigneType='1' AND numTable='".$table."' AND created_at='".$Jour_actuel."' AND Etat <> 'Desactive'";
 		$req1 = mysqli_query($con,$rk) or die (mysqli_error($con));
 		if(mysqli_num_rows($req1)>0){
 			$data0=mysqli_fetch_assoc($req1); $Qte0=$Qte+$data0['qte'];
@@ -30,7 +30,20 @@ if(($numero>0)&&($Qte>0)){echo "&nbsp;";
 			$req1 = mysqli_query($con,$pre_sql1) or die (mysqli_error($con));
 		}
 		else {
-			$pre_sql1="INSERT INTO tableEnCours VALUES(NULL,'".$numero."','".$table."','".$data['designation']."','1','','".$data['prix']."','".$Qte."','','','".$Jour_actuel."','".$Heure_actuelle."','".$tva."','')";
+			$pre_sql1="INSERT INTO tableEnCours SET 
+			Num=NULL,
+			Num2='".$numero."',
+			numTable='".$table."',
+			LigneCde='".$data['libellePortion']."',
+			LigneType=1,
+			QteInd='',
+			prix='".$data['prixPortion']."',
+			qte='".$Qte."', 
+			Etat='',
+			serveur=0,
+			created_at='".$Jour_actuel."',
+			updated_at='".$Heure_actuelle."',
+			TVA='".$tva."'";
 			$req1 = mysqli_query($con,$pre_sql1) or die (mysqli_error($con));	
 		}
 
@@ -39,13 +52,13 @@ if(($numero>0)&&($Qte>0)){echo "&nbsp;";
 		$re="INSERT INTO operation VALUES(NULL,'".$ref."','Vente ','".$numero."','".$Qte_Stock."','".$Qte."','".$quantiteF."','".$Jour_actuel."','".$Heure_actuelle."','','".$Qte."')";
 		$req=mysqli_query($con,$re);
 
-		echo $update="UPDATE plat SET NbreC=NbreC+'".$Qte."',Nbre=Nbre-'".$Qte."' WHERE numero='".$_GET['numero']."' AND state=1 ";
-		$Query=mysqli_query($con,$update);
+		$update="UPDATE plat SET NbreC=NbreC+'".$Qte."',Nbre=Nbre-'".$Qte."' WHERE numero='".$_GET['numero']."' AND state=1 ";
+		//$Query=mysqli_query($con,$update);
 		
-  		echo "<script language='javascript'>";
+/*   		echo "<script language='javascript'>";
 		echo "window.close();";
 		echo "window.opener.location.reload();";
-		echo "</script>";   
+		echo "</script>";   */ 
 	}
 }
 
@@ -97,8 +110,8 @@ a.info {
 		<script src="js/sweetalert.min.js"></script>
 
 		<script type="text/javascript" >
-		function JSalertQte(param){
-		swal("QUANTITE DE PLATS ",{
+		function JSalertQte(param,param2){
+		swal("QUANTITE DE PORTIONS DISPONIBLES ",{
 		  content: {
 			element: "input",
 			attributes: {
@@ -110,7 +123,7 @@ a.info {
 		})
 			.then((value) => {
 				//var numero = param; 
-				document.location.href='frameFood.php?Qte='+value+'&numero='+param;
+				document.location.href='framePFood.php?Qte='+value+'&numero='+param+'&pId='+param2;
 			});
 		}
 		</script>
@@ -169,7 +182,7 @@ a.info {
 <form class="ajax" action="" method="get">
 	<p align='center'>
 		 <input style='text-align:center;font-size:1.5em;background-color:#EFFBFF;width:500px;padding:3px;border:1px solid #aaa;-moz-border-radius:7px;-webkit-border-radius:7px;border-radius:7px;height:35px;line-height:22px;' type="text" name="qt" id="qt" 
-		 placeholder="Rechercher parmi la liste des portions du <?php echo $Jour_actuel; ?>"/> 
+		 placeholder="Rechercher parmi la liste des portions du <?php echo substr($Jour_actuel,8,2)."-".substr($Jour_actuel,5,2)."-".substr($Jour_actuel,0,4); ?>"/> 
 	</p>
 </form>
 <!--fin du formulaire-->
@@ -197,7 +210,7 @@ a.info {
 		<tbody id="">
 <?php 
 	mysqli_query($con,"SET NAMES 'utf8'");
-	$req="SELECT * FROM plat,categorieplat,menu,portion WHERE portion.numPlat=plat.numero AND categorieplat.id=plat.categPlat AND menu.id=plat.categMenu ORDER BY NbreJ DESC";
+	$req="SELECT catPlat,designation,libellePortion,Nbre,prixPortion,numero,NbreJ,portion.id AS pId FROM plat,categorieplat,menu,portion WHERE portion.numPlat=plat.numero AND categorieplat.id=plat.categPlat AND menu.id=plat.categMenu ORDER BY NbreJ DESC";
 	$result=mysqli_query($con,$req);
 	$cpteur=1;$i=0;$j=0;
     // parcours et affichage des résultats
@@ -219,10 +232,10 @@ a.info {
 				<td style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'>&nbsp;<?php echo $data->catPlat; ?> </td>
 				<td style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'>&nbsp; <?php echo $data->designation; ?></td>
 				<td align='left'  style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'> <?php echo $data->libellePortion; ?></td>
-								<td align='center'  style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'> <?php echo $data->Nbre; ?></td>
-				<td align='center'  style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'> <?php echo $data->prix; ?></td>				
+				<td align='center'  style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'> <?php echo $data->Nbre; ?></td>
+				<td align='center'  style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'> <?php echo $data->prixPortion; ?></td>				
 				<td align='center'  style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'> 
-				<a class='info' onclick='JSalertQte(<?php echo $data->numero ?>);return false;' 
+				<a class='info' onclick='JSalertQte(<?php echo $data->numero.",".$data->pId ?>);return false;' 
 				<?php
 				if($data->NbreJ>0)
 					echo "style='color:".$color.";'><img src='logo/".$plus.".png' alt='' width='25' height='25' border='0'/><span style='color:#FC7F3C;'>Ajouter</span></a>";

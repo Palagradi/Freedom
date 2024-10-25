@@ -81,6 +81,11 @@
 								 array_push($productlist,$List);
 								 //echo "<br/>".var_dump($List);
 						  }
+
+						    
+							//$reqsel0=mysqli_query($con,"SELECT serveur.id as serveurId FROM RTables,serveur WHERE serveur.id=RTables.serveur AND nomTable='".$table."' AND RTables.status=0");
+							//$data0=mysqli_fetch_object($reqsel0);$serveurId=(isset($data0->serveurId)&&(!empty($data0->serveurId)))?$data0->serveurId:0;							
+							
 						    $Query="UPDATE tableEnCours SET Etat='Desactive',num_facture = '".trim($numFact)."' WHERE numTable = '".$table."' AND Etat = '' AND created_at='".$Jour_actuel."'";
 							$exec=mysqli_query($con,$Query); $_SESSION['numFact'] = trim($numFact);
 
@@ -96,7 +101,8 @@
 							 $jsonData = formatData($userId,$userName,$customerIFU,$customerName,$Aib_duclient,$productlist,$totalAmount,$totalpayee);
 						 	 push($jsonData);
 
-						  //echo '<meta http-equiv="refresh" content="25; url=servir.php?menuParent='.$_SESSION['menuParenT'].'" />';
+						    //echo '<meta http-equiv="refresh" content="0; url=servir.php?menuParent='.$_SESSION['menuParenT'].'" />';
+							
 
 						 }
 					}
@@ -147,36 +153,71 @@
 					}
 
 					}
-			}
+			}		
 			$tab=2;
-
 ?>			<table class='rouge1' style='width:500px;border:3px solid maroon;background-color:#F4FEFE;font-family:Calibri;font-size:1em;'>
 				<tr>
 					<td  colspan='1' style='font-weight:bold;font-size:1.1em;color:#FF0000;font-style:italic;font-family: Georgia;'>  <?php if(!empty($table)) { $_SESSION['tableS']=$table ;echo  "Table : " .$table." / ".$cv." CV" ; }if(empty($table)) echo "Commande en cours ...";
 					
 					?>
-					</td><td colspan='2' align='center'><?php echo "<span style='color:gray;font-weight:normal;font-style:normal;font-size:0.8em;'>".$Date_actuel2." ".$Heureactuelle;?></td>
+					</td><td colspan='2' align='center'><?php echo "<span style='color:gray;font-weight:normal;font-style:normal;font-size:0.8em;'>".$Date_actuel2." | ".$Heureactuelle;?></td>
 					<td colspan='1' align='right'>
-					<a class='info' href='#' style='' onclick='edition7();return false;'>
-					<span style='font-size:0.9em;font-style:normal;color:teal;'><?php  $query=mysqli_query($con,"SELECT Serveurassoc FROM tableenCours WHERE numTable='".$table."' AND created_at='".$Jour_actuel."' AND Etat<> 'Desactive'"); $data=mysqli_fetch_assoc($query); if(!empty($data['Serveurassoc'])) echo "Serveur(se) : ".$data['Serveurassoc']; else echo "Affecter un(e) serveur(se)"; ?></span>	 <i class='fas fa-plus-square' aria-hidden='true' style='font-size:140%;color:teal;'></i></a>
+					
+					<a class='info2' href='#' onclick='findServ(<?php echo $table; echo ",0";echo ",1";?>);return false;' style='font-size:0.9em;font-style:normal;color:teal;'>
+					<span style='font-size:1em;font-style:normal;color:teal;'>
+					<?php  								
+					$query=mysqli_query($con,"SELECT nomserv,prenoms FROM tableenCours,serveur WHERE serveur.id=tableenCours.serveur AND  numTable='".$table."' AND created_at='".$Jour_actuel."' AND Etat<> 'Desactive'"); 
+					$data=mysqli_fetch_assoc($query); if(!empty($data['nomserv'])) { echo "Serveur(se) <span style='color:red;'>";
+					echo $data['nomserv']." ".$data['prenoms']; 
+					echo "</span>";
+					}
+					else echo "Affecter un(e) serveur(se)"; ?>&nbsp;</span>
+					<i class='fas fa-plus-square' aria-hidden='true' style='font-size:140%;color:teal;'></i>
+				</a>
 
 					&nbsp;&nbsp;
 					 <input type='hidden'	name='NameTable' id='NameTable' value='<?php echo $table; ?>'/> <input type='hidden'	name='cv' id='cv' value='<?php echo $cv; ?>'/>
-					<a class='info2' href='#' style='' onclick='JSalert();return false;'>
+					<a class='info2' href='#' style='' onclick='CheckClient();return false;'>
 					<span style='font-size:0.9em;font-style:normal;color:black;'>
 					<?php
-					if(isset($_GET['table'])&&($table==$_GET['table']) && isset($_GET['clt'])) //{
-						//$tableau = array($table => $_GET['clt']); echo $tableau[$table];  $_SESSION[$table]=$_GET['clt']; }
-					//else if(isset($_SESSION[$table])) echo $_SESSION[$table];
-						echo $_GET['clt'];
+					if(isset($_GET['table'])&&($table==$_GET['table']) && isset($_GET['client'])) {
+					$client = explode("(",$_GET['client']);echo $client[0];			
+					}else if(mysqli_num_rows($reqselRTables)>0)
+					{    $table=(int)($table);
+						$Query="SELECT clientresto.entrepriseName,nomclt,prenomclt FROM tableEnCours,clientresto WHERE clientresto.id=tableEnCours.client AND numTable='".$table."' AND created_at='".$Jour_actuel."' AND Etat<> 'Desactive'";
+						$exec=mysqli_query($con,$Query);
+						 $data=mysqli_fetch_object($exec);
+						if(mysqli_num_rows($exec)>0){	echo "Client<span style='color:red;'>";					 
+						echo !empty($data->entrepriseName)?$data->entrepriseName:$data->nomclt." ".$data->prenomclt; echo "</span>";
+						}else echo "Nom du client";
+					}
 					else
 						echo "Nom du client";
 					?></span>
 					<i class='fas fa-plus-square' aria-hidden='true' style='font-size:140%;color:#FEBE89;'></i>
 					</a>
 					&nbsp;&nbsp;
-					<a class='info2' href='#' style='' onclick='edition7();return false;'>
-					<span style='font-size:0.9em;font-style:normal;color:red;'><?php  $query=mysqli_query($con,"SELECT Serveurassoc FROM tableenCours WHERE numTable='".$table."' AND created_at='".$Jour_actuel."' AND Etat<> 'Desactive'"); $data=mysqli_fetch_assoc($query); if(!empty($data['Serveurassoc'])) echo "Serveur(se) : ".$data['Serveurassoc']; else echo "Mode de règlement"; ?></span>	 <i class='fas fa-plus-square' aria-hidden='true' style='font-size:140%;color:red;'></i></a>
+					<a class='info2' href='#' style='' onclick='JSalert2();return false;'>
+					<span style='font-size:0.9em;font-style:normal;color:black;'>
+					<?php
+					if(isset($_GET['table'])&&($table==$_GET['table']) 
+						&&(isset($mode)&&(!empty($mode))&&(!is_null($mode))&&($mode!='null'))
+					) {				
+						echo "Mode de règlement <span style='color:red;'>"; echo modePayement($_GET['mode']); echo "</span>";
+					}else if(mysqli_num_rows($reqselRTables)>0){
+						 $table=(int)($table);
+						$Query="SELECT modeReglement FROM tableEnCours WHERE numTable='".$table."' AND created_at='".$Jour_actuel."' AND Etat<> 'Desactive'";
+						$exec=mysqli_query($con,$Query);
+						 $data=mysqli_fetch_object($exec);
+						if(mysqli_num_rows($exec)>0){						 
+						$modeReglement=($data->modeReglement>0)?$data->modeReglement:1;
+						//$mode=modePayement($modeReglement);
+						echo "Mode de règlement <span style='color:red;'>"; echo modePayement($modeReglement); echo "</span>";
+						}					
+					}else {
+						echo "Mode de règlement";
+					}
+					?></span>	 <i class='fas fa-plus-square' aria-hidden='true' style='font-size:140%;color:red;'></i></a>
 					&nbsp;</td>
 				</tr>
 				<tr style='background-color:#DCDCDC;font-weight:bold;'>
@@ -195,8 +236,11 @@
 					$mt=$data1['qte']*$data1['prix'];$total+=$mt;$Nbre++;
 					echo "<tr style='background-color:#C3D9E0;'>
 							<td style='padding-left:5px;border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'>";   if(isset($del)) echo "<input type='checkbox' name='choix[]' value='".$data1['Num']."'> ";
-							   echo ucfirst($data1['LigneCde'])." ".$data1['QteInd']."
-							</td>
+							   echo "<span>".ucfirst($data1['LigneCde'])." ".$data1['QteInd']."</span>";							   
+							    $sqlP = "SELECT * FROM portion WHERE libellePortion='".$data1['LigneCde']."'";$reqselP=mysqli_query($con,$sqlP);
+								if(mysqli_num_rows($reqselP)>0)			  
+							   echo "<span style='float:right;font-size:0.9em;'>P</span>";
+							echo "</td>
 							<td  style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff;padding-right:10px;' align='right'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;".$data1['prix']."</td>
 							<td  style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff' align='center'>".$data1['qte'];
 						//echo "<input type='number' name='' min='1' value='1' style='width:50px;background-color:#C3D9E0;text-align:center;'>";

@@ -1,8 +1,8 @@
 [type="checkbox"]:not(:checked),
-		[type="checkbox"]:checked {
-		  position: absolute;
-		  left: -9999px;
-		}
+[type="checkbox"]:checked {
+  position: absolute;
+  left: -9999px;
+}
 		 
 [type="checkbox"]:not(:checked) + label,
 [type="checkbox"]:checked + label {
@@ -11,7 +11,7 @@
   cursor: pointer;    
 }
 		
-		[type="checkbox"]:not(:checked) + label:before,
+[type="checkbox"]:not(:checked) + label:before,
 [type="checkbox"]:checked + label:before {
   content: '';
   position: absolute;

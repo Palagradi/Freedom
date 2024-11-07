@@ -3,8 +3,10 @@
 		
 		$agent=!empty($_GET['agent'])?$_GET['agent']:NULL; 	
 		$trie=!empty($_GET['trie'])?$_GET['trie']:NULL;$debut=!empty($_GET['debut'])?$_GET['debut']:NULL;$fin=!empty($_GET['fin'])?$_GET['fin']:NULL;
-		$debut=substr($debut,6,4).'-'.substr($debut,3,2).'-'.substr($debut,0,2); $fin=substr($fin,6,4).'-'.substr($fin,3,2).'-'.substr($fin,0,2);
-		$debutA=substr($debut,6,4).'-'.substr($debut,3,2).'-'.substr($debut,0,2);$finA=substr($fin,6,4).'-'.substr($fin,3,2).'-'.substr($fin,0,2);
+		$debut=!empty($debut)?substr($debut,6,4).'-'.substr($debut,3,2).'-'.substr($debut,0,2):NULL;
+		$fin=!empty($fin)?substr($fin,6,4).'-'.substr($fin,3,2).'-'.substr($fin,0,2):NULL;
+		$debutA=!empty($debut)?substr($debut,6,4).'-'.substr($debut,3,2).'-'.substr($debut,0,2):NULL;
+		$finA=!empty($fin)?substr($fin,6,4).'-'.substr($fin,3,2).'-'.substr($fin,0,2):NULL;
 		//$update=mysqli_query($con,"UPDATE factureResto SET objet='Hébergement' WHERE objet='Hebergement'");
 		//$update=mysqli_query($con,"UPDATE encaissement SET tarif=6355.9323 WHERE Type_encaisse='Facture de groupe' and ttc_fixe=9500");
 		$delete=mysqli_query($con,"DELETE FROM encaissement  WHERE np=0");
@@ -17,6 +19,8 @@
 ?>
 <html>
 	<head> 
+		<link rel="Stylesheet" href='css/table.css' />
+		<link rel="Stylesheet" type="text/css"  href='css/input.css'/>
 		<script type="text/javascript" src="js/date-picker.js"></script>
 		<script type="text/javascript" src="js/fonctions_utiles.js"></script>
 		<script type="text/javascript">		
@@ -47,17 +51,18 @@
 	<body bgcolor='azure' style="">
 	<div align="" style="">
 		<form  action='pVente.php?menuParent=<?php echo $_SESSION['menuParenT']; ?>&p=1' method='post' name='pVente'>
-			<center> <font color='green' size='7' > <?php  if(isset($_GET['p'])) $recette= "RECETTE PERIODIQUE"; else $recette="RECETTE JOURNALIERE";
-			if (isset($_POST['ok'])&& $_POST['ok']=='OK') 
+			<center> <font color='green' size='7' > <?php  
+			//if(isset($_GET['p'])) $recette= "RECETTE PERIODIQUE"; else $recette="RECETTE JOURNALIERE";
+/* 			if (isset($_POST['ok'])&& $_POST['ok']=='OK') 
 			{$debut=substr($_POST['debut'],6,4).'-'.substr($_POST['debut'],3,2).'-'.substr($_POST['debut'],0,2);
 			$fin=substr($_POST['fin'],6,4).'-'.substr($_POST['fin'],3,2).'-'.substr($_POST['fin'],0,2);
 			$debutA=substr($_POST['debut'],0,2).'-'.substr($_POST['debut'],3,2).'-'.substr($_POST['debut'],6,4);
 			$finA=substr($_POST['fin'],0,2).'-'.substr($_POST['fin'],3,2).'-'.substr($_POST['fin'],6,4); $debuT=$_POST['debut'];  $fiN=$_POST['fin']; 
 				if(empty($_POST['agent']))
-				{$ref=mysqli_query($con,"SELECT somme_paye FROM factureResto WHERE date_emission>='".$debuT."' and date_emission<='".$fiN."' ORDER BY date_emission");
+				{$ref=mysqli_query($con,"SELECT somme_paye FROM factureResto WHERE date_emission>='".$debuT."' and date_emission<='".$fiN."' ORDER BY id DESC");
 				}
 				else	
-				{$ref=mysqli_query($con,"SELECT somme_paye FROM factureResto WHERE  date_emission>='".$debuT."' and date_emission<='".$fiN."' AND receptionniste='".$_SESSION['login']."' ORDER BY date_emission");
+				{$ref=mysqli_query($con,"SELECT somme_paye FROM factureResto WHERE  date_emission>='".$debuT."' and date_emission<='".$fiN."' AND login='".$_SESSION['login']."' ORDER BY id DESC");
 				}
 		$montant0=0;$i=1; $cpteur=1;$montant=0;
 		while ($rerf=mysqli_fetch_array($ref))
@@ -65,21 +70,34 @@
 			$montant=$montant+$montant0;
 				
 		}
-			}
+			} */
 			?>
 			</font> </center>
-			<center>  
-			<table align='center' width='800'>
-				<tr>
-				<td colspan='6'>
-					<hr noshade size=3> <div align="left"><B>
+			<center>
+
+		<table align='center' width='90%'>
+			<tr>
+			<td style='text-align:left;'>
+
+				<h2 style='font-family:Cambria;color:maroon;font-weight:bold;'>RECETTE JOURNALIERE - REIMPRESSION DE FACTURES</h2>				
+				<form action="" method="POST" id="chgdept" style='float:right;'>
+					<span style='float:right; margin-right:25px;'>
+					<input type='checkbox' <?php if(isset($pvc)&&($pvc==2)) echo "checked='checked'"; ?> name='checkpvc' id='button_checkbox2' onchange="document.forms['chgdept'].submit();" <?php if(isset($pvc)&&($pvc==2)) echo "value='2'"; else echo "value='1'"; ?> >
+					<label for='button_checkbox2' style='color:#444739;'>
+					<?php echo "FACTURE"; ?> </label></span>
 					
-					<?php 
-					echo "<span style='font-style:italic;font-size:0.8em;'>";
+						<span style='float:right; margin-right:25px;'>
+					<input type='checkbox' name='duplicata' id='button_checkbox1'  >
+					<label for='button_checkbox1' style='color:#444739;'>
+					<?php echo "DUPLICATA"; ?> </label></span>
+					
+				</form>	
+								<?php 
+					echo "<div style='font-style:italic;font-size:0.8em;'>";
 					$mt=0; 	$i=1; $cpteur=1;
 					if(isset($agent))
 					{
-					$res=mysqli_query($con,"SELECT somme_paye FROM factureResto WHERE  date_emission='".date('Y-m-d')."'  AND receptionniste='".$_SESSION['login']."' ");
+					$res=mysqli_query($con,"SELECT somme_paye FROM factureResto WHERE  date_emission='".date('Y-m-d')."'  AND login='".$_SESSION['login']."' ");
 					//$res=mysqli_query($con,"SELECT * FROM encaissement WHERE datencaiss='".date('Y-m-d')."' and agenten='".$_SESSION['login']."'"); 
 					while ($ret=mysqli_fetch_array($res)) 
 						{			//$mt=$mt+$ret['ttc_fixe']*$ret['np'].''; 
@@ -100,26 +118,28 @@
 						{echo'<span style="color:#444739;"> <br/>'; echo '
 						<B> TOTAL: &nbsp;</b>'.$montant." ".$devise.'';
 						}
-						echo "</span>";
-					echo "<FONT SIZE=6 COLOR='Maroon'> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;".$recette."</FONT>&nbsp;&nbsp;&nbsp;<span style='color:#444739;font-style:italic;'>"; 
+						echo "</span>"; $recette=isset($recette)?$recette:0;
+					echo "<FONT SIZE=6 COLOR='Maroon'> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</FONT>&nbsp;&nbsp;&nbsp;<span style='color:#444739;font-style:italic;'>"; 
 					
 					//echo "<span style='font-style:italic;font-size:0.8em;'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Date:". date('d-m-Y')."</span>"; 
-					if(isset($debuT))
-						echo "(Du&nbsp;".substr($debut,6,4).'-'.substr($debut,3,2).'-'.substr($debut,0,2)." au&nbsp;".substr($fin,6,4).'-'.substr($fin,3,2).'-'.substr($fin,0,2).")";
-					else 
-						echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Date:&nbsp;". date('d-m-Y').""; 
-					?></span>
-					<FONT SIZE=4 COLOR="0000FF"> </FONT> </div> <hr noshade size=3>
-				</td>
-				</tr>
-
+					//if(isset($debuT))
+						//echo "(Du&nbsp;".substr($debut,6,4).'-'.substr($debut,3,2).'-'.substr($debut,0,2)." au&nbsp;".substr($fin,6,4).'-'.substr($fin,3,2).'-'.substr($fin,0,2).")";
+					//else 
+						//echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Date:&nbsp;". date('d-m-Y').""; 
+					?></div>
+					
+			</td>
+			</tr>
+			<tr>
+				<td style='text-align:left;'><hr style=''/>	</td>
+			</tr>
 		</table>
 
 		
-		<table align="center" width="800" border="0" cellspacing="0" style="margin-top:0px;border-collapse: collapse;font-family:Cambria;">
+		<table align="center" width="90%" border="0" cellspacing="0" style="margin-top:0px;border-collapse: collapse;font-family:Cambria;">
 		<?php
 			if(isset($_GET['p'])){ 
-				echo "	<td colspan='6' style='font-style:italic;'> 
+				echo "	<td colspan='8' style='font-style:italic;'> 
 				<table align='center'>
 				<td><br/><b>Période du:&nbsp;&nbsp; </b></td>
 				<td>
@@ -138,9 +158,9 @@
 					<td>&nbsp;</td>
 				</tr>
 			</table></td> ";	
-				}else echo "&nbsp;<br/>";
+				} //else echo "&nbsp;<br/>";
 				
-			if(isset($_GET['p'])) echo "<tr><td colspan='6'><hr noshade size=3></td></tr>";
+			if(isset($_GET['p'])) echo "<tr><td colspan='8'><hr noshade size=3></td></tr>";
 			
 			
 			//if(isset($_POST['debut'])) $debuT=$_POST['debut'];else $debuT=substr($_GET['debut'],8,2).'-'.substr($_GET['debut'],5,2).'-'.substr($_GET['debut'],0,4); 
@@ -157,15 +177,15 @@
 				$trie=!empty($_GET['trie'])?$_GET['trie']:NULL;
 						if(empty($agent))
 						{//mysqli_query($con,"SET NAMES 'utf8' ");
-							$ref=mysqli_query($con,"SELECT * FROM factureResto WHERE date_emission>='".$debuT."' and date_emission<='".$fiN."' ORDER BY date_emission");
+							$ref=mysqli_query($con,"SELECT * FROM factureResto WHERE date_emission>='".$debuT."' and date_emission<='".$fiN."' ORDER BY id DESC");
 							$ref3=mysqli_query($con,"SELECT SUM(Remise) AS Remise FROM factureResto WHERE  date_emission>='".$debuT."' and date_emission<='".$fiN."' ");
 							$data=mysqli_fetch_assoc($ref3);$remise=$data['Remise'];
 						//$ref=mysqli_query($con,"SELECT * FROM encaissement WHERE datencaiss>='".$debut."' and datencaiss<='".$fin."' ORDER BY datencaiss"); 
 						}
 						else	
 						{//mysqli_query($con,"SET NAMES 'utf8' ");
-						$ref=mysqli_query($con,"SELECT * FROM factureResto WHERE  date_emission>='".$debuT."' and date_emission<='".$fiN."' AND receptionniste='".$_SESSION['login']."' ORDER BY date_emission");
-						$ref3=mysqli_query($con,"SELECT SUM(Remise) AS Remise FROM factureResto WHERE  date_emission>='".$debuT."' and date_emission<='".$fiN."' AND receptionniste='".$_SESSION['login']."' ");
+						$ref=mysqli_query($con,"SELECT * FROM factureResto WHERE  date_emission>='".$debuT."' and date_emission<='".$fiN."' AND login='".$_SESSION['login']."' ORDER BY id DESC");
+						$ref3=mysqli_query($con,"SELECT SUM(Remise) AS Remise FROM factureResto WHERE  date_emission>='".$debuT."' and date_emission<='".$fiN."' AND login='".$_SESSION['login']."' ");
 						$data=mysqli_fetch_assoc($ref3);$remise=$data['Remise'];
 						//$ref=mysqli_query($con,"SELECT * FROM encaissement WHERE datencaiss>='".$debut."' and datencaiss<='".$fin."' and agenten='".$_SESSION['login']."' ORDER BY datencaiss");	
 						}
@@ -173,7 +193,7 @@
 				$montant=0;
 		}
 		 else
-			 {mysqli_query($con,"SET NAMES 'utf8'");	$date=date('Y-m-d');
+			 {mysqli_query($con,"SET NAMES 'utf8'");	$date=$Jour_actuel;
 				if(empty($agent))
 			{//mysqli_query($con,"SET NAMES 'utf8' ");
 			//$ref=mysqli_query($con,"SELECT * FROM encaissement WHERE datencaiss LIKE '$date' ORDER BY datencaiss"); 
@@ -197,28 +217,46 @@
 			//echo 12;
 			//$ref=mysqli_query($con,"SELECT * FROM encaissement WHERE datencaiss LIKE '$date' AND agenten='".$_SESSION['login']."' ORDER BY datencaiss");
 			if(!empty($trie)&&(empty($debut))){ //echo 1;
-				$ref=mysqli_query($con,"SELECT * FROM factureResto WHERE date_emission LIKE '$date' AND receptionniste='".$_SESSION['login']."' ORDER BY $trie ASC");
-				$ref3=mysqli_query($con,"SELECT SUM(Remise) AS Remise FROM factureResto WHERE  date_emission LIKE '$date' AND receptionniste='".$_SESSION['login']."'");		
+				$ref=mysqli_query($con,"SELECT * FROM factureResto WHERE date_emission LIKE '$date' AND login='".$_SESSION['login']."' ORDER BY $trie ASC");
+				$ref3=mysqli_query($con,"SELECT SUM(Remise) AS Remise FROM factureResto WHERE  date_emission LIKE '$date' AND login='".$_SESSION['login']."'");		
 			}else if(!empty($trie)&&(!empty($debut))){
-				$ref=mysqli_query($con,"SELECT * FROM factureResto WHERE date_emission>='".$debut."' and date_emission<='".$fin."' AND receptionniste='".$_SESSION['login']."' ORDER BY $trie ASC");
-				$ref3=mysqli_query($con,"SELECT SUM(Remise) AS Remise FROM factureResto WHERE  date_emission>='".$debut."' and date_emission<='".$fin."' AND receptionniste='".$_SESSION['login']."' ");
+				$ref=mysqli_query($con,"SELECT * FROM factureResto WHERE date_emission>='".$debut."' and date_emission<='".$fin."' AND login='".$_SESSION['login']."' ORDER BY $trie ASC");
+				$ref3=mysqli_query($con,"SELECT SUM(Remise) AS Remise FROM factureResto WHERE  date_emission>='".$debut."' and date_emission<='".$fin."' AND login='".$_SESSION['login']."' ");
 				}else{
-				$ref=mysqli_query($con,"SELECT * FROM factureResto WHERE date_emission LIKE '$date' AND receptionniste='".$_SESSION['login']."' ORDER BY date_emission");	
-				$ref3=mysqli_query($con,"SELECT SUM(Remise) AS Remise FROM factureResto WHERE date_emission LIKE '$date' AND receptionniste='".$_SESSION['login']."' ORDER BY date_emission");
+				$ref=mysqli_query($con,"SELECT * FROM factureResto WHERE date_emission LIKE '$date' AND login='".$_SESSION['login']."' ORDER BY id DESC");	
+				$ref3=mysqli_query($con,"SELECT SUM(Remise) AS Remise FROM factureResto WHERE date_emission LIKE '$date' AND login='".$_SESSION['login']."' ORDER BY id DESC");
 				}
 			$data=mysqli_fetch_assoc($ref3);$remise=$data['Remise'];
 			}
 			}
 		?>
-					<tr style="background-color:#3EB27B;color:white;font-size:1.2em; padding-bottom:5px;">
+		
+		<tr> 
+			<td colspan='4' align='left' style='color:gray;'> 
+			<?php
+				if(isset($debuT)&&(isset($debut))&&(isset($fin)))
+				echo "(Du&nbsp;".substr($debut,6,4).'-'.substr($debut,3,2).'-'.substr($debut,0,2)." au&nbsp;".substr($fin,6,4).'-'.substr($fin,3,2).'-'.substr($fin,0,2).")";
+			?>	
+			</td>
+			<td colspan='5' align='right' style='color:gray;'> <b>Pour réimprimer la recette d'une période donnée,
+			<a class='' href='pVente.php?menuParent=<?php echo $_SESSION['menuParenT']."&p=1";//if(isset($agent)) echo "&agent=1"; ?>' style='text-decoration:none;'> Cliquez ici</a>
+			</b>
+			</td> 
+		</tr>
+		<tr> 
+			<td colspan='9' align='right' style='color:#444739;'> &nbsp;</td> 
+		</tr>
+				 <tr style='background-color:#DCDCDC;border:0px solid gray;font-weight:bold;'>
 					<!--<tr style='background-color:#EEEE99;'> -->
 							<td WIDTH='' align='center'>N° </td> 
 							<td WIDTH='' align='center'>Date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td> 
 							<td WIDTH='' align='center'>Heure&nbsp;&nbsp;&nbsp;</td> 
 							<td WIDTH='' align='center'>Réf. Facture</td> 
-							<td WIDTH='' align='center' ><a class='info' style='color:white;' href="pVente.php?menuParent=<?php echo $_SESSION['menuParenT']; if(!empty($agent)) echo "&agent=1&p=1";  echo "&trie=somme_paye&debut=".$debuT."&fin=".$fiN; ?>">Montant<span style='font-size:0.8em;'>Trier suivant le montant</span></a></td> 
-							<td WIDTH='' align='center'><a class='info' style='color:white;' href="pVente.php?menuParent=<?php echo $_SESSION['menuParenT']; if(!empty($agent)) echo "&agent=1&p=1";  echo "&trie=numTable&debut=".$debuT."&fin=".$fiN; ?>"><span style='font-size:0.8em;'>Trier suivant les tables</span>Table occupée</a></td>
-							<td WIDTH='' align='center'><a class='info' style='color:white;' href="pVente.php?menuParent=<?php echo $_SESSION['menuParenT']; if(!empty($agent)) echo "&agent=1&p=1";  echo "&trie=objet&debut=".$debuT."&fin=".$fiN; ?>"><span style='font-size:0.8em;'></span></a></td>							
+							<td WIDTH='' align='left'>Client</td> 
+							<td WIDTH='' align='left'>Vendeur(se)</td>
+							<td WIDTH='' align='right' ><a class='info' style='' href="pVente.php?menuParent=<?php echo $_SESSION['menuParenT']; if(!empty($agent)) echo "&agent=1&p=1";  echo "&trie=somme_paye&debut=".$debuT."&fin=".$fiN; ?>">Montant<span style='font-size:0.8em;'>Trier suivant le montant</span></a></td> 
+							<td WIDTH='' align='center'><a class='info' style='' href="pVente.php?menuParent=<?php echo $_SESSION['menuParenT']; if(!empty($agent)) echo "&agent=1&p=1";  echo "&trie=numTable&debut=".$debuT."&fin=".$fiN; ?>"><span style='font-size:0.8em;'>Trier suivant les tables</span>Table occupée</a></td>
+							<td WIDTH='' align='center'>Actions</td>							
 				   </tr>
 				   <?php //echo "Récapitulatif des recttes ";?> <?php 
 
@@ -230,35 +268,56 @@
 		{ 	if($cpteur == 1)
 			{
 				$cpteur = 0;
-				$bgcouleur = "#acbfc5";
+				$bgcouleur = "white";$color = "#FC7F3C";
 			}
 			else
 			{
 				$cpteur = 1;
-				$bgcouleur = "#dfeef3";
+				$bgcouleur = "#dfeef3";$color = "red"; 
 			}
-			$NomClient=addslashes($rerf['NomClient']);				
+			//$NomClient=addslashes($rerf['NomClient']);				
 			//if(!empty($NomClient))
 			//	$ref2=mysqli_query($con,"SELECT codegrpe FROM groupe WHERE codegrpe='".$NomClient."'");
 			//$nbreResult=mysqli_num_rows($ref2);
 			//if($nbreResult>0)  $type="Facture de groupe";  else 
 			//if($rerf['Type']==3) $type="Restauration" ; else if($rerf['Type']==2) $type="Repas" ; else $type="Boisson" ;
 			$i=$rerf['numTable'];if($i<10) $ii="0".$i; else $ii=$i;
-			if($ii==0) $type="Takeaway" ; else $type="@ Table N° : ".$ii ; ;
-			$nbre=$rerf['num_facture'];
-				if(($nbre>=0)&&($nbre<=9)) $nbre="0000".$nbre ; else if(($nbre>=10)&&($nbre <=99)) $nbre="000".$nbre ;else $nbre="00".$nbre ;
+			if($ii==0) $type="-" ; else $type=$ii ; 
+			//$nbre=$rerf['num_facture'];
+			//	if(($nbre>=0)&&($nbre<=9)) $nbre="0000".$nbre ; else if(($nbre>=10)&&($nbre <=99)) $nbre="000".$nbre ;else $nbre="00".$nbre ;
 				echo"<tr class='rouge1' bgcolor='".$bgcouleur."'> "; 	$j++;
 					echo"<td align='center'> ";echo $j;echo".</td> ";					
 					echo"<td align='center'> "; echo substr($rerf['date_emission'],8,2).'-'.substr($rerf['date_emission'],5,2).'-'.substr($rerf['date_emission'],0,4);echo"</td> ";
 					echo"<td align='center'> ";echo ucfirst($rerf['heure_emission']);echo"</td> ";
-					echo"<td align='center'> ";echo $nbre;echo"</td> ";
-					echo"<td align='center'> ";echo $rerf['somme_paye'];echo"</td> ";
+					echo"<td align='center'> ";echo $rerf['num_facture'];echo"</td> ";	
+
+					$req="SELECT client FROM tableEnCours WHERE num_facture='".$rerf['num_facture']."'";
+					$reqsel2=mysqli_query($con,$req);
+					$rerfx=mysqli_fetch_object($reqsel2);	
+					$client=$rerfx->client; 			
+					if($client>0){
+						$reqx="SELECT * FROM clientresto WHERE id='".$client."' ";
+						$reqselRTablesx=mysqli_query($con,$reqx);
+						$datax=mysqli_fetch_object($reqselRTablesx);
+						$numIFU="<u>IFU</u> : ".$datax->numIFU;
+					if(!empty($datax->entrepriseName))
+						$NomClient=$datax->entrepriseName;
+					else 
+						$NomClient=$datax->nomclt." ".$datax->prenomclt;
+					}
+					else {
+					$NomClient="-";		
+					}
+					echo"<td align='left'> "; echo $NomClient; echo"</td> ";
+					echo"<td align='left'> ";if($rerf['numTable']==0) echo $rerf['seller']; echo"</td> ";
+					echo"<td align='right'> ";echo $rerf['somme_paye'];echo"</td> ";
 					echo"<td align='center'> ";echo $type;echo"</td> ";	
-					echo"<td align='center'>  ";?>	
+					echo"<td align='center'> 
 					
-					<a class='info' href='' onclick="open('receipt2.php?num_facture=<?php echo $rerf['num_facture']; ?>', 'Popup', 'scrollbars=1,resizable=1,height=560,width=770'); return false;" style='color:#FF00FF;' > <img src='logo/Print.png' alt='' title='' width='16' height='16' border='0'> <span style='font-size:0.8em;'>Réimprimer la facture</span></a>
+					<a class='info' href=''  style='color:#FF00FF;' > <img src='logo/Print.png' alt='' title='' width='16' height='16' border='0'> <span style='font-size:0.8em;'>Réimprimer la facture</span></a>
 					
-					<?php echo "</td> ";	
+					</td> ";
+					
 				echo "</tr>"; 
 			$montant0=$rerf['somme_paye'];
 			//$montant=$montant+$montant0;
@@ -274,12 +333,7 @@
 		echo"</tr>
 		</table>"; */
 	?>
-		<tr> 
-			<td colspan='6' align='right' style='color:#444739;'> <br/> <b>Pour réimprimer toute la recette d'une période donnée,
-			<a class='' href='pVente.php?menuParent=<?php echo $_SESSION['menuParenT']."&p=1";//if(isset($agent)) echo "&agent=1"; ?>' style='text-decoration:none;'> Cliquez ici</a>
-			</b>
-			</td> 
-		</tr>
+
 	</table>
 	</div>	
 </body>	

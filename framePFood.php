@@ -1,18 +1,20 @@
 <?php
 	require("config.php");
-
-	//$fd=!empty($_GET['fd'])?$_GET['fd']:NULL; $fk=!empty($_GET['fk'])?$_GET['fk']:NULL; $prix = !empty($_GET['prix'])?$_GET['prix']:NULL;
-	//$_SESSION['origin']="drink";
-	//$cv=(isset($_SESSION['cv'])&&(!empty($_SESSION['cv']))) ? $_SESSION['cv']:1;
 	
  	$table=(isset($_SESSION['table'])&&(!empty($_SESSION['table']))) ? $_SESSION['table']:0;	
 	$Qte = isset($_GET['Qte'])?$_GET['Qte']:0;   
 	$numero = !empty($_GET['numero'])?$_GET['numero']:0;
 	$pId = !empty($_GET['pId'])?$_GET['pId']:0;
 	
+	if(!is_int($table)){
+		$reqTable=mysqli_query($con,"SELECT nomTable FROM RTables WHERE (RealNameTable='".$table."' OR nomTable='".$table."')"); $j=0;
+		$dataT=mysqli_fetch_object($reqTable);
+		$table=$dataT->nomTable ;	
+	}
+	
 if(($numero>0)&&($Qte>0)){echo "&nbsp;";
 	$rek="SELECT * FROM plat,portion WHERE portion.numPlat=plat.numero AND numero='".$numero."' AND portion.id='".$pId."'";
-	$query = mysqli_query($con,$rek) or die (mysqli_error($con));$data=mysqli_fetch_assoc($query); $Qte_Stock=$data['NbreJ'];
+	$query = mysqli_query($con,$rek) or die (mysqli_error($con));$data=mysqli_fetch_assoc($query); $Qte_Stock=$data['Nbrep'];
 	if(!empty($TPS_2)&&($TPS_2==1))  $tva=0 ; else $tva=round($data['prixPortion']/(1+$TvaD)*$TvaD);
 	
 	if (($Qte>$Qte_Stock)||($Qte_Stock==0))
@@ -52,13 +54,13 @@ if(($numero>0)&&($Qte>0)){echo "&nbsp;";
 		$re="INSERT INTO operation VALUES(NULL,'".$ref."','Vente ','".$numero."','".$Qte_Stock."','".$Qte."','".$quantiteF."','".$Jour_actuel."','".$Heure_actuelle."','','".$Qte."')";
 		$req=mysqli_query($con,$re);
 
-		$update="UPDATE plat SET NbreC=NbreC+'".$Qte."',Nbre=Nbre-'".$Qte."' WHERE numero='".$_GET['numero']."' AND state=1 ";
-		//$Query=mysqli_query($con,$update);
+		$update="UPDATE portion SET Nbrep=Nbrep-'".$Qte."' WHERE id='".$pId."' ";
+		$Query=mysqli_query($con,$update);
 		
-/*   		echo "<script language='javascript'>";
+   		echo "<script language='javascript'>";
 		echo "window.close();";
 		echo "window.opener.location.reload();";
-		echo "</script>";   */ 
+		echo "</script>";   
 	}
 }
 
@@ -146,7 +148,7 @@ a.info {
 			  // on envoie la valeur recherché en GET au fichier de traitement
 			  $.ajax({
 			type : 'GET', // envoi des données en GET ou POST
-			url : 'searchFoodF.php' , // url du fichier de traitement
+			url : 'searchFoodP.php' , // url du fichier de traitement
 			data : 'qt='+$(this).val() , // données à envoyer en  GET ou POST
 			beforeSend : function() { // traitements JS à faire AVANT l'envoi
 				$field.after('<img src="logo/wp2d14cca2.gif" alt="loader" id="ajax-loader" />'); // ajout d'un loader pour signifier l'action
@@ -181,7 +183,7 @@ a.info {
 <!------ Include the above in your HEAD tag ---------->
 <form class="ajax" action="" method="get">
 	<p align='center'>
-		 <input style='text-align:center;font-size:1.5em;background-color:#EFFBFF;width:500px;padding:3px;border:1px solid #aaa;-moz-border-radius:7px;-webkit-border-radius:7px;border-radius:7px;height:35px;line-height:22px;' type="text" name="qt" id="qt" 
+		 <input style='text-align:center;font-size:1.5em;background-color:#EFFBFF;width:550px;padding:3px;border:1px solid #aaa;-moz-border-radius:7px;-webkit-border-radius:7px;border-radius:7px;height:35px;line-height:22px;' type="text" name="qt" id="qt" 
 		 placeholder="Rechercher parmi la liste des portions du <?php echo substr($Jour_actuel,8,2)."-".substr($Jour_actuel,5,2)."-".substr($Jour_actuel,0,4); ?>"/> 
 	</p>
 </form>
@@ -210,7 +212,7 @@ a.info {
 		<tbody id="">
 <?php 
 	mysqli_query($con,"SET NAMES 'utf8'");
-	$req="SELECT catPlat,designation,libellePortion,Nbre,prixPortion,numero,NbreJ,portion.id AS pId FROM plat,categorieplat,menu,portion WHERE portion.numPlat=plat.numero AND categorieplat.id=plat.categPlat AND menu.id=plat.categMenu ORDER BY NbreJ DESC";
+	$req="SELECT catPlat,designation,libellePortion,Nbre,prixPortion,numero,NbreJ,portion.id AS pId,Nbrep FROM plat,categorieplat,menu,portion WHERE portion.numPlat=plat.numero AND categorieplat.id=plat.categPlat AND menu.id=plat.categMenu ORDER BY Nbrep DESC";
 	$result=mysqli_query($con,$req);
 	$cpteur=1;$i=0;$j=0;
     // parcours et affichage des résultats
@@ -227,17 +229,17 @@ a.info {
 				$bgcouleur = "#dfeef3";
 			}  $i++;  if($i%2==0){$color="#FC7F3C";$plus="plus1"; }else {$color="maroon";$plus="plus2";}
     ?>
-		 	<tr class='rouge1' bgcolor=' <?=$data->NbreJ<=0?"gray":$bgcouleur; ?>'>
+		 	<tr class='rouge1' bgcolor=' <?=$data->Nbrep<=0?"#D2B48C":$bgcouleur; ?>'>
 			  <td align='center' style='padding:7px;border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'><?php echo $j; ?>.</td>
 				<td style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'>&nbsp;<?php echo $data->catPlat; ?> </td>
 				<td style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'>&nbsp; <?php echo $data->designation; ?></td>
 				<td align='left'  style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'> <?php echo $data->libellePortion; ?></td>
-				<td align='center'  style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'> <?php echo $data->Nbre; ?></td>
+				<td align='center'  style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'> <?php echo $data->Nbrep; ?></td>
 				<td align='center'  style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'> <?php echo $data->prixPortion; ?></td>				
 				<td align='center'  style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'> 
 				<a class='info' onclick='JSalertQte(<?php echo $data->numero.",".$data->pId ?>);return false;' 
 				<?php
-				if($data->NbreJ>0)
+				if($data->Nbrep>0)
 					echo "style='color:".$color.";'><img src='logo/".$plus.".png' alt='' width='25' height='25' border='0'/><span style='color:#FC7F3C;'>Ajouter</span></a>";
 				echo "</td>";
 				}

@@ -213,7 +213,8 @@ href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="styl
       <div class="collapse navbar-collapse" id="navbarText" >
 	  <ul class='navbar-nav animate side-nav'>
 	  <?php
-		if(!empty($menuParenT)){ $mParent=htmlspecialchars($mParent);
+		//if(!empty($menuParenT))
+		{ $mParent=htmlspecialchars($mParent);
 		mysqli_query($con,"SET NAMES 'utf8'");
 			$reqsel1=mysqli_query($con,"SELECT * FROM ".$role.",affectationrole WHERE ".$role.".nomrole=affectationrole.nomrole AND Profil='".$_SESSION['poste']."' AND menuParent='".$mParent."'");
 				$cpteur=1;
@@ -242,14 +243,16 @@ href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="styl
 							echo "<span class='ttip'>".$menu."</span></a>
 						 </li>";
 				}
-		}else {		//$reqsel1=mysqli_query($con,"SELECT * FROM ".$role.",affectationrole WHERE ".$role.".nomrole=affectationrole.nomrole AND Profil='".$_SESSION['poste']."' AND menuParent='$lien'");
+		}
+		//else {		//$reqsel1=mysqli_query($con,"SELECT * FROM ".$role.",affectationrole WHERE ".$role.".nomrole=affectationrole.nomrole AND Profil='".$_SESSION['poste']."' AND menuParent='$lien'");
 					//$data1=mysqli_fetch_assoc($reqsel1);$target=$data1['target']; if(empty($target)) $target="fas fa-cart-plus";
 					//$bgcouleur = "orange";
 					//echo "<li class='nav-item'>
 						//<a class='nav-link' href='".$cheminP."' title='Cart'> <i class='".$target."' style='color:".$bgcouleur.";'></i><span class='ttip'>".$lien."</span></a>
 					 // </li>";
-		}
-		if(empty($reqsel1)){$target="fab fa-hire-a";$bgcouleur = "orange";
+		//}
+		if(empty($reqsel1)){
+				$target="fab fa-hire-a";$bgcouleur = "orange";
 				// echo "<li class='nav-item'>
 				// 		<a class='nav-link' href='help.php' title=''> <i class='".$target."' style='color:".$bgcouleur.";'></i><span class='ttip'>Aide</span></a>
 				//  </li>";$bgcouleur="green";$target="fab fa-hire-a-helper";
@@ -297,23 +300,7 @@ href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="styl
         </ul>
       </div>
     </nav>
-    <div class="container-fluid">
-		<div class="row">
-    <?php
-			//echo $_SESSION['poste'];
-/* 			if($_SESSION['poste']=='Super administrateur'){
 
-					{ while($data = mysqli_fetch_array($reqsel))
-						echo $data['Name']; //$data->Etat;
-					}		 */
-
-
-
-			//}
-
-	?>
-		</div>
-  </div>
   <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
 
 	<?php
@@ -326,7 +313,8 @@ href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="styl
 			$data=mysqli_fetch_assoc($reqsel);
 			$logo=$data['logo'];$title="e-Freedom";
 			$logo="logo/Sesy.png";
-			echo "<center><img src='".$logo."' style='margin-top:0px;filter:alpha(opacity=25);opacity: 0.25;-moz-opacity:0.95;'/></center>";
+			include('dashboard.php');
+			//echo "<center><img src='".$logo."' style='margin-top:0px;filter:alpha(opacity=25);opacity: 0.25;-moz-opacity:0.95;'/></center>";
 		//echo " <br/>";
 /* 		echo "<H2 ALIGN='center' style='color:#444739;font-family:calibri ;'><b><span style='font-size:200%;color:green;font-family:calibri;'>H</span>EBERGEMENT - <span style='font-size:200%;color:teal;font-family:calibri;'>R</span>ESTAURATION -
 		<span style='font-size:200%;color:red;font-family:calibri;'>E</span>CONOMAT </b> -
@@ -419,9 +407,9 @@ href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="styl
 <div class='footer'>
 	<?php
 		if($footer=="/menu.php"){
-		echo "<h2 ALIGN='center' style='color:#444739;font-family:calibri;margin-bottom:0px;'><b><span style='font-size:200%;color:green;font-family:calibri;'>H</span>EBERGEMENT - <span style='font-size:200%;color:yellow;font-family:calibri;'>R</span>ESTAURATION -
+/* 		echo "<h2 ALIGN='center' style='color:#444739;font-family:calibri;margin-bottom:0px;'><b><span style='font-size:200%;color:green;font-family:calibri;'>H</span>EBERGEMENT - <span style='font-size:200%;color:yellow;font-family:calibri;'>R</span>ESTAURATION -
 		<span style='font-size:200%;color:red;font-family:calibri;'>E</span>CONOMAT - <span style='font-size:200%;color:teal;font-family:calibri;'>I</span>MMOBILIER</b>"; 
-		echo "</h2>";
+		echo "</h2>"; */
 		}
 	?>	
 <span style='font-weight:normal;'>Copyright © eFREEDOM Version 1.0 (Juillet 2020)</span>		

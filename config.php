@@ -2,22 +2,7 @@
 		ob_start();
 		session_start();
 		include_once 'connexion.php';
-
-		$date = new DateTime("now"); // 'now' n'est pas n�c�ssaire, c'est la valeur par d�faut
-		$tz = new DateTimeZone('Africa/Porto-Novo');
-		$date->setTimezone($tz);
-		$Heure_actuelle= $date->format("H") .":". $date->format("i").":". $date->format("s");
-		$Jour_actuel= $date->format("Y") ."-". $date->format("m")."-". $date->format("d");
-		$previousDay= date('Y-m-d', strtotime('-1 day', strtotime($Jour_actuel)));
-		$Jour_actuelp= $date->format("Y") ."-". $date->format("m")."-". $date->format("d");
-		$Date_actuel= $date->format("d") ."/". $date->format("m")."/". $date->format("Y");
-		$Date_actueli= $date->format("Y") ."/". $date->format("m")."/". $date->format("d");
-		$Date_actuel2= $date->format("d") ."-". $date->format("m")."-". $date->format("Y");   // echo gmdate('d-m-Y');
-		$Heureactuelle= $date->format("H") .":". $date->format("i");
-		$Heure_actuelle2= $date->format("H") ."-". $date->format("i")."-". $date->format("s");
-		$Heureh= $date->format("H") ;
-		$datej=$date->format("d") ;$month=$date->format("m") ; $year=$date->format("Y") ;
-
+		
 		/* Fonction renvoyant l'adresse de la page actuelle  https://openclassrooms.com/forum/sujet/recuperer-l-url-en-php-24302 */
 		function getURI(){
 			$adresse = $_SERVER['PHP_SELF'];
@@ -37,6 +22,53 @@
 			}
 			return $adresse;
 		}
+
+		if (empty($_SESSION['login'])) {
+			// Redirige vers la page de connexion si l'utilisateur n'est pas connecté
+			header('Location: index.php');
+			exit();
+		} else {
+			// Vérifie si un timestamp d'activité existe
+			if (isset($_SESSION['timestamp'])) {
+				// Définir le délai d'inactivité en secondes (par exemple, 900s = 15 minutes)
+				$inactivity_limit = 100;
+				// Si l'utilisateur a été inactif trop longtemps
+				if (time() - $_SESSION['timestamp'] > $inactivity_limit) {
+					// Mettre à jour l'état de l'utilisateur comme déconnecté dans la base de données
+					$current_uri = getURI(); // Fonction que vous utilisez pour obtenir l'URI actuelle
+					$query = "UPDATE utilisateur SET etatconnect='". utf8_decode($current_uri) ."' WHERE login='" . $_SESSION['login'] . "'";
+					$result = mysqli_query($con, $query);
+					// Détruit la session et redirige vers la page de connexion
+					session_unset();
+					session_destroy();
+					header('Location: index.php');
+					exit();
+				} else {
+					// Réinitialise le timestamp si l'utilisateur est actif
+					$_SESSION['timestamp'] = time();
+				}
+			} else {
+				// Initialise le timestamp au moment de la connexion
+				$_SESSION['timestamp'] = time();
+			}
+		}
+
+		$date = new DateTime("now"); // 'now' n'est pas n�c�ssaire, c'est la valeur par d�faut
+		$tz = new DateTimeZone('Africa/Porto-Novo');
+		$date->setTimezone($tz);
+		$Heure_actuelle= $date->format("H") .":". $date->format("i").":". $date->format("s");
+		$Jour_actuel= $date->format("Y") ."-". $date->format("m")."-". $date->format("d");
+		$previousDay= date('Y-m-d', strtotime('-1 day', strtotime($Jour_actuel)));
+		$Jour_actuelp= $date->format("Y") ."-". $date->format("m")."-". $date->format("d");
+		$Date_actuel= $date->format("d") ."/". $date->format("m")."/". $date->format("Y");
+		$Date_actueli= $date->format("Y") ."/". $date->format("m")."/". $date->format("d");
+		$Date_actuel2= $date->format("d") ."-". $date->format("m")."-". $date->format("Y");   // echo gmdate('d-m-Y');
+		$Heureactuelle= $date->format("H") .":". $date->format("i");
+		$Heure_actuelle2= $date->format("H") ."-". $date->format("i")."-". $date->format("s");
+		$Heureh= $date->format("H") ;
+		$datej=$date->format("d") ;$month=$date->format("m") ; $year=$date->format("Y") ;
+
+
 		function nbJours($debut, $fin) {
         //60 secondes X 60 minutes X 24 heures dans une journée
         $nbSecondes= 60*60*24;
@@ -73,12 +105,12 @@
 		$ri='UPDATE utilisateur SET etatconnect=0 WHERE login="'.$_SESSION['login'].'"';
 		$rit=mysqli_query($con,$ri);
 		}
-		if(empty($_SESSION['login'])) {
+/* 		if(empty($_SESSION['login'])) {
 			header('Location: index.php');
 		}
 		else{ // si le membre est connect�
 			 if(isset($_SESSION['timestamp'])){ // si $_SESSION['timestamp'] existe
-					 if($_SESSION['timestamp'] + 900 > time()){ //unset($_SESSION['login']);
+					 if($_SESSION['timestamp'] + 100 > time()){ //unset($_SESSION['login']);
 							$_SESSION['timestamp'] = time();
 					 }else{
 						$_SESSION['lien']= getURI();
@@ -91,7 +123,7 @@
 						echo '<meta http-equiv="refresh" content="900; url=index.php"/>';
 					 }
 			 }else{  $_SESSION['timestamp'] = time(); }
-		}
+		} */
 		$categorie="<i>Client ordinaire</i>";
 		//include 'connexion.php';  //include 'Connexion_2.php';
 		mysqli_query($con,"SET NAMES 'utf8'");
@@ -189,6 +221,25 @@
 		else if($modeReglement==6) $mode="Autre";
 		return $mode;
 	}
+	
+	function clientName($client){ // Pour vérifier si l'utilisateur est connecté à Internet
+/* 		if(isset($client)&& ($client>0)){
+				mysqli_query($con,"SET NAMES 'utf8'");
+				$reqx="SELECT * FROM clientresto WHERE id='".$client."' ";
+				$reqselRTablesx=mysqli_query($con,$reqx) or die (mysqli_error($con));
+				$datax=mysqli_fetch_object($reqselRTablesx);
+				$numIFU="<u>IFU</u> : ".$datax->numIFU;
+			if(!empty($datax->entrepriseName))
+				$NomClient=$datax->entrepriseName;
+			else 
+				$NomClient=$datax->nomclt." ".$datax->prenomclt;
+			}
+			else {
+			$NomClient="<g>Non renseigné</g>";		
+			}
+			return $NomClient; */
+	}
+	
 	//Pour le numero des factures du Resto
 	if(($numFact>=0)&&($numFact<=9))  $numRecu="0000".$numFact."/".substr(date('Y'),2,2);	else if(($numFact>=10)&&($numFact <=99))	 $numRecu="000".$numFact."/".substr(date('Y'),2,2);	else if(($numFact>=100)&&($numFact<=999))	 $numRecu="00".$numFact."/".substr(date('Y'),2,2);	else if(($numFact>=1000)&&($numFact<=1999)) $numRecu="0".$numFact."/".substr(date('Y'),2,2);else $numRecu=$numFact."/".substr(date('Y'),2,2);
 

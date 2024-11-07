@@ -17,9 +17,24 @@ try {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Récupérer les données
     $serveurNumber = isset($_POST['serveurNumber']) ? trim($_POST['serveurNumber']) : '';
-    $tableName = isset($_POST['tableName']) ? trim($_POST['tableName']) : ''; 
+    $tableName = isset($_POST['tableName']) ? trim($_POST['tableName']) : 0; 
 	$permanent = isset($_POST['permanent']) ? trim($_POST['permanent']) : 0; 
-	$current = isset($_POST['current']) ? trim($_POST['current']) : 0;
+	$current = isset($_POST['current']) ? trim($_POST['current']) : 0; 
+	$tableRealName = isset($_POST['tableRealName']) ? trim($_POST['tableRealName']) : 0; 
+	$isPermanent = isset($_POST['isPermanent']) ? (int)$_POST['isPermanent'] : 0;
+	
+	if ($tableRealName != 0) {
+		$Query = "SELECT id FROM RTables WHERE RealNameTable = ?";
+		$stmt = $pdo->prepare($Query);
+		$stmt->execute([$tableRealName]);
+		
+		$data = $stmt->fetch(); // Use fetch() instead of fetchAll() for a single row
+		
+		if ($data && isset($data['id'])) { // Ensure data is available and 'id' exists
+			$tableName = (int)$data['id'];    
+		}
+	}
+
     
     // Vérification des données reçues
     if ($serveurNumber === '' || $tableName === '') {

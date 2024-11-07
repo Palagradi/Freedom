@@ -29,13 +29,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         echo json_encode(["status" => "error", "message" => "Les champs Nom de la table et Nbre de couverts sont obligatoires."]);
         exit;
     }
-	if($edit==1){ 
+	if($edit==1){
+
+
+    try {
+        // Vérification si la table existe déjà
+        $req = "SELECT * FROM RTables WHERE RealNameTable <> '' OR RealNameTable = ? AND status = 0";
+        $stmt = $pdo->prepare($req);
+        $stmt->execute([$RealNameTable]);
+
+        // Vérifier si la table existe déjà
+        if ($stmt->rowCount() > 0) {
+            echo json_encode(["status" => "error", "message" => "Une table du même nom existe déjà."]);
+            exit;  
+        }
+
 	 //Modifications des informations sur la table
         $sql = "UPDATE RTables SET RealNameTable = ?, NbreCV = ? WHERE nomTable = ?";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([$RealNameTable, $NbreCV, $table]);	
-        // Répondre avec un message de succès
-        echo json_encode(["status" => "success", "message" => "Modification effectuée avec succès."]);	
+
+        // Répondre avec un message de succès sans inclure la requête SQL
+        echo json_encode(["status" => "success", "message" => "Table modifiée avec succès."]);
+    } catch (\PDOException $e) {
+        echo json_encode(["status" => "error", "message" => "Erreur lors de l'ajout de la table: " . $e->getMessage()]);
+    }
+
 	}
 	else{  
 // Préparer et exécuter la requête d'insertion
@@ -49,7 +68,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($stmt->rowCount() > 0) {
             echo json_encode(["status" => "error", "message" => "Cette table existe déjà."]);
             exit;  
-        }
+        }else {
+		        // Vérification si la table existe déjà
+			$req = "SELECT * FROM RTables WHERE RealNameTable <> '' AND RealNameTable = ? AND status = 0";
+			$stmt = $pdo->prepare($req);
+			$stmt->execute([$RealNameTable]);
+
+			// Vérifier si la table existe déjà
+			if ($stmt->rowCount() > 0) {
+				echo json_encode(["status" => "error", "message" => "Une table du même nom existe déjà."]);
+				exit;  
+			}	
+		}
 
         // Préparer la requête d'insertion
         $sql = "UPDATE RTables SET RealNameTable = ?, NbreCV = ?, status = ? WHERE id = ?";

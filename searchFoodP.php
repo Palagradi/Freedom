@@ -3,14 +3,14 @@ require("config.php");
 
  mysqli_query($con,"SET NAMES 'utf8'");
 //recherche des résultats dans la base de données
-$result =   mysqli_query($con, 'SELECT * FROM plat,categorieplat,menu WHERE Nbre>0 AND categorieplat.id=plat.categPlat AND menu.id=plat.categMenu AND (categMenu LIKE \'%' . safe( $_GET['qt'] ) . '%\'  OR catPlat LIKE \'%' . safe( $_GET['qt'] ) . '%\' OR designation LIKE \'%' . safe( $_GET['qt'] ) . '%\' OR prix LIKE \'%' . safe( $_GET['qt'] ) . '%\' OR Nbre LIKE \'%' . safe( $_GET['qt'] ) . '%\')
+$result =   mysqli_query($con, 'SELECT catPlat,designation,libellePortion,Nbre,prixPortion,numero,NbreJp,portion.id AS pId,Nbrep FROM plat,categorieplat,menu,portion WHERE Nbrep>0 AND portion.numPlat=plat.numero AND categorieplat.id=plat.categPlat AND menu.id=plat.categMenu AND (categMenu LIKE \'%' . safe( $_GET['qt'] ) . '%\'  OR catPlat LIKE \'%' . safe( $_GET['qt'] ) . '%\' OR designation LIKE \'%' . safe( $_GET['qt'] ) . '%\' OR libellePortion LIKE \'%' . safe( $_GET['qt'] ) . '%\' OR prixPortion LIKE \'%' . safe( $_GET['qt'] ) . '%\' OR Nbrep LIKE \'%' . safe( $_GET['qt'] ) . '%\')
                           LIMIT 0,20' );
 
 // affichage d'un message "pas de résultats"
 if( mysqli_num_rows( $result ) == 0 )
 {
 ?>
-    <h5 style="text-align:center; margin:10px 0;color:teal;">Aucun plat ne correspond à cette recherche</h5>
+    <h5 style="text-align:center; margin:10px 0;color:teal;">Aucune portion ne correspond à cette recherche</h5>
 <?php
 }
 else
@@ -53,25 +53,27 @@ else
     <link href="css/customize.css" rel="stylesheet"><script type="text/javascript" src="js/fonctions_utiles.js"></script>
 
 </tr>
-	<thead>
+		<thead>
 		<tr><td> &nbsp;&nbsp;</td></tr>
 		<tr  style='background-color:gray;color:white;font-size:1.2em; padding-bottom:5px;'>
 			<td style="border:2px solid #ffffff" align="center">#</td>
-			<td style="padding:2px;border:2px solid #ffffff" align="center" >Catégorie plat<span style='font-size:0.8em;'></td>
-			<td style="padding:2px;border:2px solid #ffffff" align="center" >Désignation du plat<span style='font-size:0.8em;'></td>
-			<td style="padding:2px;border:2px solid #ffffff" align="center" >Quantité<br/>&nbsp;disponible<span style='font-size:0.8em;'></td>
-			<td style="padding:2px;border:2px solid #ffffff" align="center" >Prix de vente<span style='font-size:0.8em;'></td>
+			<td style="padding:2px;border:2px solid #ffffff" align="center" ><g style='color:yellow;'>Catégorie</g><span style='font-size:0.8em;'></td>
+			<td style="padding:2px;border:2px solid #ffffff" align="center" >Désignation <br/>plat principal<span style='font-size:0.8em;'></td>
+			<td style="padding:2px;border:2px solid #ffffff" align="center" ><g style='color:yellow;'>Désignation<br/>Portion</g><span style='font-size:0.8em;'></td>
+						<td style="padding:2px;border:2px solid #ffffff" align="center" >Quantité<br/>&nbsp;disponible<span style='font-size:0.8em;'></td>
+			<td style="padding:2px;border:2px solid #ffffff" align="center" ><g style='color:yellow;'>Prix <br/> portion</g><span style='font-size:0.8em;'></td>
 			<td style='padding:2px;border:2px solid #ffffff;' align="center" >Actions</td>
 		</tr>
 		</thead>
-
-		<?php //echo "</tr>";
-
-	$cpteur=1; $i=0;$j=0;
+		<tbody id="">
+<?php 
+	mysqli_query($con,"SET NAMES 'utf8'");
+	$req="SELECT catPlat,designation,libellePortion,Nbre,prixPortion,numero,NbreJ,portion.id AS pId,Nbrep FROM plat,categorieplat,menu,portion WHERE portion.numPlat=plat.numero AND categorieplat.id=plat.categPlat AND menu.id=plat.categMenu ORDER BY NbreJ DESC";
+	//$result=mysqli_query($con,$req);
+	$cpteur=1;$i=0;$j=0;
     // parcours et affichage des résultats
     while( $data = mysqli_fetch_object($result))
-    {
-		$j++;
+    { $j++;
 		if($cpteur == 1)
 			{
 				$cpteur = 0;
@@ -82,26 +84,24 @@ else
 				$cpteur = 1;
 				$bgcouleur = "#dfeef3";
 			}  $i++;  if($i%2==0){$color="#FC7F3C";$plus="plus1"; }else {$color="maroon";$plus="plus2";}
-
     ?>
-		 	<tr class='rouge1' bgcolor=' <?=$data->Nbre<=0?"#D2B48C":$bgcouleur; ?>'>
+		 	<tr class='rouge1' bgcolor=' <?=$data->Nbrep<=0?"#D2B48C":$bgcouleur; ?>'>
 			  <td align='center' style='padding:7px;border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'><?php echo $j; ?>.</td>
-				<td style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'><?php echo $data->catPlat; ?> </td>
-				<td style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'> <?php echo $data->designation; ?></td>
-				<td align='center'  style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'> <?php echo $data->Nbre; ?></td>
-				<td align='center'  style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'> <?php echo $data->prix; ?></td>	
-				
+				<td style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'>&nbsp;<?php echo $data->catPlat; ?> </td>
+				<td style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'>&nbsp; <?php echo $data->designation; ?></td>
+				<td align='left'  style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'> <?php echo $data->libellePortion; ?></td>
+				<td align='center'  style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'> <?php echo $data->Nbrep; ?></td>
+				<td align='center'  style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'> <?php echo $data->prixPortion; ?></td>				
 				<td align='center'  style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'> 
-				<a class='info' onclick='JSalertQte(<?php echo $data->numero ?>);return false;' 
+				<a class='info' onclick='JSalertQte(<?php echo $data->numero.",".$data->pId ?>);return false;' 
 				<?php
-				if($data->Nbre>0)
+				if($data->Nbrep>0)
 					echo "style='color:".$color.";'><img src='logo/".$plus.".png' alt='' width='25' height='25' border='0'/><span style='color:#FC7F3C;'>Ajouter</span></a>";
 				echo "</td>";
-		?>
-	</tr>
-
+				}
+				?>
+			</tr>
     <?php
-    }
 }
 
 

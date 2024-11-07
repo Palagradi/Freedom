@@ -5,19 +5,23 @@
 			}	 */
 			// QRcode::png('PHP QR Code :)');
 
-
 			if (isset($_POST['Valider']))
-			{  //echo 12;
-				if((!empty($table))||(!empty($vt)) ||(!empty($tk))) { //echo $_POST['remise']; echo "&nbsp;".$_POST['Mtpercu'];
-				 $tva=!empty($tva)?$tva:0; $type="1";//$numrecu="0121";
+			{ 	if((!empty($table))||(!empty($vt)) ||(!empty($tk))) {
+				 $tva=!empty($tva)?$tva:0; $type="1";
 				 if (isset($_GET['clt'])) echo $_GET['clt'];
-
-				$remise= (int)$_POST['remise']; $Mtpercu= (int)$_POST['Mtpercu'];    $total=(int)$_POST['m'];  $total+=$remise;
-				 if($Mtpercu<=0){
+				$remise= (int)$_POST['remise']; $Mtpercu= (int)$_POST['Mtpercu'];    $total=(int)$_POST['m'];  //$total+=$remise;
+				 if(($Mtpercu<=0)&&($total>0)){
 					  echo "<script language='javascript'>";
 					  echo 'alertify.error(" Renseignez le montant reçu");';
+					  echo "</script>";					  
+					  
+				 }
+				 else if($_POST['m']==0){
+					  echo "<script language='javascript'>";
+					  echo 'alertify.error("Aucune ligne à valider");';
 					  echo "</script>";
-				 }else if($Mtpercu<$total) {
+				 }
+				 else if($Mtpercu<$total) { 
 					  echo "<script language='javascript'>";
 					  echo 'alertify.error(" Montant renseigné non valide");';
 					  echo "</script>";
@@ -26,26 +30,31 @@
 					 	$update=mysqli_query($con,"UPDATE ConfigResto SET num_fact=num_fact+1 ");
 						$reqsel=mysqli_query($con,"SELECT num_fact,numFactNorm FROM ConfigResto");
 						$data=mysqli_fetch_assoc($reqsel);
-						$numFact=convertNumero(1,$data['num_fact']); $NomClient=isset($_GET['clt'])?$_GET['clt']:NULL;						
-						$numFactNorm=NumeroFacture($data['numFactNorm']); //echo $NomClient=" "; //echo $NomClient=$_SESSION[$table];  //unset($_SESSION[$table]);
+						$numFact=convertNumero(1,$data['num_fact']); $NomClient=isset($_GET['client'])?$_GET['client']:NULL;						
+						$numFactNorm=NumeroFacture($data['numFactNorm']);
 
-					  if(!empty($tk)) $table=0; $productlist=array();
+					 //if(isset($tk)&&($tk==1)) $table=0; 
+					 
+					  $productlist=array();
+					  
 
-						//$reqsel=mysqli_query($con,"SELECT num_fact,numFactNorm FROM configuration_facture");
-						//$data=mysqli_fetch_object($reqsel);		$NumFact=NumeroFacture($data->num_fact);  $numFactNorm=NumeroFacture($data->numFactNorm);
-
-					  $Query="INSERT INTO factureResto SET id=NULL,numFactNorm='".$numFactNorm."',numTable = '".$table."',date_emission = '".$Jour_actuelp."', heure_emission = '".$Heure_actuelle."', receptionniste = '".$_SESSION['login']."', num_facture = '".$numFact."', NomClient= '".$NomClient."',
+					  $sql = "SELECT nomTable FROM RTables WHERE RealNameTable='".$table."'";
+					  $reqselRTablesX=mysqli_query($con,$sql);
+					  if(mysqli_num_rows($reqselRTablesX)>0){
+						  $data1X=mysqli_fetch_object($reqselRTablesX);
+						  $table=$data1X->nomTable;	
+					  }else 
+						  $table=(int)($table);
+					 
+					  $Query="INSERT INTO factureResto SET id=NULL,numFactNorm='".$numFactNorm."',numTable = '".$table."',date_emission = '".$Jour_actuelp."', heure_emission = '".$Heure_actuelle."',login='".$_SESSION["login"]."',seller = '".$_SESSION["nom"]." ".$_SESSION["prenom"]."', num_facture = '".$numFact."',
 					  Type = '".$type."', tva = '".$tva."', montant_ttc = '".$_POST['m']."', Remise = '".$remise."', somme_paye = '".$Mtpercu."',NbreCV='".$cv."'";
 					 $exec=mysqli_query($con,$Query);
 					 if(isset($exec)){
 						 echo "<script language='javascript'>";
 						 echo 'alertify.success(" La commande a été validée !");';
 						 echo "</script>";
-
-/* 						$Query=mysqli_query($con,"SELECT NomClient FROM factureResto WHERE numTable='".$table."' AND date_emission ='".date('Y-m-d')."' LIMIT 1");
-						while($data1=mysqli_fetch_array($Query))	{echo $_SESSION["NomClient"]=$data1['NomClient']; } */
-
-						  $sql = "SELECT * FROM tableEnCours WHERE numTable='".$table."' AND created_at='".$Jour_actuel."' AND Etat LIKE 'active' ORDER BY Num ASC";
+							  
+						   $sql = "SELECT * FROM tableEnCours WHERE numTable='".$table."' AND created_at='".$Jour_actuel."' AND Etat <> 'Desactive' ORDER BY Num ASC";
 						  $reqselRTables=mysqli_query($con,$sql);
 						  while($data1=mysqli_fetch_array($reqselRTables)){
 
@@ -81,11 +90,6 @@
 								 array_push($productlist,$List);
 								 //echo "<br/>".var_dump($List);
 						  }
-
-						    
-							//$reqsel0=mysqli_query($con,"SELECT serveur.id as serveurId FROM RTables,serveur WHERE serveur.id=RTables.serveur AND nomTable='".$table."' AND RTables.status=0");
-							//$data0=mysqli_fetch_object($reqsel0);$serveurId=(isset($data0->serveurId)&&(!empty($data0->serveurId)))?$data0->serveurId:0;							
-							
 						    $Query="UPDATE tableEnCours SET Etat='Desactive',num_facture = '".trim($numFact)."' WHERE numTable = '".$table."' AND Etat = '' AND created_at='".$Jour_actuel."'";
 							$exec=mysqli_query($con,$Query); $_SESSION['numFact'] = trim($numFact);
 
@@ -93,27 +97,23 @@
 
 							 $userId=$_SESSION['userId'];
 							 $userName=$NomClient;
-							 //$customerIFU=$_SESSION['NumIFU'];
-							 //if(($customerIFU==0)||(empty($customerIFU)))  $customerName=isset($_SESSION['groupe1'])?$_SESSION['groupe1']:$_SESSION['client'];
 							 $customerIFU=null; $customerName=$NomClient; $Aib_duclient="";
 							 $_SESSION['Date_actuel']=isset($_SESSION['date_emission'])?$_SESSION['date_emission']:$Jour_actuelp;
 							 $totalAmount=$_POST['m']; $totalpayee = $Mtpercu;
 							 $jsonData = formatData($userId,$userName,$customerIFU,$customerName,$Aib_duclient,$productlist,$totalAmount,$totalpayee);
 						 	 push($jsonData);
-
-						    //echo '<meta http-equiv="refresh" content="0; url=servir.php?menuParent='.$_SESSION['menuParenT'].'" />';
-							
-
 						 }
+						 // echo '<meta http-equiv="refresh" content="0; url=servir.php?menuParent='.$_SESSION['menuParenT'].'&tk='.$tk.'" />';		
+							$menuParent = $_SESSION['menuParenT'];	$tk = "";
+							ob_end_clean(); // Terminer et vider tout tampon de sortie
+							header("Location: servir.php?menuParent=$menuParent&tk=$tk");
+							exit;						 
 					}
-
+					
 				 }
 			}
-
-
 			if (isset($_POST['Supprimer']))
-			{
-					if( !empty($_POST['choix'])){
+			{	if( !empty($_POST['choix'])){
 					$choix ='';
 					for ($i=0;$i<count($_POST['choix']);$i++)
 					{	//on concatène
@@ -121,70 +121,111 @@
 						 $explore = explode('|',$choix);
 						if($explore[$i]!='')
 							{   //echo $explore[$i]; echo "<br/>".$i;
-								$reqsel=mysqli_query($con,"SELECT numTable,Num2,qte FROM tableEnCours WHERE Num='".$explore[$i]."' AND created_at='".$Jour_actuel."'");
-								$data=mysqli_fetch_assoc($reqsel);  $numTable1=$data['numTable']; $Num=$data['Num2']; $qte=$data['qte'];
+								$reqsel=mysqli_query($con,"SELECT numTable,Num2,qte,LigneCde FROM tableEnCours WHERE Num='".$explore[$i]."' AND created_at='".$Jour_actuel."'");
+								$data=mysqli_fetch_assoc($reqsel);  $numTable1=$data['numTable']; $Num=$data['Num2']; $qte=$data['qte']; $LigneCde=addslashes($data['LigneCde']);
 
-								$reqsel=mysqli_query($con,"DELETE FROM tableEnCours WHERE Num='".$explore[$i]."'");
+								$sql="DELETE FROM tableEnCours WHERE Num='".$explore[$i]."'";
+								$reqsel=mysqli_query($con,$sql);
 
 								$reqsel=mysqli_query($con,"DELETE FROM operation WHERE reference1='".$Num."'");
 
-								$check=mysqli_query($con,"SELECT * FROM boisson WHERE numero='".$Num."' AND Depot = '2'");
+								$check=mysqli_query($con,"SELECT * FROM boisson WHERE numero='".$Num."' AND Depot = '2' AND pc=0");
 								if(mysqli_num_rows($check)>0){
-										$update="UPDATE boisson SET Qte_Stock=Qte_Stock+$qte,StockReel=StockReel+$qte WHERE numero='".$Num."' AND Depot = '2'";
+										$update="UPDATE boisson SET QteStock=QteStock+$qte,StockReel=StockReel+$qte WHERE numero='".$Num."' AND Depot = '2' AND pc=0 AND designation='".$LigneCde."'";
 								}else {
-										$update="UPDATE plat SET Nbre=Nbre+$qte WHERE numero='".$Num."'"; //Pour les repas
-								}
-
-								$reqk=mysqli_query($con,$update);//	$dataP = mysqli_fetch_object($reqk);
-									//$nbre = $dataP->numero2;$designation=$dataP->designation;$Categorie=$dataP->Categorie;$Qte=$dataP->Qte;$Conditionne=$dataP->Conditionne;$Prix=$dataP->Prix;$Qte_Stock=$dataP->Qte_Stock; $Seuil=$dataP->Seuil;
-									//if(($nbre>=0)&&($nbre<=9)) $nbre="00000".$nbre ; else if(($nbre>=10)&&($nbre <=99)) $nbre="0000".$nbre ;else $nbre="00".$nbre ;
-
-								//$query_Recordset5 = "SELECT SUM(tableencours.qte) AS QteVendue
-								//FROM factureResto,tableencours,boissonp  WHERE  factureResto.numTable=tableencours.numTable AND tableencours.LigneCde=boissonp.designation AND  tableencours.QteInd=boissonp.Qte  AND date_emission BETWEEN '".$debutN."'	AND '".$finN."'  AND boissonp.numero2='".$data->numero2."'  ";
-								//$result5 = mysqli_query($con,$query_Recordset5);$data5 = mysqli_fetch_object($result5);  $QteVendue=!empty($data5->QteVendue)?$data5->QteVendue:"-";
-
-								 //$_SESSION['del']
-								 echo "<script language='javascript'>";
+								$check=mysqli_query($con,"SELECT * FROM boisson WHERE numero='".$Num."' AND Depot = '2' AND pc<>0 AND designation='".$LigneCde."'"); //Pack
+									if(mysqli_num_rows($check)>0){
+										$update="UPDATE boisson SET QteStock=QteStock+$qte,StockReel=StockReel+$qte WHERE numero='".$Num."' AND Depot = '2' AND pc<>0";
+									}else{
+										$check=mysqli_query($con,"SELECT * FROM plat WHERE numero='".$Num."' AND (designation='".$LigneCde."' OR designation2='".$LigneCde."')");
+										if(mysqli_num_rows($check)>0){
+										$update="UPDATE plat SET Nbre=Nbre+$qte WHERE numero='".$Num."' AND (designation='".$LigneCde."' OR designation2='".$LigneCde."')"; //Pour les repas
+										}else {
+										$update="UPDATE portion SET Nbrep=Nbrep+$qte WHERE numPlat='".$Num."' AND libellePortion='".$LigneCde."'"; //Pour les portions
+										}
+									}											
+								}	
+								$reqk=mysqli_query($con,$update);
+								
+/* 								 echo "<script language='javascript'>";
 								 echo 'alertify.success(" Suppression effectuée !");';
 								 echo 'self.location=self.location ';
-								 echo "</script>";
-
+								 echo "</script>"; */						 
 							}
 					}
 
-					}
+				}
+					$menuParent = $_SESSION['menuParenT'];$_SESSION['delete']=1;
+					ob_end_clean(); // Terminer et vider tout tampon de sortie
+					header("Location: servir.php?menuParent=$menuParent&table=$table&tk=$tk&delete=ok");
+					exit;	
 			}		
-			$tab=2;
+				 
 ?>			<table class='rouge1' style='width:500px;border:3px solid maroon;background-color:#F4FEFE;font-family:Calibri;font-size:1em;'>
 				<tr>
-					<td  colspan='1' style='font-weight:bold;font-size:1.1em;color:#FF0000;font-style:italic;font-family: Georgia;'>  <?php if(!empty($table)) { $_SESSION['tableS']=$table ;echo  "Table : " .$table." / ".$cv." CV" ; }if(empty($table)) echo "Commande en cours ...";
+					<td  colspan='1' style='font-weight:bold;font-size:1.1em;color:#FF0000;font-style:italic;font-family: Georgia;'> 
+					<?php if(!empty($table)) { $_SESSION['tableS']=$table ;echo  "Table : " .$table." / ".$cv." CV" ; }if(empty($table)) echo "Commande en cours ...";
 					
+					$table0=(int)($table);	
+					$Query="SELECT id FROM RTables WHERE RealNameTable='".$table."'";
+					$exec=mysqli_query($con,$Query);
+					 $data=mysqli_fetch_object($exec);
+					if(mysqli_num_rows($exec)>0){
+					$table0=(int)($data->id);	
+					}
+		
+					$reqx="SELECT nomserv,prenoms FROM RTables,serveur WHERE serveur.id=RTables.serveur AND nomTable='".$table0."'";
+					$reqselx=mysqli_query($con,$reqx);
+					$datax=mysqli_fetch_object($reqselx);
+					$serveur=!empty($datax->nomserv)?($datax->nomserv." ".$datax->prenoms):NULL; 
+	/* 				if(mysqli_num_rows($exec)>0){
+						
+					} */
 					?>
 					</td><td colspan='2' align='center'><?php echo "<span style='color:gray;font-weight:normal;font-style:normal;font-size:0.8em;'>".$Date_actuel2." | ".$Heureactuelle;?></td>
 					<td colspan='1' align='right'>
 					
-					<a class='info2' href='#' onclick='findServ(<?php echo $table; echo ",0";echo ",1";?>);return false;' style='font-size:0.9em;font-style:normal;color:teal;'>
+					<?php 
+					echo "<a class='info2' href='#' ";
+					//if(isset($tk)&&($tk==1)&&($table==0)){} 
+					//else 
+					echo "onclick='findServ(".$table0.",0,1,\"".addslashes($table)."\"); return false;' ";
+					echo "style='font-size:0.9em;font-style:normal;color:teal;' id='test'>";
+					?>					
 					<span style='font-size:1em;font-style:normal;color:teal;'>
-					<?php  								
-					$query=mysqli_query($con,"SELECT nomserv,prenoms FROM tableenCours,serveur WHERE serveur.id=tableenCours.serveur AND  numTable='".$table."' AND created_at='".$Jour_actuel."' AND Etat<> 'Desactive'"); 
-					$data=mysqli_fetch_assoc($query); if(!empty($data['nomserv'])) { echo "Serveur(se) <span style='color:red;'>";
-					echo $data['nomserv']." ".$data['prenoms']; 
-					echo "</span>";
+					<?php  						
+					$query=mysqli_query($con,"SELECT nomserv,prenoms FROM tableenCours,serveur WHERE serveur.id=tableenCours.serveur AND  numTable='".$table0."' AND created_at='".$Jour_actuel."' AND Etat<> 'Desactive'"); 
+					$data=mysqli_fetch_assoc($query); 
+					if(!empty($data['nomserv'])) { 
+						echo "Serveur(se) <span style='color:red;'>";
+						echo $data['nomserv']." ".$data['prenoms']; 
+						echo "</span>";
+					}else if(!empty($serveur)) { 
+						echo "Serveur(se) permanent(e)<span style='color:red;'>";
+						echo $serveur; 
+						echo "</span>";
 					}
-					else echo "Affecter un(e) serveur(se)"; ?>&nbsp;</span>
+					else  if(isset($tk)&&($tk==1)&&($table==0)){
+						echo "Vendeur(se) <span style='color:red;'>";
+						echo $_SESSION["nom"]." ".$_SESSION["prenom"];
+						echo "</span>"; 
+					}
+					else echo "Affecter un(e) serveur(se)"; 
+					//}
+					?>&nbsp;</span>
 					<i class='fas fa-plus-square' aria-hidden='true' style='font-size:140%;color:teal;'></i>
-				</a>
-
+					</a>
 					&nbsp;&nbsp;
-					 <input type='hidden'	name='NameTable' id='NameTable' value='<?php echo $table; ?>'/> <input type='hidden'	name='cv' id='cv' value='<?php echo $cv; ?>'/>
+					 <input type='hidden' name='NameTable' id='NameTable' value='<?php echo $table; ?>'/> <input type='hidden' name='cv' id='cv' value='<?php echo $cv; ?>'/>
+					 <input type='hidden' name='tk' id='tk' value='<?php echo $tk; ?>'/>
 					<a class='info2' href='#' style='' onclick='CheckClient();return false;'>
 					<span style='font-size:0.9em;font-style:normal;color:black;'>
-					<?php
+					<?php 
 					if(isset($_GET['table'])&&($table==$_GET['table']) && isset($_GET['client'])) {
-					$client = explode("(",$_GET['client']);echo $client[0];			
+					$client = explode("(",$_GET['client']); echo "Client<span style='color:red;'>".$client[0]."</span>";			
 					}else if(mysqli_num_rows($reqselRTables)>0)
-					{    $table=(int)($table);
-						$Query="SELECT clientresto.entrepriseName,nomclt,prenomclt FROM tableEnCours,clientresto WHERE clientresto.id=tableEnCours.client AND numTable='".$table."' AND created_at='".$Jour_actuel."' AND Etat<> 'Desactive'";
+					{   //echo $table0=(int)($table);
+						$Query="SELECT clientresto.entrepriseName,nomclt,prenomclt FROM tableEnCours,clientresto WHERE clientresto.id=tableEnCours.client AND numTable='".$table0."' AND created_at='".$Jour_actuel."' AND Etat<> 'Desactive'";
 						$exec=mysqli_query($con,$Query);
 						 $data=mysqli_fetch_object($exec);
 						if(mysqli_num_rows($exec)>0){	echo "Client<span style='color:red;'>";					 
@@ -202,20 +243,28 @@
 					<?php
 					if(isset($_GET['table'])&&($table==$_GET['table']) 
 						&&(isset($mode)&&(!empty($mode))&&(!is_null($mode))&&($mode!='null'))
-					) {				
+					) {		
 						echo "Mode de règlement <span style='color:red;'>"; echo modePayement($_GET['mode']); echo "</span>";
-					}else if(mysqli_num_rows($reqselRTables)>0){
-						 $table=(int)($table);
-						$Query="SELECT modeReglement FROM tableEnCours WHERE numTable='".$table."' AND created_at='".$Jour_actuel."' AND Etat<> 'Desactive'";
+					}else if(mysqli_num_rows($reqselRTables)>0){ 
+						//$table0=(int)($table);
+						$Query="SELECT modeReglement FROM tableEnCours WHERE numTable='".$table0."' AND created_at='".$Jour_actuel."' AND Etat<> 'Desactive'";
 						$exec=mysqli_query($con,$Query);
 						 $data=mysqli_fetch_object($exec);
-						if(mysqli_num_rows($exec)>0){						 
-						$modeReglement=($data->modeReglement>0)?$data->modeReglement:1;
-						//$mode=modePayement($modeReglement);
-						echo "Mode de règlement <span style='color:red;'>"; echo modePayement($modeReglement); echo "</span>";
-						}					
+						if(mysqli_num_rows($exec)>0){					 
+						$modeReglement=($data->modeReglement>0)?$data->modeReglement:1;	
+											
+						}else {
+/* 							$Query="SELECT modeReglement FROM tableEnCours,RTables WHERE RTables.id=tableEnCours.numTable AND RealNameTable='".$table."' AND created_at='".$Jour_actuel."' AND Etat<> 'Desactive'";
+		 					$exec=mysqli_query($con,$Query);
+							 $data=mysqli_fetch_object($exec);
+							if(mysqli_num_rows($exec)>0){					 
+							$modeReglement=($data->modeReglement>0)?$data->modeReglement:1;								
+							}  */
+						}
+							$data=mysqli_fetch_object($exec);
+							echo "Mode de règlement <span style='color:red;'>"; echo modePayement($modeReglement); echo "</span>";						
 					}else {
-						echo "Mode de règlement";
+						echo "Mode de règlement<span style='color:red;'> Espèce </span>";	
 					}
 					?></span>	 <i class='fas fa-plus-square' aria-hidden='true' style='font-size:140%;color:red;'></i></a>
 					&nbsp;</td>
@@ -226,7 +275,7 @@
 					<td  align='center'>Qté</td>
 					<td  style='padding-right:5px;' align='right'>Montant</td>
 				</tr>
-				<?php if(isset($reqselRTables)){
+				<?php if(isset($reqselRTables)){ 
 				$total=0;
 				echo "<form action='servir.php?menuParent=".$menuParenT."&val=1&table=".$table."&cv=".$cv."&tk=".$tk."'' method='post'>";
 				echo "<input type='hidden' name='' id='Nomclt' value=''/>";
@@ -261,12 +310,12 @@
 					<td  align='left' style='font-size:1.1em;font-weight:bold;color:#A0522D;'><br>Remise accordée : </td>
 					<td  align='left'><br><input type='text' name='remise' id='remise' style='width:100px;background-color:#D3D3D3;' onkeyup='remiseR();' onchange='remiseR();' onkeypress='testChiffres(event);' autocomplete='OFF' /></td>
 
-					<td  align='right' style='font-size:1.1em;font-weight:bold;color:#A0522D;'><br>&nbsp;Montant reçu :		</td>
+					<td  align='right' style='font-size:1.1em;font-weight:bold;color:#A0522D;'><br>&nbsp;Montant reçu :</td>
 					<td  align='right'><br><input type='text' name='Mtpercu' id='Mtpercu' onkeyup='monnaie();' onkeypress='testChiffres(event);' autocomplete='OFF' style='text-align:right;font-weight:bold;width:100px;background-color:#D3D3D3;border-radius: 5px;-moz-border-radius: 5px;-webkit-border-radius: 5px;'";  echo "/></td>
 				</tr>
 				<tr>
-				<td  align='left' style='font-size:1.1em;font-weight:bold;color:#A0522D;'><br>Net à payer :		</td>
-				<td  align='left'> <br> <span id='rem'>0	</span></td>
+				<td  align='left' style='font-size:1.1em;font-weight:bold;color:#A0522D;'><br>Net à payer :	</td>
+				<td  align='left'> <br> <span id='rem'>".$total."</span></td>
 					<td  align='right' style='font-size:1.1em;font-weight:bold;color:#A0522D;'><br>&nbsp;&nbsp;Monnaie :		</td>
 					<td  align='right'> <br> <span id='mon'>0	</span>	</td>
 				</tr>
@@ -301,11 +350,26 @@
 				<tr>
 					<td colspan='4' align='center'>
 					 <hr/> <span style='float:left;'>
-					 <a class='info' <?php if((!empty($table))||(!empty($vt)))  echo "onclick='edition5();return false;'"; else echo "onclick='Alert();return false;'";?> style='color:orange;' > <span style='font-size:0.9em;font-style:normal;color:maroon;'>Ajouter une boisson </span><img src='logo/Resto/add-to-cart.png' alt='' width='45' height='46' border='0'style='padding-bottom:5px;'>  </a>
-					  &nbsp;&nbsp;&nbsp;<a class='info' <?php if((!empty($table))||(!empty($vt)))  echo "onclick='edition8();return false;'"; else echo "onclick='Alert();return false;'";?> style='color:maroon;'><span style='font-size:0.9em;font-style:normal;color:maroon;'>Ajouter un pack ou <br/>casier de boissons</span><img src='logo/Resto/add.png' alt='' width='35' height='40' border='0' >  </a>
+					 <a class='info' <?php //if((!empty($table))||(!empty($vt)))  
+						 echo "onclick='edition5();return false;'";
+					 //else  echo "onclick='Alert();return false;'";
+					 ?> style='color:orange;' > <span style='font-size:0.9em;font-style:normal;color:maroon;'>Ajouter une boisson </span><img src='logo/Resto/add-to-cart.png' alt='' width='45' height='46' border='0'style='padding-bottom:5px;'>  </a>
+					  &nbsp;&nbsp;&nbsp;<a class='info' <?php 
+					  //if((!empty($table))||(!empty($vt)))  
+						  echo "onclick='edition8();return false;'";
+					 // else echo "onclick='Alert();return false;'";
+					  ?> style='color:maroon;'><span style='font-size:0.9em;font-style:normal;color:maroon;'>Ajouter un pack ou <br/>casier de boissons</span><img src='logo/Resto/add.png' alt='' width='35' height='40' border='0' >  </a>
 					   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-					   <a class='info2' <?php if((!empty($table))||(!empty($vt)))  echo "onclick='edition4();return false;'"; else echo "onclick='Alert();return false;'";?> style='color:#FF00FF;' > <span style='font-size:0.9em;font-style:normal;color:maroon;'>Ajouter un plat </span><img src='logo/Resto/add-soup.png' alt='' width='45' height='45' border='0'>	</a>
-					  &nbsp;&nbsp;&nbsp;<a class='info2' <?php if((!empty($table))||(!empty($vt)))  echo "onclick='edition9();return false;'"; else echo "onclick='Alert();return false;'";?> style='color:#6495ed;' > <span style='font-size:0.9em;font-style:normal;color:maroon;'>Ajouter une portion de plat</span><img src='logo/Resto/soup.png' alt='' width='40' height='45' border='0'></a>
+					   <a class='info2' <?php 
+					  //if((!empty($table))||(!empty($vt)))  
+						   echo "onclick='edition4();return false;'";
+					   //else echo "onclick='Alert();return false;'";
+					   ?> style='color:#FF00FF;' > <span style='font-size:0.9em;font-style:normal;color:maroon;'>Ajouter un plat </span><img src='logo/Resto/add-soup.png' alt='' width='45' height='45' border='0'>	</a>
+					  &nbsp;&nbsp;&nbsp;<a class='info2' <?php
+					  //if((!empty($table))||(!empty($vt)))  
+						  echo "onclick='edition9();return false;'"; 
+					  //else echo "onclick='Alert();return false;'";
+					  ?> style='color:#6495ed;' > <span style='font-size:0.9em;font-style:normal;color:maroon;'>Ajouter une portion de plat</span><img src='logo/Resto/soup.png' alt='' width='40' height='45' border='0'></a>
 
 					   
 					</span>
@@ -319,13 +383,13 @@
 							else
 								{
 									?>
-									<a class='info2' ><span style='font-size:0.9em;font-style:normal;color:red;'>Supprimer</span>	 <input type='submit' name='Supprimer'  value='&#x274C;' class="buttonT button6"> </a>
+									<a class='info2' ><span style='font-size:0.9em;font-style:normal;color:red;'>Supprimer</span><input type='submit' name='Supprimer'  value='&#x274C;' class="buttonT button6"> </a>
 						<?php
 								}
 						?>
 						&nbsp;&nbsp;&nbsp;
 						<input type='hidden' value='<?php if(isset($total)) echo $total; ?>' name='m' id='m' />
-						<a class='info2' ><span style='font-size:0.9em;font-style:normal;color:blue;'>Valider la commande</span>	 <input type='submit' name='Valider'  value='✔' class="button button5"> </a></form>
+						<a class='info2' ><span style='font-size:0.9em;font-style:normal;color:blue;'>Valider la commande</span><input type='submit' name='Valider'  value='✔' class="button button5"> </a></form>
 					</span> </td>
 				</tr>
 			</table>

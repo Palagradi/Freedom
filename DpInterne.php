@@ -24,7 +24,7 @@
 			}
 		}
 		else if(isset($_SESSION['ok'])&&($_SESSION['ok']==0)&&(isset($_GET['checkpvc']))){
-			echo 'alertify.error("Pour passer au mode Pack [P] et Casier [C], Veuillez repartir dans le menu Dépôt principal.");';
+			//echo 'alertify.error("Pour passer au mode Pack [P] et Casier [C], Veuillez repartir dans le menu Dépôt principal.");';
 		}else {}
 		echo "</script>";
 	}
@@ -315,12 +315,12 @@
 		 $query = mysqli_query($con,$rek) or die (mysqli_error($con)); $query = mysqli_query($con,$rek1) or die (mysqli_error($con));
 			if($query){
 			echo "<script language='javascript'>";
-			//echo 'alertify.success(" Boisson enrégistrée avec succès !");';
+			echo 'alertify.success(" Boisson enrégistrée avec succès !");';
 			echo "</script>";
 			if($_POST['pvc']==2)
-				echo '<meta http-equiv="refresh" content="0; url=DpInterne.php?menuParent='.$_SESSION['menuParenT'].'&ok=4" />'; 
+				echo '<meta http-equiv="refresh" content="1; url=DpInterne.php?menuParent='.$_SESSION['menuParenT'].'&ok=4" />'; 
 			else 
-				echo '<meta http-equiv="refresh" content="0; url=DpInterne.php?menuParent='.$_SESSION['menuParenT'].'&ok=4&checkpvc='.$_GET['checkpvc'].'" />'; 
+				echo '<meta http-equiv="refresh" content="1; url=DpInterne.php?menuParent='.$_SESSION['menuParenT'].'&ok=4&checkpvc='.$_GET['checkpvc'].'" />'; 
 			} 
 		}
 	}

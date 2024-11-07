@@ -1,9 +1,9 @@
 <?php
 		if(!empty($_GET['trie'])){
-			$req="(SELECT tableencours.numTable AS numTable,RTables.NbreCV AS NbreCV,tableencours.updated_at AS updated_at,RTables.status,RTables.id,RealNameTable FROM tableencours,RTables WHERE RTables.nomTable=tableencours.numTable AND created_at='".$Jour_actuel."' AND Etat <> 'Desactive' AND NbreCV<>0 AND RTables.status=0 ORDER BY updated_at DESC)
+			$req="(SELECT DISTINCT tableencours.numTable AS numTable,RTables.NbreCV AS NbreCV,tableencours.updated_at AS updated_at,RTables.status,RTables.id,RealNameTable FROM tableencours,RTables WHERE RTables.nomTable=tableencours.numTable AND created_at='".$Jour_actuel."' AND Etat <> 'Desactive' AND RTables.status=0 ORDER BY updated_at DESC)
 			UNION 
-			(SELECT * FROM RTables WHERE nomTable NOT IN (SELECT numTable FROM tableencours,RTables WHERE RTables.nomTable=tableencours.numTable AND created_at='".$Jour_actuel."' AND Etat <> 'Desactive' AND NbreCV<>0 AND RTables.status=1)
-			AND nomTable NOT IN (SELECT nomTable FROM RTables WHERE RTables.status=1)
+			(SELECT * FROM RTables WHERE nomTable NOT IN (SELECT numTable FROM tableencours,RTables WHERE RTables.nomTable=tableencours.numTable AND created_at='".$Jour_actuel."' AND Etat <> 'Desactive' AND RTables.status=1)
+			AND nomTable NOT IN (SELECT nomTable FROM RTables WHERE RTables.status=1) AND  NbreCV<>0
 			)"; 
 			$reqsel=mysqli_query($con,$req); $j=0; $array = array(); 
 			while($data=mysqli_fetch_array($reqsel))
@@ -22,7 +22,7 @@
 					$serveur=!empty($datax->nomserv)?($datax->nomserv." ".$datax->prenoms):""; 
 					}
 					
-					$reqxT="SELECT RealNameTable FROM RTables WHERE RTables.nomTable=".$i." AND NbreCV<>0 AND status=0";
+					$reqxT="SELECT RealNameTable,NbreCV FROM RTables WHERE RTables.nomTable=".$i." AND NbreCV<>0 AND status=0";
 					$reqselxT=mysqli_query($con,$reqxT);$dataxT=mysqli_fetch_object($reqselxT);
 				
 				  if(!empty($serveur)) $user="user0"; else $user="user";			  
@@ -34,13 +34,13 @@
 							//echo "<span style='color:white;display:block;float:top;margin-left:20px;'>".$Heure."</span>"; //else echo "<span style='color:blue;display:block;float:top;margin-bottom:-25px;'>&nbsp;</span>";
 							echo "<input type='submit'"; echo "class='bouton5' id='full' ";   echo "name='table' value='"; if(!empty($dataxT->RealNameTable)) echo $dataxT->RealNameTable; else echo $ii; echo "' onclick='redirect();' style='width:90px;height:45px;font-size:1.2em;";
 							if(count($checkFormaHour)==3) { echo "background: #7E45D8;"; $current=1;} else $current=0;
-							echo "'/><span style='color:blue;display:block;position:relative;margin-top:-20px;background: white;z-index:1;width:25px;height:12px;border:0px solid white;border-radius: 5px;-moz-border-radius: 5px;-webkit-border-radius: 5px;display:block;top:0px;font-size:0.6em;font-weight:bold;color:maroon;text-align:center;'> &nbsp;"; echo $NbreCV." CV&nbsp;"; echo"</span>
+							echo "'/><span style='color:blue;display:block;position:relative;margin-top:-20px;background: white;z-index:1;width:25px;height:12px;border:0px solid white;border-radius: 5px;-moz-border-radius: 5px;-webkit-border-radius: 5px;display:block;top:0px;font-size:0.6em;font-weight:bold;color:maroon;text-align:center;'> &nbsp;"; echo $dataxT->NbreCV." CV&nbsp;"; echo"</span>
 							</a>&nbsp;";
-							echo "&nbsp;<span style='color:maroon;position:sticky;z-index:1;'>".$Heure."</span>";
+							echo "&nbsp;<span style='color:yellow;position:sticky;z-index:1;'>".$Heure."</span>";
 							//echo "<a href='servir.php?menuParent=".$_SESSION['menuParenT']."&serv=1&tab=".$ii; ?>
 							 <a class='info2' href='#' 
 							 <?php if(empty($serveur)) {?>
-							 onclick='findServ(<?php echo $ii; echo ",1"; echo ",".$current;?>);return false;' 
+							 onclick='findServ(<?php echo $ii; echo ",1"; echo ",".$current.",0";?>);return false;' 
 							 <?php } else { ?>
 							 onclick='delServ(<?php echo $ii;?>);return false;' 
 							<?php } ?>
@@ -99,7 +99,7 @@
 						
 						<a class='info2' href='#' 						
 						 <?php if(empty($serveur)) {?>
-						 onclick='findServ(<?php echo $ii; echo ",1"; echo ",".$current;?>);return false;' 
+						 onclick='findServ(<?php echo $ii; echo ",1"; echo ",".$current.",0";?>);return false;' 
 						 <?php } else { ?>
 						 onclick='delServ(<?php echo $ii;?>);return false;' 
 						<?php } ?>
@@ -129,5 +129,5 @@
 		}
 					
 		}
-			
+		//echo $table;	
 		

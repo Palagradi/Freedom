@@ -1,18 +1,19 @@
 <?php
 	require("config.php");
-
-	//$fd=!empty($_GET['fd'])?$_GET['fd']:NULL; $fk=!empty($_GET['fk'])?$_GET['fk']:NULL; $prix = !empty($_GET['prix'])?$_GET['prix']:NULL;
-	//$_SESSION['origin']="drink";
-	//$cv=(isset($_SESSION['cv'])&&(!empty($_SESSION['cv']))) ? $_SESSION['cv']:1;
 	
  	$table=(isset($_SESSION['table'])&&(!empty($_SESSION['table']))) ? $_SESSION['table']:0;	
 	$Qte = isset($_GET['Qte'])?$_GET['Qte']:0;   
 	$numero = !empty($_GET['numero'])?$_GET['numero']:0;
 
+	if(!is_int($table)){
+		$reqTable=mysqli_query($con,"SELECT nomTable FROM RTables WHERE (RealNameTable='".$table."' OR nomTable='".$table."')"); $j=0;
+		$dataT=mysqli_fetch_object($reqTable);
+		$table=$dataT->nomTable ;	
+	}
 	
 if(($numero>0)&&($Qte>0)){echo "&nbsp;";
 	$rek="SELECT * FROM plat WHERE numero='".$numero."'";
-	$query = mysqli_query($con,$rek) or die (mysqli_error($con));$data=mysqli_fetch_assoc($query); $Qte_Stock=$data['NbreJ'];
+	$query = mysqli_query($con,$rek) or die (mysqli_error($con));$data=mysqli_fetch_assoc($query); $Qte_Stock=$data['Nbre'];
 	if(!empty($TPS_2)&&($TPS_2==1))  $tva=0 ; else $tva=round($data['prix']/(1+$TvaD)*$TvaD);
 	
 	if (($Qte>$Qte_Stock)||($Qte_Stock==0))
@@ -112,11 +113,11 @@ a.info {
 
 		<script type="text/javascript" >
 		function JSalertQte(param){
-		swal("QUANTITE DE PLATS ",{
+		swal("QUANTITE DE PLATS COMMANDEE",{
 		  content: {
 			element: "input",
 			attributes: {
-			  placeholder: "Saisissez ici la quantité commandée ",
+			  placeholder: "Saisissez la quantité ici ",
 			  type: "number",
 			  min : "1",
 			},
@@ -210,7 +211,7 @@ a.info {
 		<tbody id="">
 <?php 
 	mysqli_query($con,"SET NAMES 'utf8'");
-	$result=mysqli_query($con,"SELECT * FROM plat,categorieplat,menu WHERE categorieplat.id=plat.categPlat AND menu.id=plat.categMenu ORDER BY NbreJ DESC");
+	$result=mysqli_query($con,"SELECT * FROM plat,categorieplat,menu WHERE categorieplat.id=plat.categPlat AND menu.id=plat.categMenu ORDER BY Nbre DESC");
 	$cpteur=1;$i=0;$j=0;
     // parcours et affichage des résultats
     while( $data = mysqli_fetch_object($result))
@@ -227,7 +228,7 @@ a.info {
 			}  $i++;  if($i%2==0){$color="#FC7F3C";$plus="plus1"; }else {$color="maroon";$plus="plus2";}
 
     ?>
-		 	<tr class='rouge1' bgcolor=' <?=$data->NbreJ<=0?"gray":$bgcouleur; ?>'>
+		 	<tr class='rouge1' bgcolor=' <?=$data->Nbre<=0?"#D2B48C":$bgcouleur; ?>'>
 			  <td align='center' style='padding:7px;border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'><?php echo $j; ?>.</td>
 				<td style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'><?php echo $data->catPlat; ?> </td>
 				<td style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'> <?php echo $data->designation; ?></td>
@@ -236,7 +237,7 @@ a.info {
 				<td align='center'  style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'> 
 				<a class='info' onclick='JSalertQte(<?php echo $data->numero ?>);return false;' 
 				<?php
-				if($data->NbreJ>0)
+				if($data->Nbre>0)
 					echo "style='color:".$color.";'><img src='logo/".$plus.".png' alt='' width='25' height='25' border='0'/><span style='color:#FC7F3C;'>Ajouter</span></a>";
 				echo "</td>";
 				}

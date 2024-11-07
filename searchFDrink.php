@@ -6,7 +6,7 @@ $Qte = isset($_POST['QteAjeT'])?$_POST['QteAjeT']:NULL;    $Qte = isset($_GET['Q
 
  mysqli_query($con,"SET NAMES 'utf8'");
 //recherche des résultats dans la base de données
-$result =   mysqli_query($con, 'SELECT * FROM boisson,config_boisson,conditionnement,QteBoisson,casier WHERE QteBoisson.id=boisson.Qte AND conditionnement.id=boisson.Conditionne AND config_boisson.id=boisson.Categorie AND casier.id=boisson.pc AND pc<>0 AND  Depot = \'2\' AND (LibCateg LIKE \'%' . safe( $_GET['qt'] ) . '%\'  OR designation LIKE \'%' . safe( $_GET['qt'] ) . '%\' OR LibConditionne LIKE \'%' . safe( $_GET['qt'] ) . '%\'
+$result =   mysqli_query($con, 'SELECT * FROM boisson,config_boisson,conditionnement,QteBoisson,casier WHERE QteStock>0 AND QteBoisson.id=boisson.Qte AND conditionnement.id=boisson.Conditionne AND config_boisson.id=boisson.Categorie AND casier.id=boisson.pc AND pc<>0 AND  Depot = \'2\' AND (LibCateg LIKE \'%' . safe( $_GET['qt'] ) . '%\'  OR designation LIKE \'%' . safe( $_GET['qt'] ) . '%\' OR LibConditionne LIKE \'%' . safe( $_GET['qt'] ) . '%\'
  OR LibQte LIKE \'%' . safe( $_GET['qt'] ) . '%\' OR QteStock LIKE \'%' . safe( $_GET['qt'] ) .'%\' OR PrixUnitaire LIKE \'%' . safe( $_GET['qt'] ) . '%\') ORDER BY QteStock DESC LIMIT 0,20' );
 
 // affichage d'un message "pas de résultats"
@@ -89,7 +89,7 @@ else
 			}  $i++;  if($i%2==0){$color="#FC7F3C";$plus="plus1"; }else {$color="maroon";$plus="plus2";}
 
     ?>
-		 	<tr class='rouge1' bgcolor=' <?=$data->QteStock<=0?"gray":$bgcouleur; ?>'>
+		 	<tr class='rouge1' bgcolor=' <?=$data->QteStock<=0?"#D2B48C":$bgcouleur; ?>'>
 					<td align='center' style='padding:7px;border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'><?php echo $j; ?>.</td>
 				<td style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'><?php echo $data->LibCateg; ?> </td>
 				<td style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'> <?php echo $data->designation; ?></td>

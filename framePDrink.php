@@ -5,6 +5,11 @@
 	$Qte = isset($_GET['Qte'])?$_GET['Qte']:0;   
 	$numero = !empty($_GET['numero'])?$_GET['numero']:0;
 
+	if(!is_int($table)){
+		$reqTable=mysqli_query($con,"SELECT nomTable FROM RTables WHERE (RealNameTable='".$table."' OR nomTable='".$table."')"); $j=0;
+		$dataT=mysqli_fetch_object($reqTable);
+		$table=$dataT->nomTable ;	
+	}
 	
 if(($numero>0)&&($Qte>0)){echo "&nbsp;";
 	$rek="SELECT * FROM boisson,config_boisson,conditionnement,QteBoisson,casier WHERE QteBoisson.id=boisson.Qte AND conditionnement.id=boisson.Conditionne AND config_boisson.id=boisson.Categorie AND casier.id=boisson.pc AND pc<>0 AND Depot = '2' AND numero='".$numero."'";
@@ -109,11 +114,11 @@ a.info {
 
 		<script type="text/javascript" >
 		function JSalertQte(param){
-		swal("QUANTITE ",{
+		swal("QUANTITE COMMANDEE",{
 		  content: {
 			element: "input",
 			attributes: {
-			  placeholder: "Saisissez ici la quantité commandée ",
+			  placeholder: "Saisissez la quantité commandée ici",
 			  type: "number",
 			  min : "1",
 			},
@@ -225,7 +230,7 @@ a.info {
 			}  $i++;  if($i%2==0){$color="#FC7F3C";$plus="plus1"; }else {$color="red";$plus="plus2";}
 
     ?>
-		 	<tr class='rouge1' bgcolor=' <?=$data->QteStock<=0?"gray":$bgcouleur; ?>'>
+		 	<tr class='rouge1' bgcolor=' <?=$data->QteStock<=0?"#D2B48C":$bgcouleur; ?>'>
 				<td align='center' style='padding:7px;border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'><?php echo $j; ?>.</td>
 				<td style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'><?php echo $data->LibCateg; ?> </td>
 				<td style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'> <?php echo $data->designation; ?></td>

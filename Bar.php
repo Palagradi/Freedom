@@ -31,14 +31,14 @@
 				$RegimeTVA=$data->RegimeTVA;
 			
 				if(mysqli_num_rows($result0)==0){
-					 $rek1="INSERT INTO boisson SET numero2='".$numero2."',Categorie='".$Categorie."',pc='".$pc."',designation='".$designation."',Qte='".$Qte2."',Conditionne='".$Conditionne."',PrixUnitaire='".$PrixUnitaire."',PrixPack='".$PrixPack."',Seuil='".$Seuil."',QteStock='".$QteStock."',StockReel='".$QteStock."',dateCreation='".$Jour_actuel."',dateUpdate='".$Jour_actuel."',Depot = '2',RegimeTVA='".$RegimeTVA."'";	
+					 $rek1="INSERT INTO boisson SET numero2='".$numero2."',Categorie='".$Categorie."',pc='".$pc."',designation='".$designation."',Qte='".$Qte2."',Conditionne='".$Conditionne."',PrixUnitaire='".$PrixUnitaire."',PrixPack='".$PrixPack."',Seuil='".$Seuil."',QteStock='".$QteStock."',StockReel='".$QteStock."',created_at='".$Jour_actuel."',updated_at='".$Jour_actuel."',Depot = '2',RegimeTVA='".$RegimeTVA."'";	
 					 $query = mysqli_query($con,$rek1) or die (mysqli_error($con));
 				}else {
 					$data2=mysqli_fetch_object($result0); $QteStock+=$data2->QteStock; $numero3=$data2->numero;
 					  $rek="UPDATE boisson SET QteStock='".$QteStock."' WHERE numero='".$numero3."' AND pc='0' AND Depot = '2' ";
-					$query = mysqli_query($con,$rek) or die (mysqli_error($con));
+					  $query = mysqli_query($con,$rek) or die (mysqli_error($con));
 				}
-				$rek="UPDATE boisson SET QteStock='".$QteStockPack."' WHERE numero='".$numero."' AND pc<>'0' AND Depot = '1' "; 
+				$rek="UPDATE boisson SET QteStock='".$QteStockPack."' WHERE numero='".$numero."' AND pc<>'0' "; 
 				$query = mysqli_query($con,$rek) or die (mysqli_error($con)); //dimunition du stock du depot
 				
 				if($query){
@@ -75,7 +75,7 @@
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 		<link rel="stylesheet" media="screen" type="text/css" title="design" href="design.css"/>
 		<link rel="Stylesheet" href='css/table.css' />
-		<link rel="Stylesheet" type="text/css"  href='css/input.css' />
+		<link rel="Stylesheet" type="text/css"  href='css/input.css'/>
 		<link href="fontawesome/web-fonts-with-css/css/fontawesome-all.min.css" rel="stylesheet">
 		<link rel="stylesheet" href="js/alertify.js/themes/alertify.core.css" />
 		<link rel="stylesheet" href="js/alertify.js/themes/alertify.default.css" id="toggleCSS" />
@@ -146,11 +146,11 @@
 					<?php echo "En Pack [P] et Casier [C]"; ?> </label></span>
 				</form>			
 			</td>
-		</tr>
-		<tr>
-			<td style='text-align:left;'><hr style=''/>	</td>
-		</tr>
-	</table>
+			</tr>
+			<tr>
+				<td style='text-align:left;'><hr style=''/>	</td>
+			</tr>
+		</table>
 
 <br/>
 

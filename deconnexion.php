@@ -3,7 +3,7 @@
 	include 'connexion.php'; 
 	//if ((isset($_POST['dec']) and $_POST['dec']=='Déconnexion')||(!empty($_SESSION['lien'])))
 		{mysqli_query($con,"SET NAMES 'utf8' ");
-			$req=mysqli_query($con,"TRUNCATE table menu_Tempon");
+			//$req=mysqli_query($con,"TRUNCATE table menu_Tempon");
 			$req=mysqli_query($con,"DROP TABLE IF EXISTS reservation_tempon2");
 			$res=mysqli_query($con,"DELETE FROM client_tempon");	
 			$or="SELECT jour FROM reservation_tempon";

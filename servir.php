@@ -13,61 +13,45 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
 
 		$fd=!empty($_GET['fd'])?$_GET['fd']:NULL; $fk=!empty($_GET['fk'])?$_GET['fk']:NULL;$Qte=!empty($_GET['Qte'])?$_GET['Qte']:0;$desactiveT=0;
 		 $fd; $tk=!empty($_GET['tk'])?$_GET['tk']:NULL;   $serv = !empty($_GET['serv'])?$_GET['serv']:NULL; $tab = !empty($_GET['tab'])?$_GET['tab']:NULL;
-
-/* 		$nomclt=!empty($_GET['nomclt'])?$_GET['nomclt']:NULL;
-		if(empty($nomclt))
-		$nomclt=!empty($_GET['rsociale'])?$_GET['rsociale']:NULL;
-		if(isset($nomclt)&&(!empty($nomclt)))
-		{  
-			if(!empty($_GET['nomclt']))
-				$req="SELECT * FROM clientresto WHERE (nomclt='".$nomclt."' AND prenomclt='".$_GET['prenoms']."')";
-		   else 
-			    $req="SELECT * FROM clientresto WHERE entrepriseName='".$_GET['rsociale']."' OR numIFU='".$_GET['ifu']."'";
-		   $mQuery=mysqli_query($con,$req);
-		   $data=mysqli_fetch_object($mQuery); 
-		   if(mysqli_num_rows($mQuery)>0)
-		   {	echo "<script language='javascript'>";
-				echo 'alertify.error("Ce client existe déjà");';
-				echo "</script>";
-		   }else {
-
-	       $Query="INSERT INTO clientresto SET nomclt='".$nomclt."',prenomclt ='".$_GET['prenoms']."',numIFU ='".$_GET['ifu']."',entrepriseName='".$_GET['rsociale']."',adresseclt ='".$_GET['adresse']."', Telclt ='".$_GET['telephone']."'";
-		   $exec=mysqli_query($con,$Query);
-			 if(isset($exec)){
-				 echo "<script language='javascript'>";
-				 echo 'alertify.success(" Le client a été enregistré avec succès");';
-				 echo "</script>";					 
-				}
-		}
-		} */
 				
 		$table = !empty($_GET['table'])?$_GET['table']:0;
 		$cv = !empty($_GET['cv'])?$_GET['cv']:0;
-		$reqselRTables=mysqli_query($con,"SELECT * FROM tableEnCours WHERE numTable='".$table."' AND created_at='".$Jour_actuel."' AND Etat<> 'Desactive'");
-			if($reqselRTables){ unset($del); unset($val); unset($vt);
-/* 				echo "<script language='javascript'>";
-				echo 'alertify.success(" La commande a été validée !");';
-				echo "</script>";	 */
-				}
+		
+		$table0=(int)($table);	
+		$Query="SELECT id FROM RTables WHERE RealNameTable='".$table."'";
+		$exec=mysqli_query($con,$Query);
+		 $data=mysqli_fetch_object($exec);
+		if(mysqli_num_rows($exec)>0){
+		$table0=(int)($data->id);	
+		}			
+			
+		$sql="SELECT * FROM tableEnCours WHERE numTable='".$table0."' AND created_at='".$Jour_actuel."' AND Etat<> 'Desactive'";
+		$reqselRTables=mysqli_query($con,$sql);
+		if($reqselRTables){ unset($del); unset($val); unset($vt);}
 		
 		$client=!empty($_GET['client'])?$_GET['client']:NULL;
 		if(isset($client)&&(!empty($client)))
-		{	$client = explode("(",$client); $client = explode(")",$client[1]); $table=(int)($table);
-	 		$Query="UPDATE tableEnCours SET client ='".$client[0]."' WHERE numTable='".$table."' AND created_at='".$Jour_actuel."' AND Etat<> 'Desactive'";
+		{	$client = explode("(",$client); $client = explode(")",$client[1]); //$table=(int)($table);
+	 		$Query="UPDATE tableEnCours SET client ='".$client[0]."' WHERE numTable='".$table0."' AND created_at='".$Jour_actuel."' AND Etat<> 'Desactive'";
 			 $exec=mysqli_query($con,$Query);
 		}
 		$mode=!empty($_GET['mode'])?$_GET['mode']:NULL; 
 		if(isset($mode)&&(!empty($mode))&&(!is_null($mode))&&($mode!='null'))
-		{	$table=(int)($table);
-	 		$Query="UPDATE tableEnCours SET modeReglement ='".$mode."' WHERE numTable='".$table."' AND created_at='".$Jour_actuel."' AND Etat<> 'Desactive'";
+		{	/* $table0=(int)($table);	
+			$Query="SELECT id FROM RTables WHERE RealNameTable='".$table."'";
+			$exec=mysqli_query($con,$Query);
+			 $data=mysqli_fetch_object($exec);
+			if(mysqli_num_rows($exec)>0){
+			$table0=(int)($data->id);	
+			} */								
+	 		$Query="UPDATE tableEnCours SET modeReglement ='".$mode."' WHERE numTable='".$table0."' AND created_at='".$Jour_actuel."' AND Etat<> 'Desactive'";
 			$exec=mysqli_query($con,$Query);
 		}
-
 	$vt = !empty($_GET['vt'])?$_GET['vt']:NULL;  $val = !empty($_GET['val'])?$_GET['val']:NULL; if(empty($val)) { if(!isset($_GET['del'])) unset($_SESSION['Ntable']); unset($_SESSION['cv']);}
-	$del = !empty($_GET['del'])?$_GET['del']:NULL;
+	$del = !empty($_GET['del'])?$_GET['del']:NULL;$delete = !empty($_GET['delete'])?$_GET['delete']:NULL;
 
 	if (!empty($del))
-		{  $mQuery=mysqli_query($con,"SELECT max(Num) AS Num FROM tableEnCours WHERE numTable='".$table."' AND created_at='".$Jour_actuel."' AND Etat<> 'Desactive'");
+		{  $mQuery=mysqli_query($con,"SELECT max(Num) AS Num FROM tableEnCours WHERE numTable='".$table0."' AND created_at='".$Jour_actuel."' AND Etat<> 'Desactive'");
 		   $data=mysqli_fetch_object($mQuery); $max=$data->Num;
 		   if(empty($max))
 		   {	echo "<script language='javascript'>";
@@ -75,9 +59,9 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
 				echo "</script>";
 		   }else {  //$pre_sql1="DELETE FROM tableEnCours WHERE num='$max' AND Etat<> 'Desactive'";
 		   //$req1 = mysqli_query($con,$pre_sql1) or die (mysqli_error($con));
-		   $reqsel=mysqli_query($con,"SELECT * FROM RTables WHERE status=0 AND nomTable='".$table."'");
-		   $data=mysqli_fetch_assoc($reqsel);$cv=$data['NbreCV'];
-		   $reqselRTables=mysqli_query($con,"SELECT * FROM tableEnCours WHERE status=0 numTable='".$table."' AND created_at='".$Jour_actuel."' AND Etat<> 'Desactive'");
+		   $reqsel=mysqli_query($con,"SELECT * FROM RTables WHERE nomTable='".$table0."'");
+		   $data=mysqli_fetch_assoc($reqsel);$cv=isset($data['NbreCV'])?$data['NbreCV']:0;
+		   $reqselRTables=mysqli_query($con,"SELECT * FROM tableEnCours WHERE numTable='".$table0."' AND created_at='".$Jour_actuel."' AND Etat<> 'Desactive'");
 		   		//if($req1){
 				//echo "<script language='javascript'>";
 				//echo 'alertify.success(" Ligne supprimée avec succès !");';
@@ -86,18 +70,12 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
 		   //echo '<meta http-equiv="refresh" content="2; url=servir.php" />';
 		}
 
-
-/* 			$reqsel2=mysqli_query($con,"SELECT DISTINCT numTable FROM tableEnCours");
-			$Ttable=array();$i=0;
-			while($data1=mysqli_fetch_array($reqsel2)){
-				 echo $Ttable[$i]=$data1['numTable']; $i++;
-			} */
 		$reqTable=mysqli_query($con,"SELECT * FROM RTables WHERE NbreCV<>0"); $j=0;
 		while($dataT=mysqli_fetch_object($reqTable)){	$j++;	
-		$i=$dataT->nomTable ;  
+		$i=$dataT->nomTable ;$RealNameTable=$dataT->RealNameTable ;
 		//for($i=1;$i<=$Nbre;$i++){
-			if (isset($_POST['table']) and $_POST['table']==$i)
-				{ if($i<10) $table="0".$i; else $table=$i;
+			if (isset($_POST['table']) and ($_POST['table']==$i)||($_POST['table']==$RealNameTable))
+				{ if($i<10) $table="0".$i; else $table=$i; if($_POST['table']==$RealNameTable) $table=$RealNameTable;
 					$reqsel=mysqli_query($con,"SELECT * FROM RTables WHERE status=0 AND nomTable='".$i."'");
 					if(mysqli_num_rows($reqsel)>0){
 					$_SESSION['Ntable']=$i;
@@ -114,8 +92,12 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
 			if (isset($_POST['Valider']))
 			{  //if(isset($_POST['MontantP'])) echo $_POST['MontantP'] ; echo 12;
 			}
-			$_SESSION['table'] = $table;
-
+			$_SESSION['table'] = $table; 
+ if(isset($delete)&&($delete=="ok")&&(isset($_SESSION['delete'])&&($_SESSION['delete']==1))){
+	 echo "<script language='javascript'>";
+	 echo 'alertify.success(" Suppression effectuée !");';
+	 echo "</script>"; 
+ }$_SESSION['delete']=0;
 ?>
 <html>
 	<head>
@@ -169,7 +151,6 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
 		#test:hover{
 			color:black;
 		}
-
 
 		 .button {
 		  background-color: blue;
@@ -309,8 +290,8 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
 			top: 0;
 		}
 	  .info {
-		margin-bottom: 10px;
-	}
+		margin-bottom: 0px;
+		}
 		</style>
 			<script type="text/javascript" >
 				function edition1() { options = "Width=800,Height=450" ; window.open( "tableP.php", "edition", options ) ; }
@@ -332,11 +313,14 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
 					alertify.error(" Aucune donnée à imprimer!");
 				}
 				function remiseR() {//alert("hjjjd");
+					var remise = parseInt(document.getElementById('remise').value);
 					if(document.getElementById('remise').value!=""){
+						if((remise>0)&&(remise < parseInt(document.getElementById("total").value))){
 						rem.innerHTML = parseInt(document.getElementById("total").value)-parseInt(document.getElementById('remise').value);
 						document.getElementById('m').value=parseInt(document.getElementById("total").value)-parseInt(document.getElementById('remise').value);
 						document.getElementById('remise').style.backgroundColor='#F3F39F';
-						document.getElementById('remise').style.fontWeight='bold'; }
+					document.getElementById('remise').style.fontWeight='bold';}
+						}
 				}
 				function monnaie() {
 					if(document.getElementById('remise').value=="") {document.getElementById('remise').value=0;
@@ -355,19 +339,6 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
 					document.getElementById('m').value=parseInt(document.getElementById("total").value)-parseInt(document.getElementById('remise').value);
 
 				}
-
-		/* 		function JSalert(){
-					swal("Entrez ici le Nom du Client :", {
-					  content: "input",
-					})
-					.then((value) => {
-
-					  document.getElementById('Nomclt').value=value;   var table = document.getElementById('NameTable').value;  var cv = document.getElementById('cv').value;
-					  document.location.href='servir.php?menuParent=<?php echo $_SESSION['menuParenT']; ?>&clt='+value+'&table='+table+'&cv='+cv;
-					});
-				} */
-				
-
 	</script>
 	</head>
 	<body bgcolor='azure' style="" > 
@@ -389,17 +360,7 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
 			echo "</script>";
 		}  //https://sweetalert.js.org/docs/#configuration
 		if(!empty($_GET['test'])&& ($_GET['test']=='true')){
-			//echo $_SESSION['p'];
-/* 			$rz="SELECT * FROM produits WHERE Num='".$_SESSION['aj']."' AND Type='".$_SESSION['menuParenT1']."'"; $req=mysqli_query($con,$rz);
-			$data=mysqli_fetch_object($req);  $Qte_initial= $data->Qte_Stock; $Qte_Stock=$Qte_initial+$_SESSION['qte'];$update=$data->Num2 ;
-		 	$rek="UPDATE produits SET Qte_Stock='".$Qte_Stock."',StockReel='".$Qte_Stock."' WHERE Num='".$_SESSION['aj']."' AND Type='".$_SESSION['menuParenT1']."'";
-			$query = mysqli_query($con,$rek) or die (mysqli_error($con)); $ref="PRIN".$update ;  $service=" "; $designationOperation ='Mise à jour Produits';
-			if($query){
-			$re="INSERT INTO operation VALUES(NULL,'".$ref."','".$designationOperation."','".$update."','".$Qte_initial."','".$_SESSION['qte']."','".$Qte_Stock."','".$Jour_actuel."','".$Heure_actuelle."','','".$_SESSION['qte']."')";
-			$req=mysqli_query($con,$re);
-			echo "<script language='javascript'>";
-			echo 'alertify.success(" Opération effectuée avec succès !");';
-			echo "</script>"; */
+
 		} 
 		echo "<a href='servir.php?menuParent=".$_SESSION['menuParenT']."&tab=1&trie=1' style='text-decoration:none;font-size:1.1em;' class='info2'>
 		<img src='logo/Resto/circle.png' alt='' width='30' height='25' border='1'><span style='color:#ff103c;font-weight:bold;font-size:75%;'>Trier les tables</span></a>";
@@ -413,9 +374,6 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
 		
 		 if($printf==1)  {
  				echo "<br/><br/>";
-			/*	echo "&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;<a href='servir.php?menuParent=".$_SESSION['menuParenT']."&serv=1' style='text-decoration:none;font-size:1.1em;'>
-			<span style='color:#ff103c;font-weight:bold;font-size:75%;'>Serveurs -> Tables</span></a> &nbsp;|<a href='servir.php?menuParent=".$_SESSION['menuParenT']."&tab=1&trie=1' style='text-decoration:none;font-size:1.1em;'>
-			<span style='color:#ff103c;font-weight:bold;font-size:75%;'>Trier les tables</span></a>"; */
 			}
 		?>	
 		</div>
@@ -424,13 +382,17 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
 		else if((empty($table))&&(!empty($vt))) echo "<span style='color:#444739;font-weight:bold;'>Formule de vente : Takeaway</span>";
 		else if(!empty($table)) {echo "<span style='color:#444739;font-weight:bold;'>Formule de vente : Occupation d'une table</span>"; }  else {}
 
-	 		echo "</span>"; if((empty($table))&&(empty($vt))) echo "<span style='float:left;font-weight:bold;'></span>
+	 		echo "</span>"; 
+			//if((empty($table))&&(empty($vt))) 
+			echo "<span style='float:left;font-weight:bold;'></span>
 			<span style='float:right;font-weight:bold;'><a href='servir.php?menuParent=".$_SESSION['menuParenT']."&vt=1&tk=1' id='lien1' class='info2' style='color:red;text-decoration:none;border-radius: 5px;-moz-border-radius: 5px;-webkit-border-radius: 5px;'>
 			<span style='font-size:0.8em;'>Takeaway</span> <img src='logo/Resto/take-away.png' alt='' width='40' height='45' border='1' style='position:relative;margin-top:-14px;background: white;z-index:1;'></a> </span>";
 		?>
 		<h2 style='font-size:1.1em;color:maroon;font-family:cambria;'>&nbsp;&nbsp;  </h2>
 
-				<?php if(((!empty($table))||(!empty($vt))||(!empty($tk)))&& ($desactiveT==0))
+				<?php 
+				if(((!empty($table))||(!empty($vt))||(!empty($tk)))||(!empty($_GET['client']))||(!empty($_GET['mode'])))
+				//if(((!empty($table))||(!empty($vt))||(!empty($tk)))&& ($desactiveT==0))
 					{include('serv.php');
 					}
 					else if(isset($_GET['print'])){
@@ -441,7 +403,7 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
 							echo "<img title='' src='logo/1/".rand(1,3).".jpg' width='500' height='340' style='max-width:500px;border:3px solid white;'/>	";
 						}
 
-		$req="SELECT DISTINCT tableEnCours.num_facture as num_facture,heure_emission,montant_ttc,NomClient,factureResto.numTable,factureResto.id AS id FROM tableEnCours,factureResto WHERE factureResto.num_facture=tableEnCours.num_facture AND created_at='".$Jour_actuel."' AND Etat LIKE 'Desactive' AND factureResto.num_facture<>'' ORDER BY factureResto.id DESC LIMIT 5";
+		$req="SELECT DISTINCT tableEnCours.num_facture as num_facture,heure_emission,montant_ttc,client,factureResto.numTable,factureResto.id AS id FROM tableEnCours,factureResto WHERE factureResto.num_facture=tableEnCours.num_facture AND created_at='".$Jour_actuel."' AND Etat LIKE 'Desactive' AND factureResto.num_facture<>'' ORDER BY factureResto.id DESC LIMIT 5";
 		$reqsel2=mysqli_query($con,$req);
 		if(mysqli_num_rows($reqsel2)>0) {
 				?>
@@ -475,19 +437,55 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
 				$cpteur = 1;
 				$bgcouleur = "#dfeef3";$color = "red"; 
 			}
-		  $i=$data['numTable']; if($i<10) $table="0".$i; else $table=$i;
+		  $i=$data['numTable']; if($i<10) $table="0".$i; else $table=$i; 
+		  
+		  $sql = "SELECT RealNameTable FROM RTables WHERE nomTable='".$i."'";
+		  $reqselRTablesX=mysqli_query($con,$sql);
+		  $data1X=mysqli_fetch_object($reqselRTablesX); 
+		  
 		  echo "<tr class='rouge1' bgcolor='".$bgcouleur."' style='border:1px solid gray;'>
-			<td align='left' style='color:maroon;'>&nbsp;&nbsp;&nbsp;".$data['num_facture']."</td>
+			<td align='left' style='color:maroon;'>".$data['num_facture']."</td>
 			<td align='left'>".$data['heure_emission']."</td>
-			<td style='text-align: left;'> "; echo $client=!empty($data['NomClient'])?substr($data['NomClient'],0,75):"#Non renseigné#"; echo"</td>
-			<td style='text-align: center;'>"; echo $table=($table!="00")?substr($table,0,35):"-"; echo"</td>
+			<td style='text-align: left;'> "; 
+			$client=$data['client']; 			
+			if($client>0){
+					$reqx="SELECT * FROM clientresto WHERE id='".$client."' ";
+					$reqselRTablesx=mysqli_query($con,$reqx);
+					$datax=mysqli_fetch_object($reqselRTablesx);
+					$numIFU="<u>IFU</u> : ".$datax->numIFU;
+				if(!empty($datax->entrepriseName))
+					$NomClient=$datax->entrepriseName;
+				else 
+					$NomClient=$datax->nomclt." ".$datax->prenomclt;
+				}
+				else {
+				$NomClient="<g>Non renseigné</g>";		
+				}
+			echo $NomClient;
+				
+			echo"</td>
+			<td style='text-align: center;'>"; 
+			if(empty($data1X->RealNameTable)) 
+				echo $table=($table!="00")?substr($table,0,35):"-"; 
+			else {
+				echo $data1X->RealNameTable;
+			}
+			echo"</td>
 			<td style='text-align: right;color:maroon;'>".$data['montant_ttc']."</td>
 			 <td style='text-align:right;'>";
-			 //echo "<a class='info2' href='servir.php?print=1' onclick='edition6(".$data['id'].");return false;'> <span style='font-size:0.9em;font-style:normal;color:black;'>Impression</span>	 <i class='fas fa-print' style='color:".$color."' aria-hidden='true' style='font-size:100%;'></i></a>";
-			//echo "<a href='#' class='info2' id='ticketLink-".$data['id']."' data-bs-toggle='modal' data-bs-target='#ticketModal' data-ticket-id='".$data['id']."'><span style='font-size:0.9em;font-style:normal;color:black;'>Impression</span>	 <i class='fas fa-print' style='color:".$color."' aria-hidden='true' style='font-size:100%;'></i></a>";
 		?>  
-		<a href='' class='info' class='quickview' data-link-action='quickview'  data-bs-toggle='modal' data-bs-target='#ec_quickview_modal<?=$data['id'];?>'> <span style='font-size:0.9em;font-style:normal;color:black;'>Impression</span><i class='fas fa-print' style='color:<?=$color;?>' aria-hidden='true' style='font-size:100%;'></i></a>
-
+		<span style='float:right;'>
+		<!-- Lien pour la visualisation seule -->
+		<a href='' class='info' data-link-action='viewonly' data-bs-toggle='modal' data-bs-target='#ec_quickview_modal<?=$data['id'];?>'> 
+			<span style='font-size:0.9em;font-style:normal;color:black;'>Visualisation</span>
+			<i class='fas fa-eye' style='color:<?=$color;?>' aria-hidden='true' style='font-size:100%;'></i>
+		</a>&nbsp;
+		<!-- Lien pour l'impression -->
+		<a href='' class='info2' data-link-action='quickview' data-bs-toggle='modal' data-bs-target='#ec_quickview_modal<?=$data['id'];?>'> 
+			<span style='font-size:0.9em;font-style:normal;color:black;'>Impression</span>
+			<i class='fas fa-print' style='color:<?=$color;?>' aria-hidden='true' style='font-size:100%;'></i>
+		</a>&nbsp;&nbsp;
+		</span>
 		<!-- Modal -->
     <div class="modal fade" id="ec_quickview_modal<?=$data['id'];?>" tabindex="-1" role="dialog" aria-labelledby="ticketModalLabel" aria-hidden="true">			
     <div class="modal-dialog">
@@ -533,12 +531,12 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
 					{ 
 					}
 					$factureResto=mysqli_query($con,$req);
-					while($data1=mysqli_fetch_array($factureResto)){ 
-						$Net=$data1['montant_ttc']-$data1['Remise'];
-						$SommePayee=$data1['somme_paye']; $monnaie=$SommePayee-$Net;$remise=$data1['Remise'];
-						$NomClient=!empty($data1['NomClient'])?$data1['NomClient']:"<g>Non renseigné</g>";
-						$heure=$data1['heure_emission'];$numRecu=$data1['num_facture'];$client=$data1['client'];$serveur=$data1['serveur'];
-					}
+					$data1=mysqli_fetch_object($factureResto);//{ 
+						$remise=$data1->Remise; $Net=$data1->montant_ttc;
+						$SommePayee=$data1->somme_paye; $monnaie=$SommePayee-$Net;$seller=$data1->seller; 
+						$NomClient=!empty($data1->NomClient)?$data1->NomClient:"<g>Non renseigné</g>";
+						$heure=$data1->heure_emission;$numRecu=$data1->num_facture;$client=$data1->client;$serveur=$data1->serveur;
+					//}
 
 				if($client>0){
 						$reqx="SELECT * FROM clientresto WHERE id='".$client."' ";
@@ -562,13 +560,12 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
 						$NomServeur=$datax->nomserv." ".$datax->prenoms;
 					}
 					else {
-					$NomServeur="<g> </g>";	
+					$NomServeur="";	
 					}					
 					?>
 				</div>
 			</div>
-
-			  <div class="info">
+			  <div class="info" >
 					<small><?php if(!empty($Date_actuel)) echo $Date_actuel2;  ?> à <?php echo $heure; ?></small>
 					<center>
 							<h6 style='font-weight:bold;background-color:#e5e5e5;'> Ticket N°: <?php echo $numRecu; ?> </h6>
@@ -577,14 +574,22 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
 						<p style='float:left;margin-bottom:0px;font-size:0.9em;'><u>Client</u> :  <?php echo $NomClient; ?></p>
 						<p style='float:right;margin-bottom:0px;font-size:0.9em;'> <?php echo $numIFU; ?></p></div><br/>
 						<div>
-						<p style='font-size:0.9em;float: <?php echo "left;"; //else echo "right;"; ?> '><u>Serveur(se)</u> : <?php echo $NomServeur; ?> </p>
-						<p style='font-size:0.9em;float: <?php  echo "right;"; ?> '><u>Caissier(e)</u> : <?php echo $_SESSION["nom"]." ".$_SESSION["prenom"]; ?> </p>
+						<p style='font-size:0.9em;float: <?php echo "left;"; //else echo "right;"; ?> '>
+						<?php 
+							if(!empty($NomServeur)) {
+								echo "<u>";
+								if($data1->numTable==0) echo "Vendeur(se)"; else echo "Serveur(se)";
+								echo "</u> :  ".$NomServeur; 
+							}
+							else echo "<u>Vendeur(se)</u> :  ".$seller; 
+							
+						?> 
+						</p>
+						<p style='font-size:0.9em;float: <?php  echo "right;"; ?> '><u>Caissier(e)</u> : <?php echo $seller; ?> </p>
 						</div>
 					</div>	
-
 				</div>
-  <div class="content">
-						
+  <div class="content">						
 	<table style='font-size:0.9em;'>
     <tr style='background-color:#e5e5e5;font-weight:bold;'>
 	   <td style=''>Désignation</td>
@@ -595,43 +600,41 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
 		<?php
 		if(isset($reqselRTables)){$total=0;$num=0;//$mt=0;
 			while($data1=mysqli_fetch_array($reqselRTables)){ $num++;
-			$mt=$data1['qte']*$data1['prix'];$total+=$mt;
+			$mt=$data1['qte']*$data1['prix'];$total+=$mt;$mode=$data1['modeReglement'];
 				echo "<tr>
 					<td class='' >".ucfirst($data1['LigneCde'])." ".$data1['QteInd']."</td>
 					<td align='right' class=''> ".$data1['prix']."</td>
 					<td align='center' class=''> ".$data1['qte']."</td>
 					<td  align='right' class=''> ".$mt."</td>
 				</tr>";
-			} $mht=round($total/1.18); $tva=round(0.18*$mht);
-		   }
-		   
+			} $mht=round($total/1.18); $tva=round(0.18*$mht); $mht=$total-$tva;//Pour éviter les arrondis supérieurs 
+		   }		   
 			  echo 	"
 			  <tr>
 					<td colspan='1' rowspan='4' align='right'><strong> Montant HT : ".$mht." </strong>
 					<br/><strong>  TVA [18%] : ".$tva." </strong>
-					</td>
-					
+					</td>					
 					
 			  </tr>
 			  <tr>
 				<td  colspan='2' align='right'> <strong> Montant Total : </strong>  ";
-				if($remise>0)
-					echo "<br/><strong> Remise accordée : </strong>";
+				//if($remise>0)
+					echo "<br/><strong> Remise : </strong>";
 
 				echo "<br/><strong> Net à payer :</strong>
 				<br/><strong> Somme payée :</strong> ";
-				if($monnaie>0)
+				//if($monnaie>0)
 					echo "<br/><strong> Monnaie : </strong> </td>";
 					?>
 					<td align='right' style=''><strong><i class=""></i> <?php echo $total;?>
-					<br/><?php echo $Net;?><br/>	<?php echo $SommePayee;?></strong>									
+					<br/><?php echo $remise;?><br/>	<?php echo $Net;?></strong>									
 
 				<?php
-				if($remise>0)
-					echo " <br/><strong><i class=''></i> ". $remise."</strong> ";
+				//if($remise>0)
+					echo " <br/><strong><i class=''></i> ".$SommePayee."</strong> ";
 
-				if($monnaie>0)
-					echo "<br/><strong><i class=''></i> ". $monnaie."</strong> </td>
+				//if($monnaie>0)
+					echo "<br/><strong><i class=''></i> ".$monnaie."</strong> </td>
 			</tr>";
 
 				//QRcode::png('code data text', 'filename.png'); // creates file
@@ -639,12 +642,10 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
 	 ?>
 	
 	</table>
-
-				</div>
-				
+				</div>				
 				<div class="total" style='background-color:#e5e5e5;'>
-				<span style='font-weight:normal;font-size:0.9em;float:left;padding-left:5px;'>Mode de règlement : <?php echo $mode="Espèce";?></span>
-				<span style='padding-right:5px;'>Total encaissé : <strong><?php echo $total;?></strong></span>
+				<span style='font-weight:normal;font-size:0.9em;float:left;padding-left:5px;'>Mode de règlement : <?php echo modePayement($mode);?></span>
+				<span style='padding-right:5px;'>Total encaissé : <strong><?php echo $SommePayee-$monnaie;?></strong></span>
 				</div>
 
 				<div class="footerT">
@@ -675,26 +676,33 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="js/jsalertClient.js"></script>
 <script>
- // Attacher un événement sur le document pour détecter les clics sur les éléments qui ouvrent la modale
- document.addEventListener('DOMContentLoaded', () => {
-    // Sélectionner tous les éléments de lien qui déclenchent l'impression (basé sur une classe ou attributs data)
-    const printLinks = document.querySelectorAll('[data-bs-toggle="modal"][data-link-action="quickview"]');
+document.addEventListener('DOMContentLoaded', () => {
+    // Sélectionner tous les éléments de lien d'impression et de visualisation
+    const modalLinks = document.querySelectorAll('[data-bs-toggle="modal"]');
 
-    printLinks.forEach(link => {
-        link.addEventListener('click', () => {
-            // Obtenir l'ID de la modale depuis l'attribut data-bs-target
+    modalLinks.forEach(link => {
+        link.addEventListener('click', (event) => {
+            const actionType = link.getAttribute('data-link-action');
             const modalId = link.getAttribute('data-bs-target');
-            const ticketModal = document.querySelector(modalId); // Récupérer la modale correspondante
+            const ticketModal = document.querySelector(modalId);
 
-            // Ajouter un écouteur à l'événement 'shown.bs.modal' pour déclencher l'impression
-            ticketModal.addEventListener('shown.bs.modal', () => {
-                setTimeout(() => {
+            if (actionType === 'quickview') {
+                // Impression automatique
+                ticketModal.addEventListener('shown.bs.modal', () => {
+                    setTimeout(() => {
+                        window.print();
+                    }, 100);
+                });
+            } else if (actionType === 'viewonly') {
+                // Visualisation seule - aucune impression
+                ticketModal.removeEventListener('shown.bs.modal', () => {
                     window.print();
-                }, 500); // Lancer l'impression après un court délai
-            });
+                });
+            }
         });
     });
-}); 
+});
+
 
 	function JSalert2(){
 	swal("1 : Espèce | 2 : Chèque | 3 : Virement | 4 : Carte Bancaire | 5 : Mobile Money | 6 : Autre", {
@@ -707,8 +715,8 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
 			},
 	})
 	.then((value) => {
-		var table = document.getElementById('NameTable').value;  var cv = document.getElementById('cv').value;
-		document.location.href='servir.php?menuParent=<?php echo $_SESSION['menuParenT']; ?>&mode='+value+'&table='+table+'&cv='+cv;
+		var table = document.getElementById('NameTable').value;  var cv = document.getElementById('cv').value; var tk = document.getElementById('tk').value;
+		document.location.href='servir.php?menuParent=<?php echo $_SESSION['menuParenT']; ?>&mode='+value+'&table='+table+'&cv='+cv+'&tk='+tk;
 
 	});
 	}
@@ -858,9 +866,11 @@ function CheckClient() {
     if (value) {
       var table = document.getElementById('NameTable').value;  
       var cv = document.getElementById('cv').value;
+	  var tk = document.getElementById('tk').value;
 
       // Utiliser la valeur sélectionnée pour rediriger
-      document.location.href = 'servir.php?menuParent=<?php echo $_SESSION['menuParenT']; ?>&client=' + value + '&table=' + table + '&cv=' + cv;
+      document.location.href = 'servir.php?menuParent=<?php echo $_SESSION['menuParenT']; ?>&client=' + value + '&table=' + table + '&cv=' + cv + '&tk=' + tk;
+	  
     }
   });
 
@@ -904,7 +914,18 @@ function showSuggestions(data) {
 }
 
 
-function findServ(tableName,permanent=0,current) {
+function findServ(tableName,permanent=0,current,tableRealName=0) {
+	 const legendText = tableName != 0
+    ? `Affecter un(e) serveur(se) de façon provisoire à la Table [ ${tableRealName === 0 ? tableName : tableRealName} ]`
+    : "Assigner un(e) autre vendeur(se)";
+	
+	 const checkboxHTML = tableName === 0 ? `
+    <div class='row'>
+      <label for='checkPermanent'>Assignation permanente :</label>
+      <input type='checkbox' id='checkPermanent'>
+    </div>` : "";
+	
+	
   swal({
     title: "",
     content: {
@@ -917,7 +938,6 @@ function findServ(tableName,permanent=0,current) {
               flex-direction: column;
               gap: 10px;
               font-family: Arial, sans-serif;
-			  min-height:200px;
             }
             .swal-custom-form .row {
               display: flex;
@@ -944,14 +964,14 @@ function findServ(tableName,permanent=0,current) {
           <div class='swal-custom-form'>
             <div class='row'>
               <fieldset>
-                <legend align='center' style='color:#2F574D;'><b>Affectation d'un(e) serveur(se) à la Table ${tableName}</b></legend>
+                <legend align='center' style='color:#2F574D;'><b>${legendText}</b></legend>
                 <div class='row'>
-                  <label for='serveurNumber'>Serveur(se) :</label>
+                  <label for='serveurNumber'>${tableName === 0? "Vendeur(se) :":"Serveur(se) :"} </label>
                   <select id='serveurNumber' class='swal-content__input' style='height:35px;'>
                     <option value=''>Sélectionner le nom ..</option>
                   </select>
                 </div>
-              </fieldset>
+				</fieldset>
             </div>
           </div>
         `
@@ -962,6 +982,7 @@ function findServ(tableName,permanent=0,current) {
 	if (willSubmit) {
   // Récupérer les valeurs des champs
   var serveurNumber = document.getElementById('serveurNumber').value.trim();
+   const isPermanent = tableName === 0 && document.getElementById('checkPermanent')?.checked ? 1 : 0;
 
   // Validation côté client
   if (serveurNumber === "") {
@@ -975,6 +996,8 @@ function findServ(tableName,permanent=0,current) {
   formData.append('tableName', tableName);  // Ajouter la table en tant que paramètre supplémentaire
   formData.append('permanent', permanent); 
   formData.append('current', current); 
+  formData.append('tableRealName', tableRealName);  
+  formData.append('isPermanent', isPermanent);
 
   fetch('affecter_serveur.php', {
     method: 'POST',

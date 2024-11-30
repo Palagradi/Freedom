@@ -101,7 +101,7 @@ include_once'menu.php';  //$req = mysqli_query($con,"DELETE FROM QteBoisson WHER
 	</head>
 	<body bgcolor='azure' style="">
 
-		<table align='center'>
+		<table align='center' width='90%'>
 			<tr>
 			<td>
 				<h2 style=' font-family:Cambria;color:Maroon;font-weight:bold;margin-bottom:50px;'>		<hr /> STOCK DE PRODUITS ALIMENTAIRES DISPONIBLES<hr style=''/></h2>
@@ -120,7 +120,7 @@ include_once'menu.php';  //$req = mysqli_query($con,"DELETE FROM QteBoisson WHER
 <!--preparation de l'affichage des resultats-->
 <div id="resultsC">
 
-	<table align='center' width='80%' border='0' cellspacing='0' style='margin-top:0px;border-collapse: collapse;font-family:Cambria;'>
+	<table align='center' width='90%' border='0' cellspacing='0' style='margin-top:0px;border-collapse: collapse;font-family:Cambria;'>
 
 <tr><td colspan='13' > <span style="float:left;font-family:Cambria;font-weight:bold;font-size:1.3em;margin-bottom:5px;color:#4C767A;" >Liste des produits <?php  if($_SESSION['menuParenT1']=="Restauration") echo "alimentaires"; ?>  </span>
 	<?php
@@ -184,7 +184,7 @@ include_once'menu.php';  //$req = mysqli_query($con,"DELETE FROM QteBoisson WHER
 				$cpteur = 1;
 				$bgcouleur = "#dfeef3";
 			}
-			if($data->StockCuisine<=0) $bgcouleur = "#ff9c8a";
+			if($data->StockCuisine<=0) $bgcouleur = "#D2B48C";
 	$nbre=$data->Num2;
 	if(($nbre>=0)&&($nbre<=9)) $nbre="0000".$nbre ; else if(($nbre>=10)&&($nbre <=99)) $nbre="000".$nbre ;else $nbre="00".$nbre ;
     ?>

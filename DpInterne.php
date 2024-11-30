@@ -2,8 +2,9 @@
 	include_once'menu.php';  //$req = mysqli_query($con,"DELETE FROM QteBoisson WHERE qte='Hhhh'");
 	$reqCat = mysqli_query($con,"SELECT * FROM config_boisson ORDER BY LibCateg") or die (mysqli_error($con));
 	//$nbre=mysqli_num_rows($req);
-	$reqsel=mysqli_query($con,"SELECT * FROM boisson WHERE Depot = '1' ");
-	$nbreBoisson=mysqli_num_rows($reqsel);$nbre=$nbreBoisson+1;  //$pvc=2;
+	$reqsel=mysqli_query($con,"SELECT MAX(numero) AS numero FROM boisson WHERE Depot = '1' ");
+	$dataP = mysqli_fetch_object($reqsel);$nbre=$dataP->numero+1;
+	$nbreBoisson=mysqli_num_rows($reqsel);//$nbre=$nbreBoisson+1;  
 
 		if(isset($_GET['ok'])){ 
 		echo "<script language='javascript'>";  
@@ -21,6 +22,9 @@
 			}
 			if($_GET['ok']==4){
 			echo 'alertify.success("Boisson enrégistrée avec succès !");';
+			}
+			if($_GET['ok']==5){
+			echo 'alertify.success("Modification enrégistrée avec succès");';
 			}
 		}
 		else if(isset($_SESSION['ok'])&&($_SESSION['ok']==0)&&(isset($_GET['checkpvc']))){
@@ -84,10 +88,10 @@
 			}
 			else {
 			//Vérifier l'existence dans la BD avant insertion
- 		   if($pack[0]=="Casier") $Npc .=" [C/".$pack[1]."]"; else $Npc .=" [P/".$pack[1]."]";
-		    $query = mysqli_query($con,"INSERT INTO casier SET Libellepc='".$Npc."',qte='".$pack[1]."'") or die (mysqli_error($con));
+ 		    if(($pack[0]=="Casier")||($pack[0]=="C")) $Npc ="Casier de ".$pack[1]." [C/".$pack[1]."]"; else $Npc ="Pack de ".$pack[1]." [P/".$pack[1]."]";
+		    $query = mysqli_query($con,"INSERT INTO casier SET Libellepc='".$Npc."',qtepc='".$pack[1]."'") or die (mysqli_error($con));
 		  	echo "<script language='javascript'>";
-			if($pack[0]=="Casier")
+			if(($pack[0]=="Casier")||($pack[0]=="C"))
 				echo 'alertify.success("Casier enrégistré avec succès !");';
 			else 
 				echo 'alertify.success("Pack enrégistré avec succès !");';
@@ -160,6 +164,8 @@
 	if(($nbre>=0)&&($nbre<=9)) $nbre="00000".$nbre ; else if(($nbre>=10)&&($nbre <=99)) $nbre="0000".$nbre ;else $nbre="00".$nbre ;
 
 	if(isset($_POST['ENREGISTRER'])&& ($_POST['ENREGISTRER']=="Modifier")){
+			//ob_end_clean(); // Terminer et vider tout tampon de sortie
+			$menuParent = $_SESSION['menuParenT'];	$_SESSION['ok']=1;
 		
 		    $categorie=$_POST['Libellepc'];$designation=$_POST['designation'];$Qte=$_POST['quantite'];$Conditionne=$_POST['conditionnement'];$Prix=$_POST['Prixvente'];$Seuil=(int)$_POST['Seuil'];
 
@@ -190,17 +196,24 @@
 			} */
 
 			if($query){
-			echo "<script language='javascript'>";
+/* 			echo "<script language='javascript'>";
 			echo 'alertify.success("Modification effectuée avec succès !");';
-			echo "</script>";
+			echo "</script>"; */
 			$req = mysqli_query($con,"SELECT * FROM config_boisson ORDER BY LibCateg") or die (mysqli_error($con));
- 			if($_POST['pvc']==2)
-				echo '<meta http-equiv="refresh" content="0; url=DpInterne.php?menuParent='.$_SESSION['menuParenT'].'" />';
-			else 
-				echo '<meta http-equiv="refresh" content="0; url=DpInterne.php?menuParent='.$_SESSION['menuParenT'].'&pvc=1" />';	 		
+ 			if($_POST['pvc']==2){
+				header("Location: DpInterne.php?menuParent=$menuParent&ok=5");
+				exit;							
+				//echo '<meta http-equiv="refresh" content="0; url=DpInterne.php?menuParent='.$_SESSION['menuParenT'].'" />';				
+			}
+			else {
+				header("Location: DpInterne.php?menuParent=$menuParent&pvc=1&ok=5");
+				exit;	
+				//echo '<meta http-equiv="refresh" content="0; url=DpInterne.php?menuParent='.$_SESSION['menuParenT'].'&pvc=1" />';	
+				}				
 			}
 	}
 	if(isset($_POST['Enregistrer'])&&($_POST['Enregistrer']=="Enrégistrer")){
+			$menuParent = $_SESSION['menuParenT'];$checkpvc=$_GET['checkpvc'];
 			$numero=isset($_GET['add'])?$_GET['add']:NULL;$adp=isset($_GET['adp'])?$_GET['adp']:$numero;
 			if($_POST['pvc']==2) 
 				$rek="SELECT QteStock as QteStock,StockReel as StockReel FROM boisson WHERE numero='".$adp."' AND pc<>'0' AND Depot = '1'";
@@ -241,10 +254,16 @@
 			echo 'alertify.success(" L\'approvisionnement du Bar a été effectué avec succès !");';
 			echo "</script>"; */
 			$req = mysqli_query($con,"SELECT * FROM config_boisson ORDER BY LibCateg") or die (mysqli_error($con));$_SESSION['ok']=1;
-			if($_POST['pvc']==2)
-				echo '<meta http-equiv="refresh" content="0; url=DpInterne.php?menuParent='.$_SESSION['menuParenT'].'&ok=2" />';
-			else 
-				echo '<meta http-equiv="refresh" content="0; url=DpInterne.php?menuParent='.$_SESSION['menuParenT'].'&pvc=1&ok=2&checkpvc='.$_GET['checkpvc'].'" />';
+			if($_POST['pvc']==2){
+				header("Location: DpInterne.php?menuParent=$menuParent&ok=2");
+				exit;
+				//echo '<meta http-equiv="refresh" content="0; url=DpInterne.php?menuParent='.$_SESSION['menuParenT'].'&ok=2" />';
+				}
+			else {
+				header("Location: DpInterne.php?menuParent=$menuParent&pvc=1&ok=2&checkpvc=$checkpvc");
+				exit;
+				//echo '<meta http-equiv="refresh" content="0; url=DpInterne.php?menuParent='.$_SESSION['menuParenT'].'&pvc=1&ok=2&checkpvc='.$checkpvc.'" />';
+				}
 			}
 			}else{
 				echo "<script language='javascript'>";
@@ -258,7 +277,7 @@
 			}
 		}
 		if(!empty($_POST['add'])){  //Pour le dépot
-	 		$qte=$Qte_initial+$_POST['QteAf'];
+	 		$qte=$Qte_initial+$_POST['QteAf']; 
 			if($_POST['pvc']==2) 
 				$rek="UPDATE boisson SET QteStock='".$qte."' WHERE numero='".$add."' AND pc<>'0' AND Depot = '1' ";
 			else 
@@ -274,24 +293,32 @@
 			echo 'alertify.success(" L\'approvisionnement du Dépôt a été effectué avec succès !");';
 			echo "</script>"; */
 			$req = mysqli_query($con,"SELECT * FROM config_boisson ORDER BY LibCateg") or die (mysqli_error($con));$_SESSION['ok']=1;
- 			if($_POST['pvc']==2)
-				echo '<meta http-equiv="refresh" content="0; url=DpInterne.php?menuParent='.$_SESSION['menuParenT'].'&ok=1" />';
-			else 
-				echo '<meta http-equiv="refresh" content="0; url=DpInterne.php?menuParent='.$_SESSION['menuParenT'].'&pvc=1&ok=1&checkpvc='.$_GET['checkpvc'].'" />'; 
+ 			if($_POST['pvc']==2){
+				header("Location: DpInterne.php?menuParent=$menuParent&ok=1");
+				exit;
+				//echo '<meta http-equiv="refresh" content="0; url=DpInterne.php?menuParent='.$_SESSION['menuParenT'].'&ok=1" />';
+				}
+			else {
+				header("Location: DpInterne.php?menuParent=$menuParent&pvc=1&ok=1&checkpvc=$checkpvc");
+				exit;
+				//echo '<meta http-equiv="refresh" content="0; url=DpInterne.php?menuParent='.$_SESSION['menuParenT'].'&pvc=1&ok=1&checkpvc='.$_GET['checkpvc'].'" />'; 
+				}
 			} 
 		}
 	}
-	if(isset($_POST['ENREGISTRER'])&& ($_POST['ENREGISTRER']=="Enrégistrer")){		
+	if(isset($_POST['ENREGISTRER'])&& ($_POST['ENREGISTRER']=="Enrégistrer")){
+		$menuParent = $_SESSION['menuParenT'];$checkpvc=$_GET['checkpvc'];	$_SESSION['ok']=1;	
 		$code=(int)$_POST['code']; $categorie=$_POST['Libellepc'];
 		$req = mysqli_query($con,"SELECT * FROM config_boisson WHERE LibCateg='".$categorie."'") or die (mysqli_error($con));
 		if(mysqli_num_rows($req)==0){
 		 $sql="INSERT INTO config_boisson SET LibCateg='".$categorie."'";
-		 $query = mysqli_query($con,$sql) or die (mysqli_error($con)); 			
-		}
+		 $query = mysqli_query($con,$sql) or die (mysqli_error($con)); 
+		 $req = mysqli_query($con,"SELECT * FROM config_boisson WHERE LibCateg='".$categorie."'") or die (mysqli_error($con));		 
+		}		
 		$data = mysqli_fetch_object($req);
 		$categorie=$data->id;
 		$designation=addslashes($_POST['designation']);$Qte=$_POST['quantite'];$Conditionne=$_POST['conditionnement'];
-		$QteStock=!empty($_POST['QteStock'])?$_POST['QteStock']:0;	$TPS_2=isset($_POST['TPS_2'])?$_POST['TPS_2']:1;
+		$QteStock=!empty($_POST['QteStock'])?$_POST['QteStock']:0;	$RegimeTVA=isset($_POST['RegimeTVA'])?$_POST['RegimeTVA']:1;
 		$PrixUnitaire=!empty($_POST['Prixvente'])?$_POST['Prixvente']:0;$PrixPack=!empty($_POST['PrixventeP'])?$_POST['PrixventeP']:0;  $Seuil=!empty($_POST['Seuil'])?$_POST['Seuil']:0; 
 		$pack=!empty($_POST['pack'])?$_POST['pack']:0; 
 		if($_POST['pvc']==2)  //Gestion des Pack de boissons
@@ -305,22 +332,34 @@
 			echo "<script language='javascript'>";
 			//echo 'alertify.error(" Attention : Ce type boisson existe déjà ");';
 			echo "</script>"; $_SESSION['ok']=1;
-			if($_POST['pvc']==2)
-				echo '<meta http-equiv="refresh" content="0; url=DpInterne.php?menuParent='.$_SESSION['menuParenT'].'&ok=3" />'; 
-			else 
-				echo '<meta http-equiv="refresh" content="0; url=DpInterne.php?menuParent='.$_SESSION['menuParenT'].'&ok=3&checkpvc='.$_GET['checkpvc'].'" />'; 
+			if($_POST['pvc']==2){
+				header("Location: DpInterne.php?menuParent=$menuParent&ok=3");
+				exit;
+				//echo '<meta http-equiv="refresh" content="0; url=DpInterne.php?menuParent='.$_SESSION['menuParenT'].'&ok=3" />'; 
+				}
+			else {
+				header("Location: DpInterne.php?menuParent=$menuParent&ok=3&checkpvc=$checkpvc");
+				exit;
+				//echo '<meta http-equiv="refresh" content="0; url=DpInterne.php?menuParent='.$_SESSION['menuParenT'].'&ok=3&checkpvc='.$_GET['checkpvc'].'" />'; 
+				}
 		}else{
-		 $rek ="INSERT INTO boisson SET numero2='".$code."',categorie='".$categorie."',pc='".$pack."',designation='".$designation."',Qte='".$Qte."',Conditionne='".$Conditionne."',PrixUnitaire='".$PrixUnitaire."',PrixPack='".$PrixPack."',Seuil='".$Seuil."',QteStock='".$QteStock."',StockReel='".$QteStock."',created_at='".$Jour_actuel."',updated_at='".$Jour_actuel."',Depot = '1',RegimeTVA='".$TPS_2."'";
-		 $rek1="INSERT INTO boisson SET numero2='".$code."',categorie='".$categorie."',pc='".$pack."',designation='".$designation."',Qte='".$Qte."',Conditionne='".$Conditionne."',PrixUnitaire='".$PrixUnitaire."',PrixPack='".$PrixPack."',Seuil='".$Seuil."',QteStock='".$QteStock."',StockReel='".$QteStock."',created_at='".$Jour_actuel."',updated_at='".$Jour_actuel."',Depot = '2',RegimeTVA='".$TPS_2."'";
+		 $rek ="INSERT INTO boisson SET numero2='".$code."',categorie='".$categorie."',pc='".$pack."',designation='".$designation."',Qte='".$Qte."',Conditionne='".$Conditionne."',PrixUnitaire='".$PrixUnitaire."',PrixPack='".$PrixPack."',Seuil='".$Seuil."',QteStock='".$QteStock."',StockReel='".$QteStock."',created_at='".$Jour_actuel."',updated_at='".$Jour_actuel."',Depot = '1',RegimeTVA='".$RegimeTVA."'";
+		 $rek1="INSERT INTO boisson SET numero2='".$code."',categorie='".$categorie."',pc='".$pack."',designation='".$designation."',Qte='".$Qte."',Conditionne='".$Conditionne."',PrixUnitaire='".$PrixUnitaire."',PrixPack='".$PrixPack."',Seuil='".$Seuil."',QteStock='".$QteStock."',StockReel='".$QteStock."',created_at='".$Jour_actuel."',updated_at='".$Jour_actuel."',Depot = '2',RegimeTVA='".$RegimeTVA."'";
 		 $query = mysqli_query($con,$rek) or die (mysqli_error($con)); $query = mysqli_query($con,$rek1) or die (mysqli_error($con));
 			if($query){
-			echo "<script language='javascript'>";
+/* 			echo "<script language='javascript'>";
 			echo 'alertify.success(" Boisson enrégistrée avec succès !");';
-			echo "</script>";
-			if($_POST['pvc']==2)
-				echo '<meta http-equiv="refresh" content="1; url=DpInterne.php?menuParent='.$_SESSION['menuParenT'].'&ok=4" />'; 
-			else 
-				echo '<meta http-equiv="refresh" content="1; url=DpInterne.php?menuParent='.$_SESSION['menuParenT'].'&ok=4&checkpvc='.$_GET['checkpvc'].'" />'; 
+			echo "</script>"; */
+			if($_POST['pvc']==2){
+				header("Location: DpInterne.php?menuParent=$menuParent&ok=4");
+				exit;
+				//echo '<meta http-equiv="refresh" content="1; url=DpInterne.php?menuParent='.$_SESSION['menuParenT'].'&ok=4" />'; 
+			}
+			else {
+				header("Location: DpInterne.php?menuParent=$menuParent&ok=4&checkpvc=$checkpvc");
+				exit;
+				//echo '<meta http-equiv="refresh" content="1; url=DpInterne.php?menuParent='.$_SESSION['menuParenT'].'&ok=4&checkpvc='.$_GET['checkpvc'].'" />'; 
+				}
 			} 
 		}
 	}
@@ -577,7 +616,9 @@
 				<td colspan='2' style='padding-left:25px;'>Stock actuel du Dépôt ";
 				if(!empty($pvc)&&($pvc==2)) {
 					echo "<span style='color:white;'>["; 
+					if(isset($Libellepc)){
 					if(substr($Libellepc,0,1,)=="P") echo "P/"; else echo "C/"; echo $qtepc;
+					}
 					echo "]</span>";
 				}
 				echo " :&nbsp;&nbsp;&nbsp;<span class='rouge'></span></td>
@@ -594,7 +635,9 @@
 				<td colspan='2' style='padding-left:25px;'>Stock actuel du Bar ";
 				if(!empty($pvc)&&($pvc==2)) {
 					echo "<span style='color:white;'>["; 
+					if(isset($Libellepc)){
 					if(substr($Libellepc,0,1,)=="P") echo "P/"; else echo "C/"; echo $qtepc;
+					}
 					echo "]</span>";
 				}
 				echo " :&nbsp;&nbsp;&nbsp;<span class='rouge'></span></td>

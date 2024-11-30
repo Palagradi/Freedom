@@ -21,7 +21,7 @@ if(isset($_POST['ENREGISTRER'])&& ($_POST['ENREGISTRER']=="Enrégistrer")){$code
 			echo 'alertify.error(" Attention : Ce produit alimentaire existe déjà ");';
 			echo "</script>";
 		}else{ $PrixV=!empty($_POST['PrixV'])?$_POST['PrixV']:0; $DateService=isset($_POST['dateS'])?$_POST['dateS']:NULL; //DateService='$DateService', datePeremption='".$_POST['dateP']."'
-		echo $req="INSERT INTO produits SET Num=NULL,Num2='".$code."',Famille='".$famille."',TypePrdts='".$TypePrdts."',Designation='".$designation."',UniteStockage='".$UniteStockage."',PoidsNet ='".$PoidsNet."',Fournisseur='".$Fournisseur."',Seuil='".$Seuil."',PrixFrs='".$PrixFrs."',Qte_Stock='".$Qte_Stock."',StockReel='".$Qte_Stock."',PrixV='".$PrixV."', Type='".$_POST['menuParenT']."',StockCuisine=0";
+			$req="INSERT INTO produits SET Num=NULL,Num2='".$code."',Famille='".$famille."',TypePrdts='".$TypePrdts."',Designation='".$designation."',UniteStockage='".$UniteStockage."',PoidsNet ='".$PoidsNet."',Fournisseur='".$Fournisseur."',Seuil='".$Seuil."',PrixFrs='".$PrixFrs."',Qte_Stock='".$Qte_Stock."',StockReel='".$Qte_Stock."',PrixV='".$PrixV."', Type='".$_POST['menuParenT']."',StockCuisine=0";
 		$query = mysqli_query($con,$req) or die (mysqli_error($con));
 		if($query){
 		$sql=mysqli_query($con,"SELECT * FROM categorieproduit WHERE Type LIKE '".$_POST['menuParenT']."' AND catPrd LIKE '".$famille."'");
@@ -32,7 +32,7 @@ if(isset($_POST['ENREGISTRER'])&& ($_POST['ENREGISTRER']=="Enrégistrer")){$code
 			echo "<script language='javascript'>";
 			echo 'alertify.success(" Enrégistrement effectué avec succès");';
 			echo "</script>";
-			echo '<meta http-equiv="refresh" content="1; url=produits.php?menuParent=Enrégistrement" />';
+			echo '<meta http-equiv="refresh" content="1; url=product.php?menuParent=Enrégistrement" />';
 			}
 		}
 
@@ -73,7 +73,7 @@ $update=isset($_GET['update'])?$_GET['update']:NULL; $delete=isset($_GET['delete
 			echo "<script language='javascript'>";
 			echo 'alertify.success(" Approvisionnement de la cuisine effectué avec succès !");';
 			echo "</script>";
-			//echo '<meta http-equiv="refresh" content="1; url=produits.php?menuParent='.$_SESSION['menuParenT'].'" />';
+			//echo '<meta http-equiv="refresh" content="1; url=product.php?menuParent='.$_SESSION['menuParenT'].'" />';
 			}
 	}
 
@@ -100,7 +100,7 @@ if(isset($_POST['ENREGISTRER'])&& ($_POST['ENREGISTRER']=="Modifier")){
 		echo 'alertify.success(" Modification effectuée avec succès !");';
 		echo "</script>";
 		//$req = mysqli_query($con,"SELECT * FROM config_boisson ORDER BY LibCateg") or die (mysqli_error($con));
-		echo '<meta http-equiv="refresh" content="1; url=produits.php?menuParent='.$_SESSION['menuParenT'].'" />';
+		echo '<meta http-equiv="refresh" content="1; url=product.php?menuParent='.$_SESSION['menuParenT'].'" />';
 		}
 }
 
@@ -291,7 +291,7 @@ if(isset($_POST['ENREGISTRER'])&& ($_POST['ENREGISTRER']=="Modifier")){
 			echo "<script language='javascript'>";
 			echo 'alertify.success(" Opération effectuée avec succès !");';
 			echo "</script>";
-			//echo '<meta http-equiv="refresh" content="1; url=produits.php?menuParent=Enrégistrement" />';
+			//echo '<meta http-equiv="refresh" content="1; url=product.php?menuParent=Enrégistrement" />';
 			}
 			//unset($_SESSION['aj']);
 		} if(!empty($_GET['test'])&& ($_GET['test']=='null')){

@@ -1,7 +1,8 @@
 <?php
 	include_once'menu.php';
-	$reqsel=mysqli_query($con,"SELECT * FROM plat");
-	$nbreplat=mysqli_num_rows($reqsel);$nbre=$nbreplat+1;
+	$reqsel=mysqli_query($con,"SELECT MAX(numero) AS numero FROM plat");
+	$nbreplat=mysqli_num_rows($reqsel);//$nbre=$nbreplat+1;
+	$dataP = mysqli_fetch_object($reqsel);$nbre=$dataP->numero+1;
 	if(($nbre>=0)&&($nbre<=9)) $nbre="00000".$nbre ; else if(($nbre>=10)&&($nbre <=99)) $nbre="0000".$nbre ;else $nbre="00".$nbre ;
 	
 	$update=isset($_GET['update'])?$_GET['update']:NULL;
@@ -281,8 +282,11 @@ if(isset($_POST['ENREGISTRER'])){
 			<td colspan='6' align='center' ><br/><input type='submit'"; if(isset($update)) echo "value='Modifier'"; else echo "value='Enrégistrer'"; echo "id='' class='bouton2' name='ENREGISTRER' style=''/>
 			&nbsp;&nbsp;<input type='reset' value='Annuler' id='' class='bouton2'  name='ANNULER' style=''/> <br/>&nbsp;";
 			?>
-			<span style='float:right; margin-right:25px;'><input checked type='checkbox' name='TPS_2' id='button_checkbox2' value='<?php if(!empty($RegimeTVA2)&&($RegimeTVA2==1)) echo "1"; else echo 2; ?>' >
-			<label for='button_checkbox2' style='color:#444739;'><?php   if(!empty($RegimeTVA2)&&($RegimeTVA2==1)) echo "Exempté(e) de la TVA"; else echo "Assujetti(e) à la TVA";?> </label></span>
+			<span style='float:right; margin-right:25px;'>
+			<!--
+			<input checked type='checkbox' name='TPS_2' id='button_checkbox2' value='<?php //if(!empty($RegimeTVA2)&&($RegimeTVA2==1)) echo "1"; else echo 2; ?>' >
+			
+			<label for='button_checkbox2' style='color:#444739;'><?php  //if(!empty($RegimeTVA2)&&($RegimeTVA2==1)) echo "Exorené(e) de la TVA"; else echo "Assujetti(e) à la TVA";?> </label></span>!-->
 			</td>
 		</tr>
 		</form>

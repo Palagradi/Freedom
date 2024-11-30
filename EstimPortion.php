@@ -1,6 +1,8 @@
 <?php
 include_once'menu.php';
 
+//https://www.fao.org/gsfaonline/foods/index.html?collapse=all
+
 unset($_SESSION['choix1']);
 
 if(isset($_POST['trie'])) { if($_POST['trie']==1) $trie="Famille"; else $trie="Fournisseur"; } else $trie="Num";
@@ -12,7 +14,7 @@ if(isset($_POST['trie'])) { if($_POST['trie']==1) $trie="Famille"; else $trie="F
 				for ($i=0;$i<count($_POST['choix']);$i++)
 				{	//on concatène
 					$choix .= $_POST['choix'][$i].'|';
-					$explore = explode('|',$choix);
+					$explore = explode("|", ($choix) ?? "");
 					if($explore[$i]!='')
 						{  $explore[$i]."<br/>";
 						}
@@ -23,7 +25,8 @@ if(isset($_POST['trie'])) { if($_POST['trie']==1) $trie="Famille"; else $trie="F
 				$choix1 ='';
 				for ($i=0;$i<count($_POST['choix1']);$i++)
 				{	$choix1 .= $_POST['choix1'][$i].'|';
-					$explore1 = explode('|',$choix1);
+					//$explore1 = explode('|',$choix1);
+					  $explore1 = explode("|", ($choix1) ?? "");
 					if(($explore1[$i]!='')&& ($explore1[$i]>0))
 						{	   //echo "<br/>".$explore1[$i]; //$QteCde=$explore1[$i];
 						 	  $sql="SELECT composition FROM plat WHERE numero='".$_GET['plat']."' ";
@@ -36,7 +39,8 @@ if(isset($_POST['trie'])) { if($_POST['trie']==1) $trie="Famille"; else $trie="F
 
 								//$ListeProduits = explode("|",$dataz['ListeProduits']);
 								//$composition="";
-								$ListeComposition = explode("|",$dataz['composition']);
+								//$ListeComposition = explode("|",$dataz['composition']);
+								$ListeComposition = explode("|", ($dataz['composition']) ?? "");
 								$compositionT= array();$compositionT=str_split($dataz['composition']);
 								$update=0;$composition="";
 								for($j=0;$j<count($compositionT);$j++){
@@ -112,30 +116,28 @@ if(isset($_POST['trie'])) { if($_POST['trie']==1) $trie="Famille"; else $trie="F
 		<script src="js/sweetalert.min.js"></script>
 		</head>
 	<body bgcolor='azure' style="margin-top:-20px;padding-top:0px;">
-		<table align='center'>
+		<table align='center' width='90%'>
 			<tr>
 			<td>
-				<h2 style=' font-family:Cambria;color:Maroon;font-weight:bold;margin-bottom:50px;'>		<hr style=''/>QUANTIFICATION DES PRODUITS ALIMENTAIRES DANS UN PLAT	<hr style=''/></h2>
+				<h2 style=' font-family:Cambria;color:Maroon;font-weight:bold;margin-bottom:50px;text-align:center;'>		<hr style=''/>QUANTIFICATION DES PRODUITS ALIMENTAIRES DANS UN PLAT	<hr style=''/></h2>
 			</td>
 		</tr>
 	</table>
 <?php
 if(!isset($_GET['Cde'])) { ?>
 
-	<form class="ajax" action="" method="get">
-		<p align='center' style='margin-bottom:50px;'>
-			<label style='font-size:22px;font-weight:bold; padding:3px;color:#B83A1B;font-family: Cambria, Verdana, Geneva, Arial;' for="q">Rechercher un plat
-			<span style='font-size:15px;color:#777;'></span></label>
-			 <input style='background-color:#EFFBFF;width:400px;padding:3px;border:1px solid #aaa;-moz-border-radius:7px;-webkit-border-radius:7px;border-radius:7px;height:25px;line-height:22px;' type="text" name="q" id="q" placeholder=" "/>
-		</p>
-	</form>
-	<div id="resultsC">
+	<table align='center' width='90%' border='0' cellspacing='0' style='margin-top:0px;border-collapse: collapse;font-family:Cambria;'>
 
-	<table align='center' width='80%' border='0' cellspacing='0' style='margin-top:0px;border-collapse: collapse;font-family:Cambria;'>
-
-<tr><td colspan='13' > <span style="float:left;font-family:Cambria;font-weight:bold;font-size:1.3em;margin-bottom:5px;color:#4C767A;" >Liste des produits   </span>
+<tr><td colspan='13' > <span style="float:left;font-family:Cambria;font-weight:bold;font-size:1.3em;margin-bottom:5px;color:#4C767A;" >Liste des produits  
+ du plat : 
 	<?php
-	//mysqli_query($con,"SET NAMES 'utf8'");
+	
+	$sqlZ="SELECT  numero,designation FROM plat WHERE composition <> '' ORDER BY numero DESC LIMIT 1";
+	$resultZ=mysqli_query($con,$sqlZ);
+	$dataZ = mysqli_fetch_object($resultZ);	
+	echo "<span style='color:maroon;'>".$dataZ->designation."</span></span>";							
+							
+/* 	//mysqli_query($con,"SET NAMES 'utf8'");
 	//$result =   mysqli_query($con, 'SELECT *  FROM boisson	LIMIT 0,10' );
 	$sql="SELECT * FROM produits p INNER JOIN fournisseurs f ON p.Fournisseur=f.NumFrs WHERE Type='".$_SESSION['menuParenT1']."' ORDER BY $trie ";
 	$reqsel=mysqli_query($con,$sql);
@@ -156,26 +158,37 @@ if(!isset($_GET['Cde'])) { ?>
 	{
 		  $pageActuelle=1; // La page actuelle est la n°1
 	}
-	 $premiereEntree=($pageActuelle-1)*$PalimentairesParPage;
-	$res=mysqli_query($con,"SELECT * FROM produits WHERE Type='".$_SESSION['menuParenT1']."' LIMIT $premiereEntree, $PalimentairesParPage");
+	 $premiereEntree=($pageActuelle-1)*$PalimentairesParPage; */
+	 
+	$res=mysqli_query($con,"SELECT * FROM produits WHERE Type='".$_SESSION['menuParenT1']."'");
 	$nbre1=mysqli_num_rows($res);
 
 	$famille=isset($_POST['famille'])?$_POST['famille']:NULL;
 	$plat=isset($_POST['plat'])?$_POST['plat']:NULL;
 	$famille=isset($_GET['famille'])?$_GET['famille']:$famille;
-	//$famille=isset($_GET['famille'])?$_GET['famille']:$famille;
 	$plat=isset($_GET['plat'])?$_GET['plat']:$plat;
 	//$plat=isset($_GET['plat'])?$_GET['plat']:$plat;
 	$produit=isset($_GET['produit'])?urlencode($_GET['produit']):NULL;
 
-	$sqlF=mysqli_query($con,"SELECT DISTINCT CategoriePlat FROM plat ");
+	if(isset($famille)&&($famille!=0)){
+		$sqlF = mysqli_query($con, "
+			SELECT id, catPlat 
+			FROM categorieplat 
+			WHERE id = '$famille'
+			UNION
+			SELECT id, catPlat 
+			FROM categorieplat 
+			WHERE id != '$famille'
+		");
+	
+	}
+	else 
+		$sqlF=mysqli_query($con,"SELECT id,catPlat FROM categorieplat ");
 	if(!empty($plat))
 		$sqlPi=mysqli_query($con,"SELECT numero,designation FROM plat  WHERE numero='".$plat."'");
 	//else
-		$sqlP=mysqli_query($con,"SELECT numero,designation FROM plat  WHERE CategoriePlat='".$famille."'");
+		$sqlP=mysqli_query($con,"SELECT numero,designation FROM plat  WHERE categPlat='".$famille."'");
 
-
-//echo
  ?>
 </span>
 	<form action="EstimPortion.php?menuParent=<?php echo $_SESSION['menuParenT']; //if(isset($produit)) echo "&produit=".$produit;  ?>" method="POST" id='chgdept1' >
@@ -210,11 +223,13 @@ if(!isset($_GET['Cde'])) { ?>
   </span>
 	<select name='famille' style='margin-bottom:8px;font-family:sans-serif;font-size:100%;border:0px solid teal;width:150px;' id='trie' onchange="document.forms['chgdept1'].submit();"  >
 	  <?php
-		echo "<option value ='".$famille."'> ".$famille."</option>";
-		$data = mysqli_fetch_assoc($sqlF);
-		echo "<option value ='".$dataF['CategoriePlat']."'> ".ucfirst($dataF['CategoriePlat'])."</option>
-			<option value =''>  </option>";
-
+		//echo "<option value ='".$famille."'> ".$famille."</option>";
+		//$dataF = mysqli_fetch_assoc($sqlF);
+		while( $dataF = mysqli_fetch_array($sqlF)){
+		echo "<option value ='".$dataF['id']."'> ".ucfirst($dataF['catPlat'])."</option>";
+		echo  "<hr/>";
+			//echo "<option value =''>  </option>";
+		}
 		?>
 	</select>
  </span>
@@ -227,23 +242,17 @@ if(!isset($_GET['Cde'])) { ?>
 <input type='hidden' name='triep' value='<?php if(isset($trie)) echo $trie;?>' >
 
 <tr style='background-color:#3EB27B;color:white;font-size:1.2em; padding-bottom:5px;'>
-	<td style="border-right: 2px solid #ffffff" align="center"><a class='info' href='Bar.php?menuParent=Restauration&trie=1' style='text-decoration:none;color:white;' title="">N° d'Enrég.<span style='font-size:0.8em;'></span></a></td>
-	<td style="border-right: 2px solid #ffffff" align="center" ><a class='info' href='Bar.php?menuParent=Restauration&trie=1' style='text-decoration:none;color:white;' title="">Famille<span style='font-size:0.8em;'></span></a></td>
-	<td style="border-right: 2px solid #ffffff" align="center" ><a class='info' href='Bar.php?menuParent=Restauration&trie=1' style='text-decoration:none;color:white;' title="">Désignation<span style='font-size:0.8em;'></span></a></td>
-	<td style="border-right: 2px solid #ffffff" align="center" ><a class='info'  href='Bar.php?menuParent=Restauration&trie=2' style='text-decoration:none;color:white;' title=''>Qté <span style='font-size:0.8em;'></span></a></td>
-  <td style="border-right: 2px solid #ffffff" align="center" ><a class='info'  href='EstimUnites.php?menuParent=Restauration&trie=2' style='text-decoration:none;color:white;' title=''>Unité de <br/> Stockage <span style='font-size:0.8em;'></span></a></td>
-		<td style="border-right: 2px solid #ffffff" align="center" ><a class='info' href='Bar.php?menuParent=Restauration&trie=1' style='text-decoration:none;color:white;' title="">Valeur en <br/>Unités<span style='font-size:0.8em;'></span></a></td>
+	<td style="border-right: 2px solid #ffffff" align="center">N° d'Enrég.<span style='font-size:0.8em;'></span></a></td>
+	<td style="border-right: 2px solid #ffffff" align="center" >Famille<span style='font-size:0.8em;'></span></a></td>
+	<td style="border-right: 2px solid #ffffff" align="center" >Désignation<span style='font-size:0.8em;'></span></a></td>
+	<td style="border-right: 2px solid #ffffff" align="center" >Qté <span style='font-size:0.8em;'></span></a></td>
+  <td style="border-right: 2px solid #ffffff" align="center" >Unité de <br/> Stockage <span style='font-size:0.8em;'></span></a></td>
+		<td style="border-right: 2px solid #ffffff" align="center" >Valeur en <br/>Unités<span style='font-size:0.8em;'></span></a></td>
 	<td align="center" >Nbre de <br/> plats à servir</td>
 </tr>
-					<?php
-							if((isset($_GET['plat']))&& ($_GET['plat']==$plat))
-								//echo $sql="SELECT  * FROM plat WHERE CategoriePlat='".$famille."' AND designation='".urldecode($_GET['plat'])."'";
-							//else if((isset($_GET['plat']))&& (urlencode($_GET['plat'])==$plat))
-								//echo $sql="SELECT  * FROM plat WHERE CategoriePlat='".$famille."' AND designation='".urlencode($_GET['plat'])."'";
-							//else
-							$plat=$_GET['plat'];
-								//echo $sql="SELECT  * FROM plat WHERE CategoriePlat='".$famille."' AND designation='".$plat."'";
-								$sql="SELECT  * FROM plat WHERE numero='".$plat."'";
+					<?php												
+							$plat=isset($plat)?$plat:$dataZ->numero;
+							$sql="SELECT  * FROM plat,categorieplat WHERE categorieplat.id=plat.categPlat AND numero='".$plat."'";
 							$result=mysqli_query($con,$sql);$cpteur=1;
 							while( $data = mysqli_fetch_array($result))
 										{  if($cpteur == 1)
@@ -259,22 +268,22 @@ if(!isset($_GET['Cde'])) { ?>
 											$nbre=$data['numero'];
 
 											if(isset($_GET['ListeProduits']))
-												$ListeProduits =  explode("|",$_GET['ListeProduits']);
+												$ListeProduits = explode("|", ($_GET['ListeProduits']) ?? "");
 											else
-												$ListeProduits = explode("|",$data['ListeProduits']);
+												$ListeProduits = explode("|", ($data['ListeProduits']) ?? "");
 											for($i=0;$i<count($ListeProduits);$i++)
 											{
 											//if($data['numero']==$ListeProduits[$i])
 											{
 
-											$sql2="SELECT  * FROM produits WHERE Num='".$ListeProduits[$i]."' ";
+											$sql2="SELECT  * FROM produits,categorieproduit WHERE produits.Famille=categorieproduit.Num AND categorieproduit.Type='".$_SESSION['menuParenT1']."' AND produits.Num='".$ListeProduits[$i]."' ";
 											$result2=mysqli_query($con,$sql2);
 											while( $data2 = mysqli_fetch_object($result2))
 											{$nbre=$data2->Num2;
 											if(($nbre>=0)&&($nbre<=9)) $nbre="0000".$nbre ; else if(($nbre>=10)&&($nbre <=99)) $nbre="000".$nbre ;else $nbre="00".$nbre ;
 													echo " 	<tr class='rouge1' bgcolor='".$bgcouleur."'>";?>
 												<td align="center" style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'><?php echo $nbre;  ?> </td>
-								 				<td style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'><?php echo $data2->Famille; ?> </td>
+								 				<td style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'><?php echo $data2->catPrd; ?> </td>
 								 				<td style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'> <?php echo $data2->Designation; ?></td>
 												<td align='center' style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'>
 													<a href='#' class='info5' ><span>
@@ -283,9 +292,10 @@ if(!isset($_GET['Cde'])) { ?>
 												<?php
 													//echo " 	";
 
-													$composition = explode("|",($data['composition']));
+													$composition = explode("|", ($data['composition']) ?? "");
 													 for($j=0;$j<count($composition);$j++)
-													 { $composition2 = explode(";",($composition[$j]));
+													 { //$composition2 = explode(";",($composition[$j]));
+													   $composition2 = explode(";", ($composition[$j]) ?? "");
 														if((isset($composition2[0]) && ($composition2[0]==$data2->Num2)))
 																 {
 																	 if(isset($composition2[1])) $QteCde=$composition2[1];
@@ -329,8 +339,6 @@ if(!isset($_GET['Cde'])) { ?>
 					 <tr><td colspan='13' ><br/> <span style='float:left;font-family:Cambria;font-size:1em;margin-bottom:5px;color:#4C767A;'>1/4 plat (repas) -> 1 Unité &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1/2 plat (repas) -> 2 Unités &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1 plat (repas) complet -> 4 Unités</span></td></tr>
 				</table>
 
-
-			</div>
 <?php }
 else if(isset($_GET['mail']))
 	{ 		echo "<script language='javascript'>";

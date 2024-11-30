@@ -239,7 +239,7 @@ if(isset($_POST['ENREGISTRER'])&& ($_POST['ENREGISTRER']=="Modifier")){
 		<?php
 		if(!empty($_GET['delete'])){ $_SESSION['delete']=$_GET['delete'];
 			echo "<script language='javascript'>";
-			echo 'swal("Cette action est irréversible. Voulez-vous continuer ?", {
+			echo 'swal("Cette action est irréversible. Voulez-vous vraiment continuer ?", {
 			  dangerMode: true, buttons: true,
 			}).then((value) => { var Es = value;  document.location.href="products.php?menuParent='.$_SESSION['menuParenT'].'&test2="+Es;
 			}); ';
@@ -272,7 +272,7 @@ if(isset($_POST['ENREGISTRER'])&& ($_POST['ENREGISTRER']=="Modifier")){
 
 		if(!empty($_GET['qte'])){ $_SESSION['qte']=$_GET['qte'];
 			echo "<script language='javascript'>";
-			echo 'swal("Cette action est irréversible. Voulez-vous continuer ?", {
+			echo 'swal("Voulez-vous vraiment continuer ?", {
 			  dangerMode: true, buttons: true,
 			}).then((value) => { var Es = value;  document.location.href="products.php?menuParent='.$_SESSION['menuParenT'].'&test="+Es;
 			}); ';
@@ -280,7 +280,7 @@ if(isset($_POST['ENREGISTRER'])&& ($_POST['ENREGISTRER']=="Modifier")){
 		}  //https://sweetalert.js.org/docs/#configuration
 		if(!empty($_GET['test'])&& ($_GET['test']=='true')){
 			$rz="SELECT * FROM produits WHERE Num='".$_SESSION['aj']."' AND Type='".$_SESSION['menuParenT1']."'"; $req=mysqli_query($con,$rz);
-			$data=mysqli_fetch_object($req);  $Qte_initial= $data->Qte_Stock; $Qte_Stock=$Qte_initial+$_SESSION['qte'];$update=$data->Num2 ;
+			$data=mysqli_fetch_object($req);  $Qte_initial= isset($data->Qte_Stock)?$data->Qte_Stock:0; $Qte_Stock=$Qte_initial+$_SESSION['qte'];$update=isset($data->Num2)?$data->Num2:NULL ;
 		 	$rek="UPDATE produits SET Qte_Stock='".$Qte_Stock."',StockReel='".$Qte_Stock."' WHERE Num='".$_SESSION['aj']."' AND Type='".$_SESSION['menuParenT1']."'";
 			$query = mysqli_query($con,$rek) or die (mysqli_error($con)); $ref="PRIN".$update ;  $service=" "; $designationOperation ='Mise à jour Produits';
 			if($query){
@@ -370,7 +370,7 @@ if(isset($_POST['ENREGISTRER'])&& ($_POST['ENREGISTRER']=="Modifier")){
 <tbody id="">
 <?php
 	mysqli_query($con,"SET NAMES 'utf8'");
-	$query="SELECT * FROM produits,categorieproduit WHERE categorieproduit.catPrd = produits.Famille AND produits.Type='".$_SESSION['menuParenT1']."' ";
+	$query="SELECT * FROM produits,categorieproduit WHERE categorieproduit.Num = produits.Famille AND produits.Type='".$_SESSION['menuParenT1']."' ";
 	$result=mysqli_query($con,$query);
 	$cpteur=1;
     // parcours et affichage des résultats
@@ -391,7 +391,7 @@ if(isset($_POST['ENREGISTRER'])&& ($_POST['ENREGISTRER']=="Modifier")){
     ?>
 		 	<tr class='rouge1' bgcolor=' <?php echo $bgcouleur; ?>'>
 				 <td align="center" style='border-right: 1px solid #ffffff; border-top: 1px solid #ffffff'><?php echo $nbre;  ?> </td>
-				<?php if($Famille==1)  { ?>  <td style='border-right: 1px solid #ffffff; border-top: 1px solid #ffffff'><?php echo $data->Famille; ?> </td> <?php } ?>
+				<?php if($Famille==1)  { ?>  <td style='border-right: 1px solid #ffffff; border-top: 1px solid #ffffff'><?php echo $data->catPrd; ?> </td> <?php } ?>
 				<td style='border-right: 1px solid #ffffff; border-top: 1px solid #ffffff'> <?php echo $data->Designation; ?></td>
 				<?php if($UnitStockage==1)  { ?> <td align='' style='border-right: 1px solid #ffffff; border-top: 1px solid #ffffff'>&nbsp;&nbsp;&nbsp;&nbsp; <?php echo $data->UniteStockage; ?></td><?php } ?>
 				<?php if($PoidsNet1==1)  { ?> <td align="center"  style='border-right: 1px solid #ffffff; border-top: 1px solid #ffffff'> <?php echo $data->PoidsNet; ?></td><?php } ?>

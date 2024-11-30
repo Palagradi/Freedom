@@ -2,7 +2,7 @@
 	$host = 'localhost';
 	$db   = 'efreedom';
 	$user = 'root';
-	$pass = '';
+	$pass = 'eFreedom@123';
 	$charset = 'utf8mb4';
 	
 	$con=mysqli_connect($host,$user,$pass,$db);

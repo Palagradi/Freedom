@@ -13,7 +13,15 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
 
 		$fd=!empty($_GET['fd'])?$_GET['fd']:NULL; $fk=!empty($_GET['fk'])?$_GET['fk']:NULL;$Qte=!empty($_GET['Qte'])?$_GET['Qte']:0;$desactiveT=0;
 		 $fd; $tk=!empty($_GET['tk'])?$_GET['tk']:NULL;   $serv = !empty($_GET['serv'])?$_GET['serv']:NULL; $tab = !empty($_GET['tab'])?$_GET['tab']:NULL;
-				
+		$status=!empty($_GET['status'])?$_GET['status']:NULL; $numCde=!empty($_GET['numCde'])?$_GET['numCde']:NULL; 
+		if(!empty($status)){
+			$pre_sql1="UPDATE tableEnCours SET EtatCde='".$status."' WHERE numCde='".$numCde."' AND created_at='".$Jour_actuel."' AND Etat <> 'Desactive'";
+			$req1 = mysqli_query($con,$pre_sql1) or die (mysqli_error($con));
+			echo "<script language='javascript'>";
+			//echo 'alertify.success("Statut de la commande a été mis à jour.");';
+			echo "</script>";
+		}
+		
 		$table = !empty($_GET['table'])?$_GET['table']:0;
 		$cv = !empty($_GET['cv'])?$_GET['cv']:0;
 		
@@ -23,12 +31,15 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
 		 $data=mysqli_fetch_object($exec);
 		if(mysqli_num_rows($exec)>0){
 		$table0=(int)($data->id);	
-		}			
-			
-		$sql="SELECT * FROM tableEnCours WHERE numTable='".$table0."' AND created_at='".$Jour_actuel."' AND Etat<> 'Desactive'";
+		}	
+
+		if(isset($_GET['tk'])&&($_GET['tk']!="")&&($table0==0))	
+			 $sql="SELECT * FROM tableEnCours WHERE numTable='".$table0."' AND numTk='".$_GET['tk']."' AND created_at='".$Jour_actuel."' AND Etat<> 'Desactive'";
+		else 
+			 $sql="SELECT * FROM tableEnCours WHERE numTable='".$table0."' AND created_at='".$Jour_actuel."' AND Etat<> 'Desactive'";
 		$reqselRTables=mysqli_query($con,$sql);
 		if($reqselRTables){ unset($del); unset($val); unset($vt);}
-		
+
 		$client=!empty($_GET['client'])?$_GET['client']:NULL;
 		if(isset($client)&&(!empty($client)))
 		{	$client = explode("(",$client); $client = explode(")",$client[1]); //$table=(int)($table);
@@ -37,13 +48,7 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
 		}
 		$mode=!empty($_GET['mode'])?$_GET['mode']:NULL; 
 		if(isset($mode)&&(!empty($mode))&&(!is_null($mode))&&($mode!='null'))
-		{	/* $table0=(int)($table);	
-			$Query="SELECT id FROM RTables WHERE RealNameTable='".$table."'";
-			$exec=mysqli_query($con,$Query);
-			 $data=mysqli_fetch_object($exec);
-			if(mysqli_num_rows($exec)>0){
-			$table0=(int)($data->id);	
-			} */								
+		{								
 	 		$Query="UPDATE tableEnCours SET modeReglement ='".$mode."' WHERE numTable='".$table0."' AND created_at='".$Jour_actuel."' AND Etat<> 'Desactive'";
 			$exec=mysqli_query($con,$Query);
 		}
@@ -57,17 +62,16 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
 		   {	echo "<script language='javascript'>";
 				echo 'alertify.error(" Aucune Ligne à supprimer");';
 				echo "</script>";
-		   }else {  //$pre_sql1="DELETE FROM tableEnCours WHERE num='$max' AND Etat<> 'Desactive'";
-		   //$req1 = mysqli_query($con,$pre_sql1) or die (mysqli_error($con));
-		   $reqsel=mysqli_query($con,"SELECT * FROM RTables WHERE nomTable='".$table0."'");
-		   $data=mysqli_fetch_assoc($reqsel);$cv=isset($data['NbreCV'])?$data['NbreCV']:0;
-		   $reqselRTables=mysqli_query($con,"SELECT * FROM tableEnCours WHERE numTable='".$table0."' AND created_at='".$Jour_actuel."' AND Etat<> 'Desactive'");
-		   		//if($req1){
-				//echo "<script language='javascript'>";
-				//echo 'alertify.success(" Ligne supprimée avec succès !");';
-				//echo "</script>";	}
+		   }else {  
+			   $reqsel=mysqli_query($con,"SELECT * FROM RTables WHERE nomTable='".$table0."'");
+			   $data=mysqli_fetch_assoc($reqsel);$cv=isset($data['NbreCV'])?$data['NbreCV']:0;
+			   //if(isset($_GET['tk'])&&($_GET['tk']!=""))
+			   if(isset($_GET['tk'])&&($_GET['tk']!="")&&($table0==0))	
+					$sqlx="SELECT * FROM tableEnCours WHERE numTable='".$table0."' AND numTk='".$_GET['tk']."' AND created_at='".$Jour_actuel."' AND Etat<> 'Desactive'";
+			   else 
+				   $sqlx="SELECT * FROM tableEnCours WHERE numTable='".$table0."' AND created_at='".$Jour_actuel."' AND Etat<> 'Desactive'";
+			   $reqselRTables=mysqli_query($con,$sql);
 		   }
-		   //echo '<meta http-equiv="refresh" content="2; url=servir.php" />';
 		}
 
 		$reqTable=mysqli_query($con,"SELECT * FROM RTables WHERE NbreCV<>0"); $j=0;
@@ -81,6 +85,7 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
 					$_SESSION['Ntable']=$i;
 					$data=mysqli_fetch_assoc($reqsel);$cv=$data['NbreCV'];$_SESSION['cv']=$cv;
 					$req="SELECT * FROM tableEnCours WHERE numTable='".$i."' AND created_at='".$Jour_actuel."' AND Etat<> 'Desactive'";
+					$span="";
 					$reqselRTables=mysqli_query($con,$req);	$desactiveT=0;
 					}else { $desactiveT=1;
 						echo "<script language='javascript'>";
@@ -88,16 +93,13 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
 						echo "</script>";		
 					}
 				}
-}
-			if (isset($_POST['Valider']))
-			{  //if(isset($_POST['MontantP'])) echo $_POST['MontantP'] ; echo 12;
 			}
 			$_SESSION['table'] = $table; 
  if(isset($delete)&&($delete=="ok")&&(isset($_SESSION['delete'])&&($_SESSION['delete']==1))){
 	 echo "<script language='javascript'>";
 	 echo 'alertify.success(" Suppression effectuée !");';
 	 echo "</script>"; 
- }$_SESSION['delete']=0;
+ }$_SESSION['delete']=0; 
 ?>
 <html>
 	<head>
@@ -109,14 +111,33 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script> !-->
 		<link rel="stylesheet" href="js/bootstrap2.min.css">
 		<script src="js/bootstrap2.bundle.min.js"></script>
-
 			
 		<script type="text/javascript" src="js/fonctions_utiles.js"></script>
 		<script src="js/sweetalert.min.js"></script>	
 		<!-- <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script> !-->
 		<script src="js/sweetalert2.min.js"></script>
+		
 
 		<style>
+		/* Styles pour le lien (a) */
+		#link-id {
+		  text-decoration: none; /* Enlever la décoration du lien */
+		  color: inherit; /* Assurer que le texte n'ait pas de couleur par défaut */
+		}
+
+		/* Styles pour la ligne (tr) */
+		#row-id {
+		background-color:#C3D9E0;
+		cursor: pointer;
+		}
+
+		/* Effet de survol sur la ligne #FFD699  #FFCC66*/ 
+		#row-id:hover {
+		font-weight: bold;
+		color:white;
+		background-color: #FFD699 ; /* Change la couleur de fond au survol */
+		}
+
 		.alertify-log-custom {
 				background: blue;
 			}
@@ -297,10 +318,10 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
 				function edition1() { options = "Width=800,Height=450" ; window.open( "tableP.php", "edition", options ) ; }
 				function edition2() { options = "Width=800,Height=400" ; window.open( "ServP.php", "edition", options ) ; }
 				//function edition3() { options = "Width=800,Height=450" ; window.open( "receipt2.php", "edition", options ) ; }
-				function edition4() { options = "Width=800,Height=450" ; window.open( "frameFood.php", "edition", options ) ; }
-				function edition9() { options = "Width=800,Height=450" ; window.open( "framePFood.php", "edition", options ) ; }
-				function edition5() { options = "Width=800,Height=450" ; window.open( "frameDrink.php", "edition", options ) ; }
-				function edition8() { options = "Width=800,Height=450" ; window.open( "framePDrink.php", "edition", options ) ; }
+				function edition4(tk=0) { options = "Width=800,Height=450" ; window.open( "frameFood.php?tk=" + encodeURIComponent(tk), "edition", options ) ; }
+				function edition9(tk=0) { options = "Width=800,Height=450" ; window.open( "framePFood.php?tk=" + encodeURIComponent(tk), "edition", options ) ; }
+				function edition5(tk=0) { options = "Width=800,Height=450" ; window.open( "frameDrink.php?tk=" + encodeURIComponent(tk), "edition", options ) ; }
+				function edition8(tk=0) { options = "Width=800,Height=450" ; window.open( "framePDrink.php?tk=" + encodeURIComponent(tk), "edition", options ) ; }
 				function edition6(param0=0) { options = "Width=auto,Height=auto" ; window.open( "receipt2.php?param0=" + encodeURIComponent(param0), "edition", options ) ; }
 				//function edition7() { options = "Width=600,Height=300" ; window.open( "tableS.php", "edition", options ) ; }
 				function Alert() {
@@ -312,34 +333,110 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
 				function Alert2() {
 					alertify.error(" Aucune donnée à imprimer!");
 				}
-				function remiseR() {//alert("hjjjd");
+				function remiseR() {
+					const checkbox = document.getElementById('checkboxR');
 					var remise = parseInt(document.getElementById('remise').value);
-					if(document.getElementById('remise').value!=""){
-						if((remise>0)&&(remise < parseInt(document.getElementById("total").value))){
-						rem.innerHTML = parseInt(document.getElementById("total").value)-parseInt(document.getElementById('remise').value);
-						document.getElementById('m').value=parseInt(document.getElementById("total").value)-parseInt(document.getElementById('remise').value);
-						document.getElementById('remise').style.backgroundColor='#F3F39F';
-					document.getElementById('remise').style.fontWeight='bold';}
+					var RegimeTVA = parseInt(document.getElementById('RegimeTVA').value);
+					if(document.getElementById('remise').value!=""){ 
+ 						if(RegimeTVA>0){
+							var montantht=(document.getElementById("total").value);							
+						}else{
+							var montantht=(parseFloat(document.getElementById("total").value)*parseFloat(1.18));
+						}
+						{						
+ 						if((remise>0)&&(remise < parseInt(montantht))){
+							if (checkbox.checked){
+								if(remise<=100){
+								rem.innerHTML =parseInt(montantht)-parseInt(parseFloat(montantht)*parseFloat(remise/100));
+								//document.getElementById('m').value=montantht-(parseInt(montantht)-parseInt(parseFloat(montantht)*parseFloat(remise/100)));
+								document.getElementById("netApayer").value=parseInt(montantht)-parseInt(parseFloat(montantht)*parseFloat(remise/100));
+								}								
+							}
+							else{			
+								rem.innerHTML = parseInt(montantht)-parseInt(document.getElementById('remise').value);
+								//document.getElementById('m').value=montantht- parseInt(document.getElementById('remise').value);
+								document.getElementById("netApayer").value=parseInt(montantht)-parseInt(document.getElementById('remise').value);
+							}
+						} 
+						}
 						}
 				}
 				function monnaie() {
+					const checkbox = document.getElementById('checkboxR');
+					var RegimeTVA = parseInt(document.getElementById('RegimeTVA').value);
+					var remise = parseInt(document.getElementById('remise').value);
+					if(RegimeTVA>0){
+						var montantht=(document.getElementById("total").value);							
+					}else{
+						var montantht=(parseFloat(document.getElementById("total").value)*parseFloat(1.18));
+					}					
 					if(document.getElementById('remise').value=="") {document.getElementById('remise').value=0;
-					rem.innerHTML =parseInt(document.getElementById("total").value)-parseInt(document.getElementById('remise').value);}
-
-						var it= parseInt(document.getElementById("total").value)-parseInt(document.getElementById('remise').value);
+						rem.innerHTML =parseInt(montantht)-parseInt(document.getElementById('remise').value);
+						document.getElementById("netApayer").value=parseInt(montantht)-parseInt(document.getElementById('remise').value);
+						}					
+					
+						if (checkbox.checked)
+							var it=parseInt(montantht)-parseInt(parseFloat(montantht)*parseFloat(remise/100));
+						else 
+							var it= parseInt(montantht)-parseInt(document.getElementById('remise').value);
 
 					  if(document.getElementById("Mtpercu").value>= it)
 						  var Rx=parseInt(document.getElementById("Mtpercu").value) - it;
 					  else
 						  var Rx=0;
 						mon.innerHTML = Rx;
-						document.getElementById('Mtpercu').style.backgroundColor='#F3F39F';
-						document.getElementById('Mtpercu').style.fontWeight='bold';
-
-					document.getElementById('m').value=parseInt(document.getElementById("total").value)-parseInt(document.getElementById('remise').value);
-
+					//document.getElementById('m').value=montantht- it;		
+				}
+				function update() {
+					const checkbox = document.getElementById('checkboxR');
+					var remise = parseInt(document.getElementById('remise').value);
+					var RegimeTVA = parseInt(document.getElementById('RegimeTVA').value);
+					if(document.getElementById('remise').value!=""){ 
+ 						if(RegimeTVA>0){
+							var montantht=(document.getElementById("total").value);							
+						}else{
+							var montantht=(parseFloat(document.getElementById("total").value)*parseFloat(1.18));
+						}
+					
+ 						if((remise>0)&&(remise < parseInt(montantht))){
+							if (checkbox.checked){
+								rem.innerHTML =parseInt(montantht)-parseInt(parseFloat(montantht)*parseFloat(remise/100));
+								document.getElementById("netApayer").value=parseInt(montantht)-parseInt(parseFloat(montantht)*parseFloat(remise/100));							
+							}
+						else{			
+								rem.innerHTML = parseInt(montantht)-parseInt(document.getElementById('remise').value);
+								document.getElementById("netApayer").value=parseInt(montantht)-parseInt(document.getElementById('remise').value);
+							}
+						} 
+						document.getElementById("Mtpercu").value="";
+						document.getElementById("Mtpercu").focus();
+						var Rx=0;
+						mon.innerHTML = Rx;
+						}
 				}
 	</script>
+	<script>
+		// Fonction pour vérifier si l'utilisateur est connecté à Internet
+		function checkConnection() {
+			const isOnline = navigator.onLine; // Utilise l'API de navigateur pour vérifier l'état de la connexion
+
+			// Si connecté à Internet, on coche le checkbox
+			document.getElementById('internetStatus').checked = isOnline;
+			// Met à jour le texte du label
+			document.getElementById('connectionLabel').innerText = isOnline ? "Vous êtes connecté à Internet" : "Impossible d'établir une facture normalisée.";
+			
+			document.getElementById('connectionStatus').value = isOnline ? 'true' : 'false';
+		}
+
+		// Vérifier la connexion à chaque changement de statut (connexion/déconnexion)
+		window.addEventListener('online', checkConnection);
+		window.addEventListener('offline', checkConnection);
+
+		// Vérifier au chargement initial de la page
+		window.onload = checkConnection;
+	</script>
+	
+	
 	</head>
 	<body bgcolor='azure' style="" > 
 		<div class="container">
@@ -375,17 +472,59 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
 		 if($printf==1)  {
  				echo "<br/><br/>";
 			}
+			
+		$tkp=isset($_GET['tk'])?$_GET['tk']:NULL;$tkp++;
+		{$sqlx="SELECT max(numTk) AS max_tk FROM tableEnCours WHERE numTable=0  AND created_at='".$Jour_actuel."' AND Etat<> 'Desactive'";
+		$reqselRTablesx=mysqli_query($con,$sqlx);
+		$dataTxy=mysqli_fetch_object($reqselRTablesx);
+		$max_tk=1+$dataTxy->max_tk;
+		}
+		
+		//||((isset($_GET['table'])&&($_GET['table']==0))&&(isset($_GET['tk'])&&($_GET['tk']>0)))
 		?>	
 		</div>
 		<div style='margin-top:0%;width:auto;float:right;'><span style='font-weight:bold;font-size:135%;color:maroon;font-family:cambria;float:left;display:inline;'>
 		<?php if((empty($table))&&(empty($vt))) echo "<a href='servir.php?menuParent=".$_SESSION['menuParenT']."&vt=1&tk=1'   id='lien1' style='text-decoration:none;'></a>";
-		else if((empty($table))&&(!empty($vt))) echo "<span style='color:#444739;font-weight:bold;'>Formule de vente : Takeaway</span>";
+		else if(((empty($table))&&(!empty($vt)))) echo "<span style='color:#444739;font-weight:bold;'>Formule de vente : Takeaway</span>";
 		else if(!empty($table)) {echo "<span style='color:#444739;font-weight:bold;'>Formule de vente : Occupation d'une table</span>"; }  else {}
-
-	 		echo "</span>"; 
-			//if((empty($table))&&(empty($vt))) 
-			echo "<span style='float:left;font-weight:bold;'></span>
-			<span style='float:right;font-weight:bold;'><a href='servir.php?menuParent=".$_SESSION['menuParenT']."&vt=1&tk=1' id='lien1' class='info2' style='color:red;text-decoration:none;border-radius: 5px;-moz-border-radius: 5px;-webkit-border-radius: 5px;'>
+ 		echo "</span>"; 
+						
+			if((empty($table))&&(empty($vt))) 
+				echo "<span style='float:left;font-weight:bold;'></span>";
+			else 
+				{if(!isset($_POST['table'])||(!empty($table))){
+					if(!isset($_POST['table'])&&(empty($table)))
+						echo "<span style='float:left;font-weight:bold;'>&nbsp;<a class='info2' href='servir.php?menuParent=".$_SESSION['menuParenT']."&vt=1&tk=".$max_tk."' style=''>
+						<span style='font-size:0.9em;font-style:normal;color:green;'>Nouveau Takeaway</span>
+						<i class='fas fa-plus-square' aria-hidden='true' style='font-size:140%;color:gray;margin-bottom:-5px;'></i>
+						</a>";
+					else 
+						echo "";					
+				}			
+				$sql="SELECT DISTINCT numTk FROM tableEnCours WHERE numTable=0 AND numTk<>0 AND created_at='".$Jour_actuel."' AND Etat<> 'Desactive' ORDER BY numTk";
+				$reqselRTablesx=mysqli_query($con,$sql);
+				if((mysqli_num_rows($reqselRTablesx)>0)&&(!isset($_POST['table']))) {
+					if(!isset($_POST['table'])&&(empty($table))){
+					$ij=0;						
+					while($dataTx=mysqli_fetch_object($reqselRTablesx)){$ij++;
+						//if($dataTx->numTk%6==0) 
+						if($ij%6==0)
+							echo "<br/>";
+						echo "&nbsp;";
+						if($tk==$dataTx->numTk)
+							echo "<span style='color:red;'>".$dataTx->numTk."</span>";
+						else 
+							echo "<a href='servir.php?menuParent=".$_SESSION['menuParenT']."&vt=1&tk=".$dataTx->numTk."' style='color:white;text-decoration:none;'>".$dataTx->numTk."</a>";
+						echo "<span style='color:white;'> | </span>";
+					}
+				}					
+				}if($tk==$max_tk) 
+					{if(!isset($_POST['table'])&&(empty($table)))
+						echo "<span style='color:red;'>".$max_tk."</span>";
+					}
+				echo "</span>";
+				}
+			echo "<span style='float:right;font-weight:bold;'><a href='servir.php?menuParent=".$_SESSION['menuParenT']."&vt=1&tk=1' id='lien1' class='info2' style='color:red;text-decoration:none;border-radius: 5px;-moz-border-radius: 5px;-webkit-border-radius: 5px;'>
 			<span style='font-size:0.8em;'>Takeaway</span> <img src='logo/Resto/take-away.png' alt='' width='40' height='45' border='1' style='position:relative;margin-top:-14px;background: white;z-index:1;'></a> </span>";
 		?>
 		<h2 style='font-size:1.1em;color:maroon;font-family:cambria;'>&nbsp;&nbsp;  </h2>
@@ -405,13 +544,16 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
 
 		$req="SELECT DISTINCT tableEnCours.num_facture as num_facture,heure_emission,montant_ttc,client,factureResto.numTable,factureResto.id AS id FROM tableEnCours,factureResto WHERE factureResto.num_facture=tableEnCours.num_facture AND created_at='".$Jour_actuel."' AND Etat LIKE 'Desactive' AND factureResto.num_facture<>'' ORDER BY factureResto.id DESC LIMIT 5";
 		$reqsel2=mysqli_query($con,$req);
+		echo "<form style='margin-top:20px;'>
+				<input type='checkbox' id='internetStatus' disabled name='testConnexion'>
+				<label id='connectionLabel' style='color:white;'>Vous n'êtes pas connecté à Internet</label>
+			 </form>";
 		if(mysqli_num_rows($reqsel2)>0) {
-				?>
+				?>	
 				<hr/>
 				<h5>LISTE DES DERNIERES FACTURES EMISES</h5><span style='float:right;margin-top:-20px;'><?=$Date_actuel2 ?></span>
 				<hr/>
-				<table class='rouge1' style='width:500px;border:2px solid gray;background-color:#F4FEFE;font-family:Calibri;font-size:1em;'>
-		 
+				<table class='rouge1' style='width:500px;border:2px solid gray;background-color:#F4FEFE;font-family:Calibri;font-size:1em;'>	 
     <thead>
       <tr style='background-color:#DCDCDC;border:1px solid gray;'>
         <th align="left">NUMERO</th>
@@ -491,7 +633,7 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="ticketModalLabel"><center>Copyright © eFREEDOM - Version 1.0 </h5>
+                <h5 class="modal-title" id="ticketModalLabel"><center>Copyright © eFREEDOM - Version 3.0 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -499,7 +641,7 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
                 <div class="ticket" id="printable-ticket">
                     <div class="header">
 						<div style="float:left;">
-								<img class="img-responsive" alt="" src="<?php if(!empty($_SESSION['logo'])) echo $_SESSION['logo']; ?>" style="width:105px;height:105px;">
+								<img class="img-responsive" alt="" src="<?php if(!empty($_SESSION['logo'])) echo $_SESSION['logo']; ?>" style="width:100px;height:100px;">
 						</div>
 						<div>
             			<h5><?php 	
@@ -532,28 +674,22 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
 					}
 					$factureResto=mysqli_query($con,$req);
 					$data1=mysqli_fetch_object($factureResto);//{ 
-						$remise=$data1->Remise; $Net=$data1->montant_ttc;
+						$remise=$data1->Remise; $Net=$data1->montant_ttc-$data1->Remise;
 						$SommePayee=$data1->somme_paye; $monnaie=$SommePayee-$Net;$seller=$data1->seller; 
 						$NomClient=!empty($data1->NomClient)?$data1->NomClient:"<g>Non renseigné</g>";
 						$heure=$data1->heure_emission;$numRecu=$data1->num_facture;$client=$data1->client;$serveur=$data1->serveur;
 					//}
-
+		
 				if($client>0){
-						$reqx="SELECT * FROM clientresto WHERE id='".$client."' ";
-						$reqselRTablesx=mysqli_query($con,$reqx);
-						$datax=mysqli_fetch_object($reqselRTablesx);
-						$numIFU="<u>IFU</u> : ".$datax->numIFU;
-					if(!empty($datax->entrepriseName))
-						$NomClient=$datax->entrepriseName;
-					else 
-						$NomClient=$datax->nomclt." ".$datax->prenomclt;
+						$numIFU="<u>IFU</u> : ".infoClient($client,3,$con);
+						$NomClient=!empty(infoClient($client,0,$con))?infoClient($client,0,$con):infoClient($client,1,$con)." ".infoClient($client,2,$con);
 					}
 					else {
 					$NomClient="<g>Non renseigné</g>";
 					$numIFU=" ";				
 					}
 
-				if($serveur>0){
+					if($serveur>0){
 						$reqx="SELECT * FROM serveur WHERE id='".$serveur."' ";
 						$reqselRTablesx=mysqli_query($con,$reqx);
 						$datax=mysqli_fetch_object($reqselRTablesx);
@@ -561,7 +697,15 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
 					}
 					else {
 					$NomServeur="";	
-					}					
+					}	
+
+					$reqx="SELECT * FROM tableEnCours,e_mecef WHERE tableEnCours.SIGNATURE_MCF=e_mecef.SIGNATURE_MCF AND num_facture='".trim($numRecu)."' ";
+					$reqselRTablesx=mysqli_query($con,$reqx);
+					$datax=mysqli_fetch_object($reqselRTablesx);
+					$PourcentRemise=explode("|",$datax->Montant);
+					$PourcentRemise=$PourcentRemise[2];		
+					$PourcentRemise=explode(";",$PourcentRemise);
+					$PourcentRemise=(isset($PourcentRemise[1])&&($PourcentRemise[1]>0))?"[".$PourcentRemise[1]." %] : ":"";				
 					?>
 				</div>
 			</div>
@@ -590,7 +734,7 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
 					</div>	
 				</div>
   <div class="content">						
-	<table style='font-size:0.9em;'>
+	<table style='font-size:0.8em;'>
     <tr style='background-color:#e5e5e5;font-weight:bold;'>
 	   <td style=''>Désignation</td>
 		<td align='right'>Prix</td>
@@ -598,43 +742,53 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
 		<td style='text-align:right;'>Montant</td>
     </tr>			
 		<?php
-		if(isset($reqselRTables)){$total=0;$num=0;//$mt=0;
+		if(isset($reqselRTables)){$total=0;$num=0; 
 			while($data1=mysqli_fetch_array($reqselRTables)){ $num++;
 			$mt=$data1['qte']*$data1['prix'];$total+=$mt;$mode=$data1['modeReglement'];
+				$LigneCde=ucfirst($data1['LigneCde'])." ".$data1['QteInd'];  
+				if($data1['GrpeTaxation']=="E") //L'entreprise est inscrite au régime TPS
+				$LigneCde.=" E "; 
+				else if($data1['GrpeTaxation']=="A") //Ici les factures normalisees sont exonerees
+					$LigneCde.="  (A-EX)"; 
+				else   //les factures normalisees seront taxables par defaut
+					$LigneCde.=" B ";
+									
 				echo "<tr>
-					<td class='' >".ucfirst($data1['LigneCde'])." ".$data1['QteInd']."</td>
+					<td class='' >".$LigneCde."</td>
 					<td align='right' class=''> ".$data1['prix']."</td>
 					<td align='center' class=''> ".$data1['qte']."</td>
 					<td  align='right' class=''> ".$mt."</td>
 				</tr>";
 			} $mht=round($total/1.18); $tva=round(0.18*$mht); $mht=$total-$tva;//Pour éviter les arrondis supérieurs 
-		   }		   
+			} if($RegimeTVA==1) {$totalht=0;$tva=0; $mht=$total;} else $totalht=$mht;		   
 			  echo 	"
 			  <tr>
-					<td colspan='1' rowspan='4' align='right'><strong> Montant HT : ".$mht." </strong>
-					<br/><strong>  TVA [18%] : ".$tva." </strong>
+					<td colspan='1' rowspan='4' align='right'> Nbre de produits : ".$num." 
+					<br/>  Total exonéré [A-EX] : ".$mht."
+					<br/> Total HT [B] 18% : ".$totalht." 
+					<br/>  TVA [B] 18% : ".$tva." 
 					</td>					
 					
 			  </tr>
 			  <tr>
-				<td  colspan='2' align='right'> <strong> Montant Total : </strong>  ";
-				//if($remise>0)
-					echo "<br/><strong> Remise : </strong>";
+				<td  colspan='2' align='right'> <strong> Montant Total :  ";
+				//if($remise>0) "(".$_SESSION['pourcent']." %)";
+					echo "<br/> Remise ".$PourcentRemise;
 
-				echo "<br/><strong> Net à payer :</strong>
-				<br/><strong> Somme payée :</strong> ";
+				echo "<br/> Net à payer :
+				<br/> Somme payée :";
 				//if($monnaie>0)
-					echo "<br/><strong> Monnaie : </strong> </td>";
+					echo "<br/>Monnaie : </strong> </td>";
 					?>
 					<td align='right' style=''><strong><i class=""></i> <?php echo $total;?>
-					<br/><?php echo $remise;?><br/>	<?php echo $Net;?></strong>									
+					<br/><?php echo $remise;?><br/>	<?php echo $Net;?>							
 
 				<?php
 				//if($remise>0)
-					echo " <br/><strong><i class=''></i> ".$SommePayee."</strong> ";
+					echo " <br/><i class=''></i> ".$SommePayee." ";
 
 				//if($monnaie>0)
-					echo "<br/><strong><i class=''></i> ".$monnaie."</strong> </td>
+					echo "<br/><i class=''></i> ".$monnaie."</strong> </td>
 			</tr>";
 
 				//QRcode::png('code data text', 'filename.png'); // creates file
@@ -649,17 +803,38 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
 				</div>
 
 				<div class="footerT">
-					<center>
-					<?php $generator = new BarcodeGeneratorHTML();
-						echo $generator->getBarcode($numRecu, $generator::TYPE_CODE_128);?><br/>
-						Merci de votre visite !</center>
+					
+						<?php 
+						//$generator = new BarcodeGeneratorHTML();
+						//echo $generator->getBarcode($numRecu, $generator::TYPE_CODE_128);
+						?>
+						<div class="info-box">
+						<img style='float:left;margin-top:-5px;' src="qrcode.php?QRCODE_MCF=<?=$datax->QRCODE_MCF; ?>" alt="QR Code">						
+						<div class="content2" style='float:right;'>
+							<span class="" style='font-size:0.8em;float:left;font-weight:bold;'>MECeF/DGI </span>&nbsp;&nbsp;
+							<span class="" style='font-size:0.8em;float:right;font-weight:bold;'> <?=$datax->SIGNATURE_MCF; ?></span>
+							<br/>
+							<span class="" style='font-size:0.8em;float:left;'>MECeF NIM  </span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+							<span class="" style='font-size:0.8em;float:right;'> TS01000378 </span>
+							<br/>
+							<span class="" style='font-size:0.8em;float:left;'>MECeF Compteurs</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+							<span class="" style='font-size:0.8em;float:right;'>  <?=$datax->COMPTEUR_MCF; ?></span>
+							<br/>
+							<span class="" style='font-size:0.8em;float:left;'>MECeF Heure </span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+							<span class="" style='font-size:0.8em;float:right;'> <?=$datax->DT_HEURE_MCF; ?></span>
+						</div>
+						</div>
+						<center style=''>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+							Merci de votre visite !
+						</center>
 				</div>				
-				<!-- <div class="watermark">DUPLICATA</div>	-->
+				<!-- <div class="watermark">DUPLICATA</div>	#f7f7f7 -->
                 </div>
             </div>
         </div>
     </div>
 	</div>
+
 	<!-- Modal end -->
 						
 		<?php 
@@ -716,7 +891,10 @@ document.addEventListener('DOMContentLoaded', () => {
 	})
 	.then((value) => {
 		var table = document.getElementById('NameTable').value;  var cv = document.getElementById('cv').value; var tk = document.getElementById('tk').value;
-		document.location.href='servir.php?menuParent=<?php echo $_SESSION['menuParenT']; ?>&mode='+value+'&table='+table+'&cv='+cv+'&tk='+tk;
+		if(table==0)
+			document.location.href='servir.php?menuParent=<?php echo $_SESSION['menuParenT']; ?>&mode='+value+'&table='+table+'&cv='+cv+'&tk='+tk+'&vt=1';
+		else 
+			document.location.href='servir.php?menuParent=<?php echo $_SESSION['menuParenT']; ?>&mode='+value+'&table='+table+'&cv='+cv+'&tk='+tk;
 
 	});
 	}
@@ -869,7 +1047,10 @@ function CheckClient() {
 	  var tk = document.getElementById('tk').value;
 
       // Utiliser la valeur sélectionnée pour rediriger
-      document.location.href = 'servir.php?menuParent=<?php echo $_SESSION['menuParenT']; ?>&client=' + value + '&table=' + table + '&cv=' + cv + '&tk=' + tk;
+	  if(table==0)
+		document.location.href = 'servir.php?menuParent=<?php echo $_SESSION['menuParenT']; ?>&client=' + value + '&table=' + table + '&cv=' + cv + '&tk=' + tk + '&vt=1';
+	else 
+		document.location.href = 'servir.php?menuParent=<?php echo $_SESSION['menuParenT']; ?>&client=' + value + '&table=' + table + '&cv=' + cv + '&tk=' + tk;
 	  
     }
   });
@@ -1087,6 +1268,55 @@ function delServ(tableName) {
     }
   });
 }
+
+
+function JSalertQte(param=0,cv=0,param2,vt=0,param3=0,param4) {
+    swal({
+        title: "ETAT DE LA COMMANDE",
+        content: {
+            element: "div",
+            attributes: {
+                innerHTML: `
+                    <div>
+                        <div style="margin-top: -10px; margin-bottom: 10px;">
+                            <label style="color: #007BFF; font-weight: bold;">
+                                <input type="radio" name="status" value="0"  ${param3 === 0 ? 'checked' : ''} > En cours
+                            </label>
+                            <label style="margin-left: 10px; color: #28A745; font-weight: bold;">
+                                <input type="radio" name="status" value="1" ${param3 === 1 ? 'checked' : ''} > Prête
+                            </label>
+                            <label style="margin-left: 10px; color: #DC3545; font-weight: bold;">
+                                <input type="radio" name="status" value="2" ${param3 === 2 ? 'checked' : ''} > Déjà servie
+                            </label>
+                        </div>
+                    </div>
+                `
+            },
+        },
+        buttons: {
+            confirm: {
+                text: "Valider",
+                closeModal: false
+            }
+        }
+    })
+    .then(() => {
+        // Récupération de l'état sélectionné
+        const selectedStatus = document.querySelector('input[name="status"]:checked').value;
+
+        // Pas de saisie de quantité, donc la quantité par défaut pourrait être une valeur par défaut si nécessaire
+        //const quantity = 1; Si vous voulez une quantité par défaut, par exemple 1
+
+        // Vérification de la sélection du statut avant la redirection
+        if (!selectedStatus) {
+            swal("Erreur", "Veuillez sélectionner un statut.", "error");
+        } else {
+            // Rediriger avec les paramètres
+            document.location.href = `servir.php?table=${param}&status=${encodeURIComponent(selectedStatus)}&cv=${cv}&vt=${vt}&tk=${param2}&numCde=${param4}`;
+        }
+    });
+}
+
 
 
 </script>			

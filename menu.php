@@ -151,16 +151,16 @@ href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="styl
 		$d1=mysqli_fetch_assoc($rZ);$mParent=isset($d1['menu'])?trim($d1['menu']):NULL;
 		//$mod;
 		$reqsel=mysqli_query($con,"SELECT * FROM module WHERE Etat='1' AND Name='RESTAURATION'");
-		if(mysqli_num_rows($reqsel)>0){
-			if(!isset($_GET['module'])) {
-			 echo "<a class='navbar-brand' href='menu.php?module=RESTAURATION' title='RESTAURATION'><i class='fas fa-home'></i></a>";
-			}
-		}
+		//if(mysqli_num_rows($reqsel)>0){
+		//	if(!isset($_GET['module'])) {
+			 echo "&nbsp;&nbsp;&nbsp;<a class='navbar-brand' href='menu.php?module=RESTAURATION' title=''><i class='fas fa-home'></i></a>";
+		//	}
+		//}
 		// $reqsel=mysqli_query($con,"SELECT * FROM module WHERE Etat='1' AND Name='ECONOMAT'");
 		// if(mysqli_num_rows($reqsel)>0){
 		// 	echo "<a class='navbar-brand' href='menu.php' title='ECONOMAT'><i class='fas fa-home'></i></a>";
 		// }
-		else {
+		//else {
 /* 			echo "<a class='navbar-brand' href='menu.php' ><i class='fas fa-home'></i></a>";
 			if(isset($_GET['module'])&&($_GET['module']=='RESTAURATION'))
 			{  echo "<a class='navbar-brand' href='menu.php?module=HEBERGEMENT' title='PASSEZ EN MODE HEBERGEMENT'><i class='fas fa-home'></i></a>";
@@ -171,7 +171,7 @@ href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="styl
 				echo "<a class='navbar-brand' href='menu.php?module=RESTAURATION' title='PASSEZ EN MODE RESTAURATION'><i class='fas fa-home'></i></a>";
 				$role="roleH"; $_SESSION['module']=2;
 			} */	
-		}
+		//}
 
 		mysqli_query($con,"SET NAMES 'utf8'");
 		$reqsel=mysqli_query($con,"SELECT DISTINCT menuParent,logo FROM ".$role.",affectationrole WHERE ".$role.".nomrole=affectationrole.nomrole AND ".$role.".nomrole <> 'Administration' AND Profil='".$_SESSION['poste']."' ORDER BY menuParent");
@@ -400,7 +400,18 @@ href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="styl
 	}
 
 	$reqsel=mysqli_query($con,"SELECT backupDate FROM backup WHERE backup='".$previousDay."'");
-	if(mysqli_num_rows($reqsel)==0) include 'backup.php'; 
+	if(mysqli_num_rows($reqsel)==0) {
+		include 'backup.php'; 
+		
+/* 		mysqli_query($con,"SET NAMES 'utf8'");
+		$result=mysqli_query($con,"SELECT numero,NbreJ,NbreC,archivesMensuel FROM plat ");
+		$cpteur=1;$month=11;
+		while( $data = mysqli_fetch_object($result))
+		{ $archivesMensuel = $data['archivesMensuel'];
+		  echo $archivesMensuel .= "|".$month.";".$data['NbreJ'].";".$data['NbreC'];
+		} */
+	
+	}
 	
 	?>
 	

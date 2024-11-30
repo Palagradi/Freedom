@@ -50,7 +50,10 @@ if (mysqli_num_rows($reqsel) > 0) {
 	$_SESSION['module0'] = isset($ret1['Name']) ? $ret1['Name'] : NULL;
 
 
-	$resT = mysqli_query($con, "SELECT * FROM  hotel");
+	if($_SESSION['module0']=="RESTAURATION")
+		$resT = mysqli_query($con, "SELECT * FROM  resto");
+	else 
+		$resT = mysqli_query($con, "SELECT * FROM  hotel");
 	$reXt = mysqli_fetch_assoc($resT);
 	$nomHotel = $reXt['nomHotel'];
 	$NbreEToile = $reXt['NbreEToile'];
@@ -155,22 +158,75 @@ if (mysqli_num_rows($reqsel) > 0) {
 <head>
 	<title> <?php echo $nomHotel; ?> </title>
 	<link href="css/animate.css" rel="stylesheet">
-	<link rel="icon" href="<?php $icon = "logo/link.png";
-							echo $icon; ?>" />
+	<link rel="icon" href="<?php $icon = "logo/link.png";echo $icon;?>" />
 	<link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
 	<link href="fontawesome/web-fonts-with-css/css/fontawesome-all.min.css" rel="stylesheet">
 	<link href="bootstrap/customize.css" rel="stylesheet">
 	<script src="js/jquery.min.js"></script>
 	<script src="js/jquery.lettering.js"></script>
 	<script src="js/jquery.textillate.js"></script>
+	
+	<style>
+/* Assurer que le body et html prennent toute la hauteur de la page */
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: Arial, sans-serif;
+}
+
+/* Conteneur avec fond et opacité */
+.background-opacity {
+    position: relative; /* Positionnement de référence pour les éléments enfants */
+    height: 100%; /* Remplir toute la hauteur de la page */
+}
+
+/* Pseudo-élément pour l'image de fond avec opacité */
+.background-opacity::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url("<?php
+            if ($role == 'HEBERGEMENT') echo 'logo/background/' . rand(11, 11) . '.jpg';
+            else if ($role == 'ECONOMAT') echo 'logo/background/' . rand(21, 21) . '.jpg';
+            else if ($role == 'RESTAURATION') echo 'logo/background/' . rand(7, 7) . '.png';
+            else echo 'logo/background/' . rand(11, 11) . '.jpg';
+    ?>");
+    background-size: cover;
+    background-position: center;
+    opacity: 0.75; /* Ajuste l’opacité entre 0 et 1 */
+    z-index: -1; /* L’image de fond est en arrière-plan */
+}
+
+/* Style du texte */
+.texte {
+    position: absolute;
+    bottom: 0px; /* Distance du bord inférieur */
+    right: 0px; /* Distance du bord droit */
+    padding: 0px;
+    font-size: 0.7em;
+    color: white; /* Couleur du texte */
+    background-color: rgba(0, 0, 0, 0.5); /* Fond semi-transparent pour rendre le texte lisible */
+    border-radius: 5px; /* Optionnel : pour arrondir les coins du fond */
+}
+
+
+</style>
+
+<body class="background-opacity">
+    <!-- Contenu de la page -->
+</body>
+
 
 </head>
 
-<body style='overflow:hidden;background-image: url("<?php
-				if ($role == "HEBERGEMENT") echo "logo/background/" . rand(11, 11) . ".jpg";
-				else if ($role == "ECONOMAT") echo "logo/background/" . rand(21, 21) . ".jpg";
-				else if ($role == "RESTAURATION") echo "logo/background/" . rand(11, 11) . ".jpg";
-				else echo "logo/background/" . rand(11, 11) . ".jpg"; ?>");'>
+<body class="background-opacity">
+	<div class="background">
+       <!--  <p class="texte"> </p>  -->
+    </div>
 	<p>
 	<h1 align='center' class="tlt" style='<?php 
 			if ($role == "HEBERGEMENT") echo "color:#573E39;";
@@ -179,17 +235,17 @@ if (mysqli_num_rows($reqsel) > 0) {
 		<font size='200'> <!--#573E39;  !-->
 			<ul class="texts">
 				<li data-out-effect="fadeIn"><?php
-												if ($lock >= 0) 
-												{
-													if ($role == "HEBERGEMENT") echo "SYSTEME DE GESTION HOTELIERE " . $serveurused;
-													else if ($role == "RESTAURATION") echo "SYSTEME DE GESTION HOTELIERE - " . $serveurused;
-													else if ($role == "ECONOMAT") echo "SYSTEME - DE GESTION DU STOCK - " . $serveurused;
-													else echo "SYSTEME DE GESTION HOTELIERE " . $serveurused;
-												} else {
-													$msg_verrou = "L'APPLICATION eFreedom EST VERROUILLEE. VEUILLEZ CONTACTER VOTRE EDITEUR";
-													echo $msg_verrou;
-												} 
-												?> </li>
+					if ($lock >= 0) 
+					{
+						if ($role == "HEBERGEMENT") echo "SYSTEME DE GESTION HOTELIERE " . $serveurused;
+						else if ($role == "RESTAURATION") echo "SYSTEME DE GESTION ET DE RESTAURATION - " . $serveurused;
+						else if ($role == "ECONOMAT") echo "SYSTEME - DE GESTION DU STOCK - " . $serveurused;
+						else echo "SYSTEME DE GESTION HOTELIERE " . $serveurused;
+					} else {
+						$msg_verrou = "L'APPLICATION eFreedom EST VERROUILLEE. VEUILLEZ CONTACTER VOTRE EDITEUR";
+						echo $msg_verrou;
+					} 
+					?> </li>
 			</ul>
 		</font>
 	</h1>
@@ -198,10 +254,10 @@ if (mysqli_num_rows($reqsel) > 0) {
 		<div class="row">
 			<div class="col-md-4 col-md-offset-4">
 				<div class="panel panel-default">
-					<h4 style='color:white;'>HOTEL<br /> <br />SESY <? //=$nomHotel 
+					<h4 style='color:white;'>RESTAURANT<br /> <br />ZACKY'S <? //=$nomHotel 
 																	?></h4>
 					<br>
-					<!-- <h4 style='color:white;'><?php echo str_replace('HOTEL', '', $nomHotel); ?></h4> !-->
+					<!-- <h4 style='color:white;'><?php echo str_replace('RESTAURANT', '', $nomHotel); ?></h4> !-->
 					<hr>
 					<div class="panel-body">
 						<form action='' method='post'>

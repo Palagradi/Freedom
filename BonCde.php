@@ -81,7 +81,7 @@ if(isset($_POST['trie'])) { if($_POST['trie']==1) $trie="Famille"; else $trie="F
 		<script src="js/sweetalert.min.js"></script>
 		</head>
 	<body bgcolor='azure' style="margin-top:-20px;padding-top:0px;">
-		<table align='center'>
+		<table align='center' width='90%'>
 			<tr>
 			<td>
 				<!--<h2 style=' font-family:Cambria;color:Maroon;font-weight:bold;margin-bottom:50px;'>	<hr /> ETABLISSEMENT D'UN BON DE COMMANDE AU FOURNISSEUR<hr /> </h2> !-->
@@ -100,7 +100,7 @@ if(!isset($_GET['Cde'])) { ?>
 	</form>
 	<div id="resultsC">
 
-	<table align='center' width='80%' border='0' cellspacing='0' style='margin-top:0px;border-collapse: collapse;font-family:Cambria;'>
+	<table align='center' width='90%' border='0' cellspacing='0' style='margin-top:0px;border-collapse: collapse;font-family:Cambria;'>
 
 <tr><td colspan='13' > <span style="float:left;font-family:Cambria;font-weight:bold;font-size:1.3em;margin-bottom:5px;color:#4C767A;" >Liste des produits <?php  if($_SESSION['menuParenT1']=="Restauration") echo "alimentaires"; ?>  </span>
 	<?php

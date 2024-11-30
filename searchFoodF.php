@@ -81,7 +81,7 @@ else
 			{
 				$cpteur = 1;
 				$bgcouleur = "#dfeef3";
-			}  $i++;  if($i%2==0){$color="#FC7F3C";$plus="plus1"; }else {$color="maroon";$plus="plus2";}
+			}  $i++;  if($i%2==0){$color="#FC7F3C";$plus="add1"; }else {$color="maroon";$plus="add1";}
 
     ?>
 		 	<tr class='rouge1' bgcolor=' <?=$data->Nbre<=0?"#D2B48C":$bgcouleur; ?>'>

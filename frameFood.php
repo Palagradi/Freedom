@@ -4,6 +4,9 @@
  	$table=(isset($_SESSION['table'])&&(!empty($_SESSION['table']))) ? $_SESSION['table']:0;	
 	$Qte = isset($_GET['Qte'])?$_GET['Qte']:0;   
 	$numero = !empty($_GET['numero'])?$_GET['numero']:0;
+	$status = !empty($_GET['status'])?$_GET['status']:0;
+	
+	$tk = !empty($_GET['tk'])?$_GET['tk']:0; if($table!=0) $tk = 0;
 
 	if(!is_int($table)){
 		$reqTable=mysqli_query($con,"SELECT nomTable FROM RTables WHERE (RealNameTable='".$table."' OR nomTable='".$table."')"); $j=0;
@@ -14,7 +17,14 @@
 if(($numero>0)&&($Qte>0)){echo "&nbsp;";
 	$rek="SELECT * FROM plat WHERE numero='".$numero."'";
 	$query = mysqli_query($con,$rek) or die (mysqli_error($con));$data=mysqli_fetch_assoc($query); $Qte_Stock=$data['Nbre'];
-	if(!empty($TPS_2)&&($TPS_2==1))  $tva=0 ; else $tva=round($data['prix']/(1+$TvaD)*$TvaD);
+	if(!empty($RegimeTVA)&&($RegimeTVA>0))  $tva=0 ; else $tva=round($data['prix']/(1+$TvaD)*$TvaD);
+	
+	if(!empty($RegimeTVA)&&($RegimeTVA==2)) //L'entreprise est inscrite au régime TPS
+	$GrpeTaxation="E";  
+	else if(!empty($RegimeTVA)&&($RegimeTVA==1))//Ici les factures normalisees sont exonerees
+	$GrpeTaxation="A";
+	else  //les factures normalisees seront taxables par defaut
+	$GrpeTaxation="B";
 	
 	if (($Qte>$Qte_Stock)||($Qte_Stock==0))
 	{	echo "<script src='js/sweetalert.min.js'></script>";
@@ -22,12 +32,19 @@ if(($numero>0)&&($Qte>0)){echo "&nbsp;";
 		echo "swal('Quantité demandée supérieure à la quantité en stock')";
 		echo "</script>";
 
-	}else {$designation=!empty($data['designation2'])?$data['designation2']:$data['designation'];
-		$rk="SELECT * FROM tableEnCours WHERE LigneCde='".$designation."' AND LigneType='1' AND numTable='".$table."' AND created_at='".$Jour_actuel."' AND Etat <> 'Desactive'";
+	}else {
+		$update=mysqli_query($con,"UPDATE ConfigResto SET numCde=numCde+1 ");
+		$reqsel=mysqli_query($con,"SELECT numCde FROM ConfigResto");
+		$dataC=mysqli_fetch_object($reqsel);$numCde=$dataC->numCde;	
+		$designation=!empty($data['designation2'])?$data['designation2']:$data['designation'];
+		if($tk==0)
+			$rk="SELECT * FROM tableEnCours WHERE LigneCde='".$designation."' AND LigneType='1' AND numTable='".$table."' AND created_at='".$Jour_actuel."' AND Etat <> 'Desactive'";
+		else 
+			$rk="SELECT * FROM tableEnCours WHERE LigneCde='".$designation."' AND LigneType='1' AND numTable='".$table."' AND numTk='".$tk."' AND created_at='".$Jour_actuel."' AND Etat <> 'Desactive'";
 		$req1 = mysqli_query($con,$rk) or die (mysqli_error($con));
 		if(mysqli_num_rows($req1)>0){
 			$data0=mysqli_fetch_assoc($req1); $Qte0=$Qte+$data0['qte'];
-			$pre_sql1="UPDATE tableEnCours SET qte='".$Qte0."',updated_at='".$Heure_actuelle."' WHERE Num = '".$data0['Num']."' AND Etat <> 'Desactive'";
+			$pre_sql1="UPDATE tableEnCours SET qte='".$Qte0."',EtatCde='".$status."',updated_at='".$Heure_actuelle."' WHERE Num = '".$data0['Num']."' AND Etat <> 'Desactive'";
 			$req1 = mysqli_query($con,$pre_sql1) or die (mysqli_error($con));
 		}
 		else {
@@ -36,7 +53,11 @@ if(($numero>0)&&($Qte>0)){echo "&nbsp;";
 			Num=NULL,
 			Num2='".$numero."',
 			numTable='".$table."',
+			numTk='".$tk."',
+			numCde='".$numCde."',
+			EtatCde='".$status."',
 			LigneCde='".$designation."',
+			GrpeTaxation='".$GrpeTaxation."',
 			LigneType=1,
 			QteInd='',
 			prix='".$data['prix']."',
@@ -112,7 +133,7 @@ a.info {
 		<script src="js/sweetalert.min.js"></script>
 
 		<script type="text/javascript" >
-		function JSalertQte(param){
+/* 		function JSalertQte(param,param2){
 		swal("QUANTITE DE PLATS COMMANDEE",{
 		  content: {
 			element: "input",
@@ -125,9 +146,58 @@ a.info {
 		})
 			.then((value) => {
 				//var numero = param; 
-				document.location.href='frameFood.php?Qte='+value+'&numero='+param;
+				document.location.href='frameFood.php?Qte='+value+'&numero='+param+'&tk='+param2;
 			});
-		}
+		} */
+		
+function JSalertQte(param, param2) {
+    swal({
+        title: "ETAT DE LA COMMANDE",
+        content: {
+            element: "div",
+            attributes: {
+                innerHTML: `
+                    <div>
+                        <div style="margin-top: -10px; margin-bottom: 10px;">
+                            <label style="color: #007BFF; font-weight: bold;">
+                                <input type="radio" name="status" value="0" checked> En cours
+                            </label>
+                            <label style="margin-left: 10px; color: #28A745; font-weight: bold;">
+                                <input type="radio" name="status" value="1"> Prête
+                            </label>
+                            <label style="margin-left: 10px; color: #DC3545; font-weight: bold;">
+                                <input type="radio" name="status" value="2"> Déjà servie
+                            </label>
+                        </div>
+                        <input 
+                            id="quantityInput"
+                            type="number" 
+                            placeholder="Saisissez la quantité ici" 
+                            min="1" 
+                            style="width: 100%; padding: 5px; border: 1px solid #ddd; border-radius: 4px;"
+                        >
+                    </div>
+                `
+            },
+        },
+        buttons: {
+            confirm: {
+                text: "Valider",
+                closeModal: false
+            }
+        }
+    })
+    .then(() => {
+        const selectedStatus = document.querySelector('input[name="status"]:checked').value;
+        const quantity = document.getElementById("quantityInput").value;
+
+        if (!quantity) {
+            swal("Erreur", "Veuillez saisir une quantité.", "error");
+        } else {
+            document.location.href = `frameFood.php?Qte=${quantity}&status=${encodeURIComponent(selectedStatus)}&numero=${param}&tk=${param2}`;
+        }
+    });
+}
 		</script>
 
 		<script type="text/javascript" >
@@ -225,7 +295,7 @@ a.info {
 			{
 				$cpteur = 1;
 				$bgcouleur = "#dfeef3";
-			}  $i++;  if($i%2==0){$color="#FC7F3C";$plus="plus1"; }else {$color="maroon";$plus="plus2";}
+			}  $i++;  if($i%2==0){$color="#FC7F3C";$plus="add4"; }else {$color="maroon";$plus="add5";}
 
     ?>
 		 	<tr class='rouge1' bgcolor=' <?=$data->Nbre<=0?"#D2B48C":$bgcouleur; ?>'>
@@ -235,7 +305,7 @@ a.info {
 				<td align='center'  style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'> <?php echo $data->Nbre; ?></td>
 				<td align='center'  style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'> <?php echo $data->prix; ?></td>				
 				<td align='center'  style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'> 
-				<a class='info' onclick='JSalertQte(<?php echo $data->numero ?>);return false;' 
+				<a class='info' onclick='JSalertQte(<?php echo $data->numero; echo ",".$tk; ?>);return false;' 
 				<?php
 				if($data->Nbre>0)
 					echo "style='color:".$color.";'><img src='logo/".$plus.".png' alt='' width='25' height='25' border='0'/><span style='color:#FC7F3C;'>Ajouter</span></a>";

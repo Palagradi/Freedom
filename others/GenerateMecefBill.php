@@ -58,7 +58,7 @@
  function push($jsonData)
 	{
 		include 'connexion.php'; $result=0;
-		$query="INSERT INTO  t_mecef VALUES (NULL,'".$jsonData."','".$result."','',NULL,NULL,NULL)";
+		return $query="INSERT INTO  t_mecef VALUES (NULL,'".$jsonData."','".$result."','',NULL,NULL,NULL)";
 		$res1=mysqli_query($con,$query);
 	}
 

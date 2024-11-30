@@ -114,9 +114,15 @@ else
 
 $items = array();
 
+if(isset($_SESSION['resto'])&&($_SESSION['resto']==1)){
+$sql = 'SELECT * FROM tableencours WHERE  Etat2 = 1 ORDER BY GrpeTaxation ASC, Num ASC';
+mysqli_query($con,"SET NAMES 'utf8' ");
+$query = mysqli_query($con, $sql);	
+}else{
 $sql = 'SELECT * FROM produitsencours WHERE  Etat = 4 ORDER BY GrpeTaxation ASC, Num ASC';
 mysqli_query($con,"SET NAMES 'utf8' ");
-$query = mysqli_query($con, $sql);
+$query = mysqli_query($con, $sql);	
+}
 while($data=mysqli_fetch_array($query)){
 	$item1 = new \Swagger\Client\Model\ItemDto();
 	$item1->setName($data['LigneCde']);
@@ -124,7 +130,7 @@ while($data=mysqli_fetch_array($query)){
 	$item1->setQuantity($data['qte']);
 
   if($data['taxSpecific']>0)
-  $item1->setTaxSpecific($data['taxSpecific']);
+  $item1->setTaxSpecific($data['taxSpecific']);   
 
 	if($data['GrpeTaxation']=="A")
 	$item1->setTaxGroup(Swagger\Client\Model\TaxGroupTypeEnum::A);
@@ -134,10 +140,6 @@ while($data=mysqli_fetch_array($query)){
 	$item1->setTaxGroup(Swagger\Client\Model\TaxGroupTypeEnum::F);
 	else
 	$item1->setTaxGroup(Swagger\Client\Model\TaxGroupTypeEnum::E);
-
-
-  //$item1->setTaxGroup(Swagger\Client\Model\taxSpecific::A);
-  //else if($data['GrpeTaxation']=="B")
 
 	array_push($items, $item1);
 }
@@ -191,7 +193,7 @@ if (!is_null($uid)){
 		$_SESSION['NIM_MCF']        = isset($securityElementsDto['nim'])?$securityElementsDto['nim']:NULL;
 
 		//$compteur=2;$_SESSION['initial_fiche']=$_SESSION['NIM_MCF']."-".$compteur;
-		$remise=0;
+		$remise=isset($_SESSION['Mremise'])?$_SESSION['Mremise']:0;
 		$solde=isset($_SESSION['solde'])?$_SESSION['solde']:0;  // Valeur 0 : facture non soldée
 		$montant=$_SESSION['TotalHT']."|".$_SESSION['Mtotal']."|".$remise."|".$solde;
 		
@@ -242,7 +244,10 @@ if (!is_null($uid)){
 
 			//if(!isset($_SESSION['reference']))
 				//{
-					$query="UPDATE produitsencours SET `Etat` = '0',SIGNATURE_MCF='".$_SESSION['SIGNATURE_MCF']."' WHERE `Etat` = '4'";
+					if(isset($_SESSION['resto'])&&($_SESSION['resto']==1))
+						$query="UPDATE tableencours SET `Etat2` = '0',SIGNATURE_MCF='".$_SESSION['SIGNATURE_MCF']."' WHERE `Etat2` = '1'";
+					else
+						$query="UPDATE produitsencours SET `Etat` = '0',SIGNATURE_MCF='".$_SESSION['SIGNATURE_MCF']."' WHERE `Etat` = '4'";
 					$res1=mysqli_query($con,$query);
 				//}
 
@@ -293,7 +298,7 @@ if (!is_null($uid)){
 			$req1 = mysqli_query($con,$pre_sql1) or die (mysqli_error($con));
 		 }
 	  }
-	 
+
 
      if($Tps==1)   //1 pour Regime normal
           { 
@@ -306,6 +311,10 @@ if (!is_null($uid)){
       }
         //include ('JsonData.php');
 
+		}else 	if(isset($_SESSION['resto'])&&($_SESSION['resto']==1)){
+			
+			//echo $_SESSION['SIGNATURE_MCF'];
+		
 		}else{
 			$query="DELETE FROM produitsencours  WHERE `Etat` = '4'";
 			$res1=mysqli_query($con,$query);			
@@ -320,8 +329,7 @@ if (!is_null($uid)){
 			
 			//echo "La tentative a échouée pour des raisons techniques. Veuillez Réessayer SVP";		
 
-			}
-	  
+			}	  
 		//}
 
 ?>

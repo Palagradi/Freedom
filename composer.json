@@ -2,6 +2,7 @@
     "require": {
         "tecnickcom/tcpdf": "^6.3",
         "tecnickcom/tc-lib-barcode": "^1.17",
-        "picqer/php-barcode-generator": "^2.4"
+        "picqer/php-barcode-generator": "^2.4",
+        "guzzlehttp/guzzle": "^7.9"
     }
 }

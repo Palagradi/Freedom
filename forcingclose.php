@@ -254,13 +254,13 @@ while($close=mysqli_fetch_array($req1)){
 
 
 	<tr><td  colspan='2' align="center" ><br/><?php
-		//if(mysqli_num_rows($req1)==0)
+		if(isset($utilisateur)) {
 		//if(($mysqli_num_rows<=0)||($mysqli_num_rowsN>0))	{ ?>
 
 			 <input type="submit" value="Valider"  name="enregistrer1"  id="" class="bouton2"  style=""/>
 			&nbsp;&nbsp;&nbsp;&nbsp;<input type="reset" value="Annuler" class="bouton2"  name="Annuler" style=""/> <br/>&nbsp;&nbsp;</td>
 
-		<?php //} else echo "&nbsp;";?>
+		<?php } else echo "&nbsp;";?>
 	</td></tr>
 </form>
 

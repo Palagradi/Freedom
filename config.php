@@ -31,7 +31,7 @@
 			// Vérifie si un timestamp d'activité existe
 			if (isset($_SESSION['timestamp'])) {
 				// Définir le délai d'inactivité en secondes (par exemple, 900s = 15 minutes)
-				$inactivity_limit = 100;
+				$inactivity_limit = 900;
 				// Si l'utilisateur a été inactif trop longtemps
 				if (time() - $_SESSION['timestamp'] > $inactivity_limit) {
 					// Mettre à jour l'état de l'utilisateur comme déconnecté dans la base de données
@@ -66,7 +66,8 @@
 		$Heureactuelle= $date->format("H") .":". $date->format("i");
 		$Heure_actuelle2= $date->format("H") ."-". $date->format("i")."-". $date->format("s");
 		$Heureh= $date->format("H") ;
-		$datej=$date->format("d") ;$month=$date->format("m") ; $year=$date->format("Y") ;
+		$datej=$date->format("d") ;$month=$date->format("m") ; $currentYear=$year=$date->format("Y") ;
+		//$currentYear = date("Y");
 
 
 		function nbJours($debut, $fin) {
@@ -159,10 +160,12 @@
 
 		$title="FREEDOM";$bodyColor="peachpuff";$DefaultPassword="change"; $categorie='ordinaire';
 
-		$resT=mysqli_query($con,"SELECT * FROM  hotel");
+		if($_SESSION['module0']=="RESTAURATION")
+			$resT = mysqli_query($con, "SELECT * FROM  resto");
+		else 
+			$resT=mysqli_query($con,"SELECT * FROM  hotel");
 		$reXt=mysqli_fetch_assoc($resT); $nomHotel=$reXt['nomHotel'];$NumUFI=$reXt['NumUFI'];$Apostale=$reXt['Apostale'];$NomLogo=$reXt['logo']; $NbreEToile=$reXt['NbreEToile'];
 		$telephone1=$reXt['telephone1'];$telephone2=$reXt['telephone2'];$Email=$reXt['Email'];$NumBancaire=$reXt['NumBancaire']; $Siteweb=$reXt['Siteweb']; $RegimeTVA=$reXt['RegimeTVA'];
-		$TPS_2=$reXt['TPS_2'];
 
 		$reqsel=mysqli_query($con,"SELECT * FROM categorieClient");
 		$dataX=mysqli_fetch_assoc($reqsel); $NbreX=$dataX['NbreVisite'];$frequenceX=$dataX['frequence'];
@@ -187,15 +190,15 @@
 	mysqli_query($con,"SET NAMES 'utf8'");
 	$reqsel=mysqli_query($con,"SELECT * FROM ConfigResto");
 		while($data=mysqli_fetch_array($reqsel))
-		{    $NomImpot=$data['NomImpot'];$TauxImpot=$data['TauxImpot']; $numFact=$data['num_fact']; $pvc=$data['pvc'];
+		{    $NomImpot=$data['NomImpot'];$TauxImpot=$data['TauxImpot']; $numFact=$data['num_fact']; $pvc=$data['pvc'];$pvp=$data['pvp'];
 		}
-	$jour=date('d');$mois=date('m');
+/*	$jour=date('d');$mois=date('m');
 	// if(($jour=='01')&&($mois=='01')&&($num_fact>1000))           Le numero du premier recu edité en janvier doit être reinitialise à 1
 	if(($mois=='01')&&($num_fact>500))
 	 $res=mysqli_query($con,'update configuration_facture set num_fact=0 WHERE num_fact!=0');
 
  	if(($mois=='01')&&($numFact>1000))
-	 $res=mysqli_query($con,'update ConfigResto set num_fact=0 WHERE num_fact!=0');
+	 $res=mysqli_query($con,'update ConfigResto set num_fact=0 WHERE num_fact!=0');*/
 
 	$reqsel=mysqli_query($con,"SELECT * FROM affectationrole"); $nbre=mysqli_num_rows($reqsel);
 	if($nbre<=0){
@@ -220,6 +223,29 @@
 		else if($modeReglement==5) $mode="Mobile Money";	
 		else if($modeReglement==6) $mode="Autre";
 		return $mode;
+	}
+	
+	function infoClient($client,$column,$con){
+		if($client>0){
+		$reqx="SELECT * FROM clientresto WHERE id='".$client."'";
+		$reqselRTablesx=mysqli_query($con,$reqx);
+		$datax=mysqli_fetch_object($reqselRTablesx);
+		if($column==0)			
+			$return = $datax->entrepriseName;
+		else if($column==1)			
+			$return = $datax->nomclt;
+		else if($column==2)			
+			$return = $datax->prenomclt;
+		else if($column==3)			
+			$return = $datax->numIFU;
+		else if($column==4)			
+			$return = $datax->adresseclt;
+		else 
+			$return = $datax->Telclt;
+		
+			return $return;
+		}else 
+			return $return="";
 	}
 	
 	function clientName($client){ // Pour vérifier si l'utilisateur est connecté à Internet
@@ -309,6 +335,22 @@ while ($ret=mysqli_fetch_array($res))
  	}
 }
 
+
+function jourFr (){
+// Obtenir le jour de la semaine en anglais
+$jourEn = date('l');
+// Traduire en français
+$jours = [
+    'Monday'    => 'Lundi',
+    'Tuesday'   => 'Mardi',
+    'Wednesday' => 'Mercredi',
+    'Thursday'  => 'Jeudi',
+    'Friday'    => 'Vendredi',
+    'Saturday'  => 'Samedi',
+    'Sunday'    => 'Dimanche'
+];
+return $jourFr = $jours[$jourEn];
+}
 function is_connected(){ // Pour vérifier si l'utilisateur est connecté à Internet
 	$connected = @fsockopen("www.google.com",80);
 	if($connected){
@@ -355,8 +397,9 @@ $reqsel=mysqli_query($con,"SELECT * FROM roleh,affectationrole WHERE roleh.nomro
 			if($data['nomRole']=='Reconvertir en Location groupée') $conversion1=1;				
 		}
 		
- 	$_SESSION['logo']="logo/Sesy.png";
-	$_SESSION['logo']="logo/gis.jpg";
+ 	$_SESSION['logo']="logo/gis.jpg";
+	$_SESSION['logo']="logo/zackys.jpg";
+	
 	
  	$_SESSION['entreprise']="GLOBAL INGENIERIES ET SERVICES";
 	$_SESSION['NumIFUEn']="1201408333100"; //Mettre ici l'IFU de l'Entreprise

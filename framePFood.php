@@ -74,7 +74,7 @@ if(($numero>0)&&($Qte>0)){echo "&nbsp;";
 		$re="INSERT INTO operation VALUES(NULL,'".$ref."','Vente ','".$numero."','".$Qte_Stock."','".$Qte."','".$quantiteF."','".$Jour_actuel."','".$Heure_actuelle."','','".$Qte."')";
 		$req=mysqli_query($con,$re);
 
-		$update="UPDATE portion SET Nbrep=Nbrep-'".$Qte."' WHERE id='".$pId."' ";
+		$update="UPDATE portion SET NbreCp=NbreCp+'".$Qte."',Nbrep=Nbrep-'".$Qte."' WHERE id='".$pId."' ";
 		$Query=mysqli_query($con,$update);
 		
    		echo "<script language='javascript'>";
@@ -300,9 +300,9 @@ a.info {
     ?>
 		 	<tr class='rouge1' bgcolor=' <?=$data->Nbrep<=0?"#D2B48C":$bgcouleur; ?>'>
 			  <td align='center' style='padding:7px;border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'><?php echo $j; ?>.</td>
-				<td style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'>&nbsp;<?php echo $data->catPlat; ?> </td>
-				<td style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'>&nbsp; <?php echo $data->designation; ?></td>
-				<td align='left'  style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'> <?php echo $data->libellePortion; ?></td>
+				<td style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'>&nbsp;<?php echo ucfirst($data->catPlat); ?> </td>
+				<td style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'>&nbsp; <?php echo ucfirst($data->designation); ?></td>
+				<td align='left'  style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'> <?php echo ucfirst($data->libellePortion); ?></td>
 				<td align='center'  style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'> <?php echo $data->Nbrep; ?></td>
 				<td align='center'  style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'> <?php echo $data->prixPortion; ?></td>				
 				<td align='center'  style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'> 

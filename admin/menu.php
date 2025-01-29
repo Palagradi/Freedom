@@ -1,5 +1,5 @@
 ﻿<?php
-require("../config.php");
+require("config.php");
 $footer= substr($_SERVER['PHP_SELF'], strrpos($_SERVER['PHP_SELF'], '/'));
 
 if($footer!="/proforma.php"){
@@ -115,9 +115,7 @@ href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="styl
 <!------ Include the above in your HEAD tag ---------->
 
   <div id="wrapper" class="animate">
-  <?php
-
-	?>
+  <?php	?>
     <nav class="navbar header-top fixed-top navbar-expand-lg navbar-dark bg-dark" style='font-weight:bold;font-family:cambria;'>
 	  <?php
 	  	$rZ=mysqli_query($con,"SELECT * FROM menu_tempon");
@@ -137,7 +135,7 @@ href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="styl
 					$reqse_l1=mysqli_query($con,"SELECT * FROM ".$role.",affectationrole WHERE ".$role.".nomrole=affectationrole.nomrole AND Profil='".$_SESSION['poste']."' AND menuParent='$menuParent'");
 					$data_1=mysqli_fetch_assoc($reqse_l1);
 					if($data_1['menu']!=$data_1['menuParent'])
-					{if($_SESSION['poste']=="Super administrateur") 
+					{ if($_SESSION['poste']=="Super administrateur") 
 						echo "<a class='navbar-brand' href='".$chemin."?menuParent=".$menuParent."' style='font-size:95%;";
 				     else 
 						 echo "<a class='navbar-brand' href='menu.php?menuParent=".$menuParent."' style='font-size:95%;";
@@ -315,7 +313,7 @@ href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="styl
 
 	<table align='center' width='45%' height='auto' border='0' cellpadding='0' cellspacing='0' style='margin-top:90px;border:2px solid teal;font-family:Cambria;background-color:#f5f5dc;'>
 		<tr>
-			<td align='center' ><h3>SYGHOG Version 2.0 (Juillet 2016) <br/><br/> AUCUN MODULE N'EST INSTALLE.  <br/><br/>CONTACTEZ LE SUPER ADMINISTRATEUR</h3></td>
+			<td align='center' >Copyright © eFREEDOM Version 1.0 (Juillet 2020)</td>
 		</tr>
 
 	</table>

@@ -1,538 +1,405 @@
 <?php
-include_once'menu.php';
+include_once 'menu.php';
 
-//https://www.fao.org/gsfaonline/foods/index.html?collapse=all
-
-unset($_SESSION['choix1']);
-
-if(isset($_POST['trie'])) { if($_POST['trie']==1) $trie="Famille"; else $trie="Fournisseur"; } else $trie="Num";
-
-	if(isset($_POST['choix1']))
-	{	if( !empty($_POST['choix'])){
-				$choix ='';
-				//on boucle
-				for ($i=0;$i<count($_POST['choix']);$i++)
-				{	//on concatène
-					$choix .= $_POST['choix'][$i].'|';
-					$explore = explode("|", ($choix) ?? "");
-					if($explore[$i]!='')
-						{  $explore[$i]."<br/>";
-						}
-				}
-
-			}	//$reqselz=mysqli_query($con,"DELETE FROM Boncommande");
-			if( !empty($_POST['choix1'])){
-				$choix1 ='';
-				for ($i=0;$i<count($_POST['choix1']);$i++)
-				{	$choix1 .= $_POST['choix1'][$i].'|';
-					//$explore1 = explode('|',$choix1);
-					  $explore1 = explode("|", ($choix1) ?? "");
-					if(($explore1[$i]!='')&& ($explore1[$i]>0))
-						{	   //echo "<br/>".$explore1[$i]; //$QteCde=$explore1[$i];
-						 	  $sql="SELECT composition FROM plat WHERE numero='".$_GET['plat']."' ";
-								$reqselz=mysqli_query($con,$sql);	$dataz=mysqli_fetch_assoc($reqselz); $composition=$dataz['composition'];
-								// if(mysqli_num_rows($reqselz)>0)	{
-								// //$QteCde=$QteCde+$Qte;
-								// $sql="DELETE FROM Boncommande WHERE Date='".$Jour_actuel."' AND NumPro='".$_GET['aj']."' AND NumFrs='".$_GET['Frs']."'";
-								// $exec=mysqli_query($con,$sql);
-								// }
-
-								//$ListeProduits = explode("|",$dataz['ListeProduits']);
-								//$composition="";
-								//$ListeComposition = explode("|",$dataz['composition']);
-								$ListeComposition = explode("|", ($dataz['composition']) ?? "");
-								$compositionT= array();$compositionT=str_split($dataz['composition']);
-								$update=0;$composition="";
-								for($j=0;$j<count($compositionT);$j++){
-										if($compositionT[$j]==";"){
-											if(($j-1>=0)&&($compositionT[$j-1]==$_GET['produit'])){
-												$compositionT[$j+1]=$explore1[$i];$update=1;
-											}
-										}
-								} //$composition=serialize($compositionT); //echo var_dump($compositionT);
-								for($j=0;$j<count($compositionT);$j++){
-									$composition.=$compositionT[$j];
-								}
-								if($update==0){
-										$composition.=	"|".$_GET['produit'].";".$explore1[$i];
-								}
-								//echo $composition;
-
-								// if(!empty($dataz['composition'])){
-								// 	for($j=0;$j<count($ListeComposition);$j++)
-								// 	{ $Produits = explode(";",$ListeComposition[$j]);
-								// 		for($k=0;$k<count($Produits);$k++)
-								// 		{	if(isset($Produits[0])&& ($Produits[0]==$_GET['produit']))
-								// 			 {
-								// 				 $Produits[1]=$explore1[$i]; //else echo $Produits[0];
-								// 				 if($k==0) $composition.="|".$Produits[0].";".$Produits[1];
-								// 			 }
-								// 			 else {
-								// 				 if($k==0) $composition.=	"|".$_GET['produit'].";".$explore1[$i];
-								// 			 }
-								// 		}//$composition.="|";
-								// 	}
-								// }else {
-								// 	$composition.=	"|".$_GET['produit'].";".$explore1[$i];
-								// }
-
-							 //echo var_dump($composition);
-
-								// if(empty($composition)) $composition.=	$_GET['produit'].";".$explore1[$i];
-								// else
-								// $composition.=	"|".$_GET['produit'].";".$explore1[$i];
-								//if(isset($ListeComposition)) $composition=$ListeComposition;
-
-								if(empty($plat))
-									$sql="UPDATE plat SET composition='".$composition."' WHERE numero='".$_GET['plat']."' ";
-								  $reqInsert = mysqli_query($con,$sql); unset($plat);
-								if(isset($reqInsert)&&($reqInsert))
-									{	echo "<script language='javascript'>";
-										echo 'alertify.success(" Enrégistrement effectué avec succès");';
-										echo "</script>";
-										//echo '<meta http-equiv="refresh" content="0; url=EstimPortion.php?menuParent='.$_SESSION['menuParenT'].'" />';
-
-								}
-
-						}
-				}
-			}
-	}
-?><html>
-	<head>
-		<link href="fontawesome/web-fonts-with-css/css/fontawesome-all.min.css" rel="stylesheet">
-		<link rel="stylesheet" href="js/alertify.js/themes/alertify.core.css" />
-		<link rel="stylesheet" href="js/alertify.js/themes/alertify.default.css" id="toggleCSS" />
-		<link rel="Stylesheet" href='css/table.css' />
-		<style>
-			.alertify-log-custom {
-					background: blue;
-				}
-						#lien1:hover {
-				text-decoration:underline;background-color: gold;font-size:1.1em;
-			}
-
-		</style>
-		<script src="js/sweetalert.min.js"></script>
-		</head>
-	<body bgcolor='azure' style="margin-top:-20px;padding-top:0px;">
-		<table align='center' width='90%'>
-			<tr>
-			<td>
-				<h2 style=' font-family:Cambria;color:Maroon;font-weight:bold;margin-bottom:50px;text-align:center;'>		<hr style=''/>QUANTIFICATION DES PRODUITS ALIMENTAIRES DANS UN PLAT	<hr style=''/></h2>
-			</td>
-		</tr>
-	</table>
-<?php
-if(!isset($_GET['Cde'])) { ?>
-
-	<table align='center' width='90%' border='0' cellspacing='0' style='margin-top:0px;border-collapse: collapse;font-family:Cambria;'>
-
-<tr><td colspan='13' > <span style="float:left;font-family:Cambria;font-weight:bold;font-size:1.3em;margin-bottom:5px;color:#4C767A;" >Liste des produits  
- du plat : 
-	<?php
-	
-	$sqlZ="SELECT  numero,designation FROM plat WHERE composition <> '' ORDER BY numero DESC LIMIT 1";
-	$resultZ=mysqli_query($con,$sqlZ);
-	$dataZ = mysqli_fetch_object($resultZ);	
-	echo "<span style='color:maroon;'>".$dataZ->designation."</span></span>";							
-							
-/* 	//mysqli_query($con,"SET NAMES 'utf8'");
-	//$result =   mysqli_query($con, 'SELECT *  FROM boisson	LIMIT 0,10' );
-	$sql="SELECT * FROM produits p INNER JOIN fournisseurs f ON p.Fournisseur=f.NumFrs WHERE Type='".$_SESSION['menuParenT1']."' ORDER BY $trie ";
-	$reqsel=mysqli_query($con,$sql);
-	$nbrePalimentaire=mysqli_num_rows($reqsel);
-	$PalimentairesParPage=25; //Nous allons afficher 5 contribuable par page.
-	$nombreDePages=ceil($nbrePalimentaire/$PalimentairesParPage); //Nous allons maintenant compter le nombre de pages.
-
-	if(isset($_GET['page'])) // Si la variable $_GET['page'] existe...
-	{
-		  $pageActuelle=intval($_GET['page']);
-
-		 if($pageActuelle>$nombreDePages) // Si la valeur de $pageActuelle (le numéro de la page) est plus grande que $nombreDePages...
-		 {
-			   $pageActuelle=$nombreDePages;
-		 }
-	}
-	else // Sinon
-	{
-		  $pageActuelle=1; // La page actuelle est la n°1
-	}
-	 $premiereEntree=($pageActuelle-1)*$PalimentairesParPage; */
-	 
-	$res=mysqli_query($con,"SELECT * FROM produits WHERE Type='".$_SESSION['menuParenT1']."'");
-	$nbre1=mysqli_num_rows($res);
-
-	$famille=isset($_POST['famille'])?$_POST['famille']:NULL;
-	$plat=isset($_POST['plat'])?$_POST['plat']:NULL;
-	$famille=isset($_GET['famille'])?$_GET['famille']:$famille;
-	$plat=isset($_GET['plat'])?$_GET['plat']:$plat;
-	//$plat=isset($_GET['plat'])?$_GET['plat']:$plat;
-	$produit=isset($_GET['produit'])?urlencode($_GET['produit']):NULL;
-
-	if(isset($famille)&&($famille!=0)){
-		$sqlF = mysqli_query($con, "
-			SELECT id, catPlat 
-			FROM categorieplat 
-			WHERE id = '$famille'
-			UNION
-			SELECT id, catPlat 
-			FROM categorieplat 
-			WHERE id != '$famille'
-		");
-	
-	}
-	else 
-		$sqlF=mysqli_query($con,"SELECT id,catPlat FROM categorieplat ");
-	if(!empty($plat))
-		$sqlPi=mysqli_query($con,"SELECT numero,designation FROM plat  WHERE numero='".$plat."'");
-	//else
-		$sqlP=mysqli_query($con,"SELECT numero,designation FROM plat  WHERE categPlat='".$famille."'");
-
- ?>
-</span>
-	<form action="EstimPortion.php?menuParent=<?php echo $_SESSION['menuParenT']; //if(isset($produit)) echo "&produit=".$produit;  ?>" method="POST" id='chgdept1' >
-<span style="float:right;font-family:Cambria;font-weight:bold;font-size:1em;margin-bottom:5px;color:#4C767A;" ><a href='<?php echo "EstimPortion.php?menuParent=".$_SESSION['menuParenT']."&triep=1"; ?>' style='text-decoration:none;color:teal;'>  </a>
-
-	<select name='plat' style='margin-bottom:8px;font-family:sans-serif;font-size:100%;border:0px solid teal;width:auto;' id='plat' onchange="document.forms['chgdept1'].submit();"  >
-	<?php
-	if((isset($_GET['plat']))&& (urldecode($_GET['plat'])==$plat))
-	$plat=urldecode($_GET['plat']);
-	else if((isset($_GET['plat']))&& (urldecode($_GET['plat'])!=$plat)) $plat=$_GET['plat'];
-	else {}
-//	echo "<option value ='".$plat."'> ".urldecode($_GET['plat'])."</option>";
-	//else
-	if(isset($sqlPi)&& mysqli_num_rows($sqlPi)>0) {$dataPi = mysqli_fetch_assoc($sqlPi);
-	//if(isset($dataP['designation'])){
-			echo "<option value ='".$dataPi['numero']."'> ".ucfirst($dataPi['designation'])."</option>";
-	}
-	else echo "<option value =''> </option>";
-	while($dataP = mysqli_fetch_array($sqlP)){
-	echo "<option value ='".$dataP['numero']."'> ".ucfirst($dataP['designation'])."</option>
-		<option value =''>  </option>";
-
-	}
-	?>
-	</select>
-
- </span>
-  <span style="float:right;font-family:Cambria;font-weight:bold;font-size:1em;margin-bottom:5px;color:#4C767A;" >Catégorie(s) de plats: &nbsp;&nbsp;
-
-	<span style="float:right;font-family:Cambria;font-weight:bold;font-size:1em;margin-bottom:5px;color:#4C767A;" >
-		&nbsp;&nbsp;&nbsp;&nbsp;plat(s) : &nbsp;&nbsp;
-  </span>
-	<select name='famille' style='margin-bottom:8px;font-family:sans-serif;font-size:100%;border:0px solid teal;width:150px;' id='trie' onchange="document.forms['chgdept1'].submit();"  >
-	  <?php
-		//echo "<option value ='".$famille."'> ".$famille."</option>";
-		//$dataF = mysqli_fetch_assoc($sqlF);
-		while( $dataF = mysqli_fetch_array($sqlF)){
-		echo "<option value ='".$dataF['id']."'> ".ucfirst($dataF['catPlat'])."</option>";
-		echo  "<hr/>";
-			//echo "<option value =''>  </option>";
+/* 	$sql="SELECT ListeProduits,numero FROM plat WHERE ListeProduits <> '' ";
+	$reqselz=mysqli_query($con,$sql);
+	$produits = mysqli_fetch_all($reqselz, MYSQLI_ASSOC);
+	foreach ($produits as $produit): 
+	$ListeProduits = explode("|", ($produit['ListeProduits']) ?? "");
+	for($j=0;$j<count($ListeProduits);$j++)
+	{ 	if($ListeProduits[$j]!=''){
+		$sqlt="SELECT Num AS produit_id,UniteStockage
+		FROM produits
+		WHERE  num= '".$ListeProduits[$j]."'";  
+		$reqselt=mysqli_query($con,$sqlt);$dataz=mysqli_fetch_object($reqselt); 
+		$sqltz="INSERT INTO plat_produit SET 
+		id_plat='".$produit['numero']."',
+		id_prd='".$dataz->produit_id."',
+		unite='".$dataz->UniteStockage."'"; //echo "<br/>";
+		$reqselzt=mysqli_query($con,$sqltz);	
 		}
-		?>
-	</select>
- </span>
-
-</form>
-
-
-	<form action="EstimPortion.php?menuParent=<?php echo $_SESSION['menuParenT']; if((isset($_GET['plat']))&& (urldecode($_GET['plat'])==$plat)) echo "&plat=".urldecode($_GET['plat']); else echo "&plat=".$plat; if(isset($_GET['famille'])) echo "&famille=".urlencode($_GET['famille']); if(isset($_GET['produit'])) echo "&produit=".urlencode($_GET['produit']);?>" method="POST" id='chgdept' >
-
-<input type='hidden' name='triep' value='<?php if(isset($trie)) echo $trie;?>' >
-
-<tr style='background-color:#3EB27B;color:white;font-size:1.2em; padding-bottom:5px;'>
-	<td style="border-right: 2px solid #ffffff" align="center">N° d'Enrég.<span style='font-size:0.8em;'></span></a></td>
-	<td style="border-right: 2px solid #ffffff" align="center" >Famille<span style='font-size:0.8em;'></span></a></td>
-	<td style="border-right: 2px solid #ffffff" align="center" >Désignation<span style='font-size:0.8em;'></span></a></td>
-	<td style="border-right: 2px solid #ffffff" align="center" >Qté <span style='font-size:0.8em;'></span></a></td>
-  <td style="border-right: 2px solid #ffffff" align="center" >Unité de <br/> Stockage <span style='font-size:0.8em;'></span></a></td>
-		<td style="border-right: 2px solid #ffffff" align="center" >Valeur en <br/>Unités<span style='font-size:0.8em;'></span></a></td>
-	<td align="center" >Nbre de <br/> plats à servir</td>
-</tr>
-					<?php												
-							$plat=isset($plat)?$plat:$dataZ->numero;
-							$sql="SELECT  * FROM plat,categorieplat WHERE categorieplat.id=plat.categPlat AND numero='".$plat."'";
-							$result=mysqli_query($con,$sql);$cpteur=1;
-							while( $data = mysqli_fetch_array($result))
-										{  if($cpteur == 1)
-											{
-												$cpteur = 0;
-												$bgcouleur = "#DDEEDD";
-											}
-											else
-											{
-												$cpteur = 1;
-												$bgcouleur = "#dfeef3";
-											}
-											$nbre=$data['numero'];
-
-											if(isset($_GET['ListeProduits']))
-												$ListeProduits = explode("|", ($_GET['ListeProduits']) ?? "");
-											else
-												$ListeProduits = explode("|", ($data['ListeProduits']) ?? "");
-											for($i=0;$i<count($ListeProduits);$i++)
-											{
-											//if($data['numero']==$ListeProduits[$i])
-											{
-
-											$sql2="SELECT  * FROM produits,categorieproduit WHERE produits.Famille=categorieproduit.Num AND categorieproduit.Type='".$_SESSION['menuParenT1']."' AND produits.Num='".$ListeProduits[$i]."' ";
-											$result2=mysqli_query($con,$sql2);
-											while( $data2 = mysqli_fetch_object($result2))
-											{$nbre=$data2->Num2;
-											if(($nbre>=0)&&($nbre<=9)) $nbre="0000".$nbre ; else if(($nbre>=10)&&($nbre <=99)) $nbre="000".$nbre ;else $nbre="00".$nbre ;
-													echo " 	<tr class='rouge1' bgcolor='".$bgcouleur."'>";?>
-												<td align="center" style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'><?php echo $nbre;  ?> </td>
-								 				<td style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'><?php echo $data2->catPrd; ?> </td>
-								 				<td style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'> <?php echo $data2->Designation; ?></td>
-												<td align='center' style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'>
-													<a href='#' class='info5' ><span>
-												</span><?php echo 1; ?></a></td>
-												 <?php //if($UnitStockage==1)  { ?> <td align='' style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'>&nbsp;&nbsp;&nbsp;&nbsp; <?php echo $data2->UniteStockage; ?></td><?php //} ?>
-												<?php
-													//echo " 	";
-
-													$composition = explode("|", ($data['composition']) ?? "");
-													 for($j=0;$j<count($composition);$j++)
-													 { //$composition2 = explode(";",($composition[$j]));
-													   $composition2 = explode(";", ($composition[$j]) ?? "");
-														if((isset($composition2[0]) && ($composition2[0]==$data2->Num2)))
-																 {
-																	 if(isset($composition2[1])) $QteCde=$composition2[1];
-																 }
-													}
-													 ?>
-													 <td align='center' style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'> <?php if(isset($QteCde)) echo $QteCde*4; else echo 0; ?></td>
-													 <td align='center' style='border-top: 2px solid #ffffff'>
-														 <input
-													<?php
-												 	 if(isset($_GET['ListeProduits'])&& ($_GET['produit']==$data2->Num2)){ echo "autofocus";?>
-													 onblur="document.forms['chgdept'].submit();" <?php } else echo " readonly";  ?>
-													 <?php if(isset($QteCde)&&($QteCde>0)) {echo "placeholder='"; echo $QteCde; echo "'"; }?>
-													 value='<?php if(isset($QteCde)&&($QteCde>0)) { if(isset($_GET['aj']) && ($_GET['aj']==$data['numero'])) echo $QteCde; } ?>'
-													 type='text' name='choix1[]' style='width:50px;<?php if(isset($_GET['aj']) && ($_GET['aj']==$data['numero'])) { }
-														else echo "background-color:#E1E6FA;" ?>text-align:center;border-radius: 5px;-moz-border-radius: 5px;-webkit-border-radius: 5px;border:1px solid red;'  maxlength='3' onkeypress='testChiffres(event);'/>
-
-													<?php echo "&nbsp;&nbsp;<a class='";
-													if(isset($plat)&&!empty($plat)) echo "info2"; else echo "info";
-													echo "' ";?>
-
-													<?php echo "href='EstimPortion.php?menuParent=".$_SESSION['menuParenT']."&ListeProduits=".$data['ListeProduits']."&produit=".$data2->Num2."&famille=".$famille; if(isset($_GET['plat'])) echo "&plat=".$_GET['plat']; else echo "&plat=".$plat; if(empty($plat)) echo "&fx=1"; echo "' style='color:gray;'>
-													&nbsp;&nbsp;<i class='fa fa-plus-square'"; if(isset($QteCde)&&($QteCde>0)) echo "style='color:red;'"; echo "></i><span style='color:gray;font-size:1em;'>";
-
-													if(isset($QteCde)&&($QteCde>0)) {echo "Modifier la quantité"; }
-													 else {
-														  if(isset($plat)&&!empty($plat))
-															echo "Nbre de plats de : <font style='color:maroon;font-weight:bold;'>".$data['designation']."</font><br/>à servir avec un (1) ".$data2->UniteStockage." de : <font style='color:maroon;font-weight:bold;'>".$data2->Designation."</font>";
-															else
-															echo "Sélectionner d'abord <br/>le plat concerné";
-													 }
-													 echo "</span></a>
-													</td>";
-													echo " 	</tr> ";
-											}$QteCde=0;
-						}
-					}
-		}
-					?>
-					</form>
-					 <tr><td colspan='13' ><br/> <span style='float:left;font-family:Cambria;font-size:1em;margin-bottom:5px;color:#4C767A;'>1/4 plat (repas) -> 1 Unité &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1/2 plat (repas) -> 2 Unités &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1 plat (repas) complet -> 4 Unités</span></td></tr>
-				</table>
-
-<?php }
-else if(isset($_GET['mail']))
-	{ 		echo "<script language='javascript'>";
-				if(isset($_GET['email'])) echo "var email = '".$_GET['email']."';";
-				echo "var id_param = '".$_GET['mail']."';";
-				echo 'swal("Confirmation de l\'adresse électronique du Fournisseur", {
-					  content: {
-					  element: "input",
-					  attributes: {
-						value : ""+email,
-					  },
-					  },
-					  })
-						.then((value) => {
-						  document.location.href="EstimPortion.php?menuParent='.$_SESSION['menuParenT'].'&Cde=1&mail="+id_param+"&email1="+email+"&email2="+value;
-						}); ';
-
-				echo "</script>";
-
-		if(isset($_GET['email1'])||(isset($_GET['email2']))){
-				$id_param = $_GET['mail']; $email = isset($_GET['email2'])?$_GET['email2']:$_GET['email1'];
-			   	function create_my_pdf_data($id_param) {
-				ob_start();
-				include_once('purchaseOrder.php');
-				//return $pdf->Output('Facture', 'S');
-				}
-				require_once 'vendor/vendor/autoload.php'; require_once 'credential.php';
-					 $transport = (new Swift_SmtpTransport('smtp.gmail.com', 587, 'tls'))
-			        ->setUsername(EMAIL)
-			        ->setPassword(PASSWORD)
-			        ->setStreamOptions(array('ssl' => array('allow_self_signed' => true, 'verify_peer' => false)));  //https://bugsdb.com/_en/debug/093fcffa336b6d9fe5a9dabdc90d712f
-					$mailer = new Swift_Mailer($transport);
-					$message = (new Swift_Message('Bon de Commande'))
-				  ->setFrom([EMAIL => 'Entreprise '.$nomHotel])
-				  ->setTo([EMAIL, 'akpovo@yopmail.com' => 'Palagradi'])
-				  ->setBody('Bonjour Madame, Monsieur, <br/><br/>Par la présente, nous vous confirmons vouloir commander les articles qui figurent sur le présent bon de commande. Nous vous réglerons cette commande à la livraison des produits et à réception de facture.
-					<br/>Tout en vous en souhaitant une bonne réception, nous vous adressons nos meilleures salutations.');
-
-					$data = create_my_pdf_data($id_param);
-
-					$attachment = new Swift_Attachment($data,'BonDeCommande.pdf', 'application/pdf');
-					$message->attach($attachment);
-					if (!$mailer->send($message)) {
-					  echo 'Erreur ';
-
-					} else {
-						//echo 'email sent successfully';
-						echo "<script language='javascript'>";
-						echo 'alertify.success("Le mail est envoyé avec succès.");';
-						echo "</script>";
-						echo '<meta http-equiv="refresh" content="1; url=EstimPortion.php?menuParent='.$_SESSION['menuParenT'].'&Cde=1" />';
-					}
-				}
-
-	//	}
-/* 		if(!isset($_GET['email2'])&& ($_GET['email2']=='null')){
-			echo "<script language='javascript'>";
-			echo 'alertify.error("Echec d\'envoi du mail");';
-			echo "</script>";
-		} */
-	} else if(isset($_GET['id_param'])){
-		echo "<div style='margin : 0 auto;' >
-		<iframe align='center' src='purchaseOrder.php"; echo "?id_param=".$_GET['id_param']; echo "' width='1000' height='800' ></iframe>
-		</div>";
 	}
-else {
-				if($date==$Jour_actuel)	$date=$Jour_actuel;
-				$idr2 = isset($_POST['ladate'])?$_POST['ladate']:$date;
+	endforeach; */	
 
-				if(isset($_GET['update'])) {
-					//echo $_GET['update'];
-				}
-				if(isset($_GET['delete'])) {
-					//echo $_GET['delete'];
-				}
+$sql_categorie = "SELECT * FROM categorieplat";  // Table contenant les catégories
+$req_categories = mysqli_query($con, $sql_categorie);
+$categories = mysqli_fetch_all($req_categories, MYSQLI_ASSOC);
 
-				?>
- <form action="EstimPortion.php?menuParent=<?php echo $_SESSION['menuParenT']; if(isset($_GET['upd'])) echo "&upd=".$_GET['upd']; if(isset($_GET['upd'])) echo "&upd=".$_GET['upd'];?>&Cde=1" method="POST" id="chgdept" name=''>
-		<table align="center" width="950" border="0" cellspacing="0" style="">
-		<tr><td align='center'><hr style='width:100%'/></td> </tr>
-			<tr><td align='left'> <span style="font-family:Cambria;font-weight:bold;font-size:1.5em;color:maroon;" >Liste des bons de Commande
-		<span style='color:black;font-size:0.7em;font-weight:normal;'>
-		<?php
-		if(!isset($_GET['state'])){
-		echo "&nbsp;&nbsp;&nbsp;&nbsp;<span style='font-size:1.1em;color:teal;font-style:italic;font-weight:bold;'>[".substr($idr2,8,2).'-'.substr($idr2,5,2).'-'.substr($idr2,0,4)."]</span>";
-		?>
-		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-		<a class='info2'  href="EstimPortion.php?menuParent=<?php echo $_SESSION['menuParenT']; ?>&state=1&Cde=1" onMouseOver="window.status='Date Picker';return true;" onMouseOut="window.status='';return true;">
-		<img src="logo/cal.gif" style="border:1px solid #ffebcd;" alt="Calendrier" title=""><span style='font-size:0.8em;color:maroon;'>Calendrier</span></a>
-		<?php }else {
-		?>
-	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	 <input required type='date' name='ladate' id='' style='border-radius: 15px;margin-bottom:2px;' onchange="document.forms['chgdept'].submit();">
-		<?php } ?>
+$sql = "SELECT * FROM plat WHERE ListeProduits <> '' ORDER BY numero DESC LIMIT 1";  // Récupère le dernier plat ajouté
+$reqk = mysqli_query($con, $sql);
 
-		</span>
-		</span>	</td> </tr><tr><td align='center'><hr style='width:100%;margin-bottom:-15px;'/></td> </tr>
-		</table><br/>
-</form>
-		<?php
-				  mysqli_query($con,"SET NAMES 'utf8'");
-					$rz="SELECT DISTINCT boncommande.NumFrs AS NumFrs,RaisonSociale,email FROM boncommande,fournisseurs WHERE boncommande.NumFrs=fournisseurs.NumFrs AND Date ='".$idr2."'";
-					$req=mysqli_query($con,$rz); //$Liste = array(); $i=0;//$j=0;
-					while($dataT=mysqli_fetch_array($req))
-					{	$id_param=$idr2."_".$dataT['NumFrs'];$email=$dataT['email'];
-						//$i++; //$j++;
-						//$Liste[$i]=$dataT['RaisonSociale'];
-					?>
-				<table align="center" width="950" border="0" cellspacing="0" style="margin-top:10px;border-collapse: collapse;font-family:Cambria;">
-				<tr><td colspan='6' >
-					<span style="float:right;font-size:1.1em;" >
-					 <form action="EstimPortion.php?menuParent=<?php echo $_SESSION['menuParenT']; if(isset($_GET['upd'])) echo "&upd=".$_GET['upd']; if(isset($_GET['upd'])) echo "&upd=".$_GET['upd'];?>&Cde=1" method="POST" id="chgdept" name=''>
+if ($reqk) {
+    $lastPlat = mysqli_fetch_assoc($reqk); // Récupère le dernier plat sous forme de tableau associatif
+} else {
+    echo "Erreur dans la requête : " . mysqli_error($con);
+}
 
-					</span>
-					<span style="float:right;" >
+$sql = "SELECT * FROM plat";  // Récupère tous les plats.
+$req_all = mysqli_query($con, $sql);
+$plats=$req_all->fetch_all(MYSQLI_ASSOC);
 
-					</span>
+// Récupérer toutes les unités de mesure depuis la base de données
+ $sql = "SELECT  catPrd, id FROM UniteStockage"; // Table contenant les unités de mesure
+$req_unites = mysqli_query($con, $sql);
 
-					</td></tr>
-					<?php
-					//if(!isset($_GET['state']))
-					//{ if(!isset($_GET['upd'])){
-						echo "<tr><td align='left' colspan='6'><span style='font-size:1.1em;color:maroon;'>Fournisseur : "
-							.$dataT['RaisonSociale'].
-							"</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-							<span style='display:block;float:right;font-weight:normal;margin-bottom:5px;'>
-							<a href='EstimPortion.php?menuParent=".$_SESSION['menuParenT']."&Cde=1&id_param=".$id_param."' class='info1' style='text-decoration:none;'>
-							<span style='font-weight:normal;color:black;font-size:0.8em;'>Imprimer</span><img src='logo/pdf_small.gif'/>
-							<a/>";
-							echo "<a class='info2' href='EstimPortion.php?menuParent=".$_SESSION['menuParenT']."&Cde=1&mail=".$id_param."&email=".$email."'>
-							&nbsp;&nbsp;<img src='logo/mail.png' alt='' title='' width='23' height='23' border='0' style='margin-bottom:-3px;'><span style='font-size:0.9em;'>Envoyer par mail</span></a>
-							</span></td></tr>";
-					?>
-					<!-- <a class='info' href='EstimPortion.php?menuParent=<?php echo $_SESSION['menuParenT']; ?>&upd=1&Cde=1'><img src='logo/b_edit.png' alt='' width='16' height='16' border='0'><span style='font-size:0.8em;'>Modifier</span></a>
-					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-					<a class='info' href='EstimPortion.php?menuParent=<?php echo $_SESSION['menuParenT']; ?>&upd=1&Cde=1'><img src='logo/b_drop.png' alt='Supprimer' width='16' height='16' border='0'><span style='font-size:0.8em;color:red;'>Supprimer</span></a>
-					!-->
-					<?php //}
+if ($req_unites) {
+    $unites_mesure = mysqli_fetch_all($req_unites, MYSQLI_ASSOC); // Récupérer les unités de mesure sous forme de tableau associatif
+} else {
+    echo "Erreur dans la requête des unités de mesure : " . mysqli_error($con);
+}
 
-					//}
-					//else  {
-						?>
+$sql = "SELECT from_unit,to_unit,conversion_factor, id FROM unit_conversions"; // Table contenant les unités de mesure
+$req_unites2 = mysqli_query($con, $sql);
+if ($req_unites2) {
+    $unites_mesure2 = mysqli_fetch_all($req_unites2, MYSQLI_ASSOC); // Récupérer les unités de mesure sous forme de tableau associatif
+} else {
+    echo "Erreur dans la requête des unités de mesure : " . mysqli_error($con);
+}
+?>
 
-					<?php //}
-					?>
+<html>
+    <head>
+        <link href="fontawesome/web-fonts-with-css/css/fontawesome-all.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="js/alertify.js/themes/alertify.core.css" />
+        <link rel="stylesheet" href="js/alertify.js/themes/alertify.default.css" id="toggleCSS" />
+        <link rel="Stylesheet" href='css/table.css' />
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+        <style>
+            body {
+                font-family: 'Arial', sans-serif;
+                background-color: #f0f2f5;
+                margin-top: 30px;
+            }
+            .card {
+                margin-bottom: 30px; 
+            }
+            .container {
+                min-width: 800px;
+            }
+            .form-group {
+                margin-bottom: 15px;
+            }
+            .card-body {
+                padding: 25px;
+            }
+            #produitsSection {
+                border-radius: 0 0 15px 15px;
+                border: 1px solid #ddd;
+				padding: 25px;
+            }
+            #platSelect {
+                margin-bottom: 15px;
+            }
+            .card-header, .card-footer {
+                border-radius: 15px 15px 0 0;
+            }
+            .form-control, .form-select {
+                border-radius: 10px;
+                border: 1px solid #ccc;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            }
+            .form-control:focus, .form-select:focus {
+                border-color: #007bff;
+                box-shadow: 0 0 10px rgba(0, 123, 255, 0.3);
+            }
+            .badge {
+                font-size: 1.1em;
+            }
+            .btn-primary {
+                background-color: #007bff;
+                border: none;
+                padding: 10px 20px;
+                border-radius: 20px;
+            }
+            .btn-primary:hover {
+                background-color: #0056b3;
+            }
+            .input-group-text {
+                border-radius: 0;
+                background-color: #f8f9fa;
+                border: 1px solid #ccc;
+				width:300px;
+            }
+            .input-group {
+                margin-bottom: 10px;
+            }
+            .input-group input {
+                border-radius: 10px;
+            }
+			input[type="number"], select.form-select {
+    height: 38px;
+    font-size: 1rem;
+    padding: 5px;
+    line-height: 1.5;
+    border-radius: 5px; /* Coins arrondis */
+    border: 1px solid #ccc; /* Bordure légère */
+    background-color: #f8f9fa; /* Fond légèrement plus clair */
+}
+/* Container centré avec une largeur définie */
+.container {
+    margin: 0 auto; /* Centrer horizontalement */
+    padding: 0; /* Aucune marge/padding supplémentaire */
+    width: 80%; /* Largeur du container (ajustable) */
+    max-width: 1200px; /* Largeur maximale */
+    display: flex;
+    justify-content: center; /* Centre les éléments horizontalement */
+    flex-direction: column; /* Disposition verticale */
+	 background-color: #e9f7fd;
+}
+
+/* La card aura la même largeur que le container */
+.card {
+    width: 100%; /* La carte prendra toute la largeur du container */
+    margin: 0; /* Supprimer les marges externes */
+    padding: 0; /* Aucun padding supplémentaire */
+}
+
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <!-- Formulaire de sélection du plat -->
+            <div class="card">
+                <h2 class="text-center mb-4" style="margin-top:15px;">Gestion des Quantités de Produits</h2>
+                <div class="card-body">
+                    <form id="platForm">
+			<div class="form-group d-flex align-items-center">
+				<label class="col-md-5" for="categPlatSelect">Catégorie :</label>
+				<select class="form-select col-md-7" id="categPlatSelect" onchange="afficherPlats()">
+					<option value="">Choisir une catégorie...</option>
+					<?php if (!empty($categories)): ?>
+						<?php foreach ($categories as $categorie): ?>
+							<option value="<?= $categorie['id']; ?>">
+								<?= htmlspecialchars($categorie['catPlat']); ?>
+							</option>
+						<?php endforeach; ?>
+					<?php else: ?>
+						<option value="">Aucune catégorie disponible</option>
+					<?php endif; ?>
+				</select>
+			</div>
+                        
+				<div class="form-group d-flex align-items-center">
+					<label class="col-md-5" for="platSelect">Désignation du Plat :</label>
+					<select class="form-select col-md-7" id="platSelect" onchange="afficherProduits()">
+						<option value="">Choisir un plat...</option>
+						<?php if (!empty($plats)): ?>
+							<?php foreach ($plats as $plat): ?>
+								<option value="<?= $plat['numero']; ?>">
+									<?= htmlspecialchars($plat['designation']); ?>
+								</option>
+							<?php endforeach; ?>
+						<?php else: ?>
+							<option value="">Aucun plat disponible</option>
+						<?php endif; ?>
+					</select>
+				</div>
+			</form>
+		</div>
+            </div>
+
+            <!-- Section pour afficher les produits du plat sélectionné -->
+            <div id="produitsSection" class="card" style="display: none;">
+			 <h5 class="card-title">Liste des Produits  
+		
+			 <?php //du Plat  : ucfirst($lastPlat['designation']); ?></h5>
+                    <form id="produitsForm">
+                <div class="card-body">
+                   
+                        <!-- Les produits seront ajoutés dynamiquement ici -->
+                    </form>
+                </div>
+				<div> Equivalence : 
+					 <?php foreach ($unites_mesure2 as $unite): ?>
+				<?php if($unite['from_unit']!=$unite['to_unit']) 
+					echo "1".$unite['from_unit'] ."=>".$unite['conversion_factor']." ". $unite['to_unit']."|"; ?>
+				<?php endforeach; ?>
+				</div>
+                <div class="text-center" style="margin-top: 50px;">
+                    <button id="submitBtn" class="btn btn-primary" style="display:none;" onclick="soumettreQuantites()">Soumettre</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Script JS pour la gestion dynamique des produits -->
+        <script>
+            window.onload = function() {
+                const platId = <?php echo $lastPlat['numero']; ?>; 
+                const platSelect = document.getElementById('platSelect');
+                platSelect.value = platId; 
+                afficherProduits();
+				
+				const categorieId = <?php echo $lastPlat['categPlat']; ?>; 
+				const categPlatSelect = document.getElementById('categPlatSelect');
+                categPlatSelect.value = categorieId; 
+            };
+			
+	function afficherPlats() {
+    const categorieSelect = document.getElementById('categPlatSelect');
+    const platSelect = document.getElementById('platSelect');
+    const categorieId = categorieSelect.value; // Récupère l'id de la catégorie sélectionnée
+
+    // Réinitialiser le select des plats
+    platSelect.innerHTML = '<option value="">Choisir un plat...</option>';
+
+    if (categorieId) {
+        // Si une catégorie est sélectionnée, faire une requête pour obtenir les plats de cette catégorie
+        fetch(`get_plats_par_categorie.php?categorie_id=${categorieId}`)
+            .then(response => response.json())
+            .then(plats => {
+                if (plats.length > 0) {
+                    plats.forEach(plat => {
+                        const option = document.createElement('option');
+                        option.value = plat.numero;
+                        option.textContent = `${plat.designation}`;
+                        platSelect.appendChild(option);
+                    });
+                } else {
+                    platSelect.innerHTML = '<option value="">Aucun plat disponible pour cette catégorie</option>';
+                }
+            })
+            .catch(error => {
+                platSelect.innerHTML = '<option value="">Erreur de chargement des plats</option>';
+            });
+    } else {
+        // Si aucune catégorie n'est sélectionnée, on réinitialise le select des plats
+        platSelect.innerHTML = '<option value="">Choisir un plat...</option>';
+    }
+}
 
 
-					<tr style=" background-color:silver;color:black;font-size:1.1em; ">
-						<td style="border: 2px solid #ffebcd" align="center" >N°</td>
-						<td style="border: 2px solid #ffebcd" align="center" >Désignation</td>
-						<td style="border: 2px solid #ffebcd" align="center" >Qté Stock</td>
-						<td style="border: 2px solid #ffebcd" align="center" >Prix de Livraison</td>
-						<td style="border: 2px solid #ffebcd" align="center" >Qté commandée</td>
-						<td style="border: 2px solid #ffebcd" align="center" >Actions</td>
-					</tr>
-					<?php
-					   $query_Recordset1 = "SELECT DISTINCT produits.Designation AS designation,Qte_Stock,PrixFrs,RaisonSociale,boncommande.QteCde AS QteCde,boncommande.Date,boncommande.NumFrs,fournisseurs.Email AS email FROM produits,fournisseurs,boncommande WHERE boncommande.NumPro=produits.Num AND fournisseurs.NumFrs=produits.Fournisseur AND produits.Type='".$_SESSION['menuParenT1']."' AND boncommande.NumFrs='".$dataT['NumFrs']."' AND Date ='".$idr2."'";
-					   $Recordset_2 = mysqli_query($con,$query_Recordset1);
-							$cpteur=1;$dataT=""; $j=0;
-							while($data=mysqli_fetch_array($Recordset_2))
-							{  $j++;
-								if($cpteur == 1)
-								{
-									$cpteur = 0;
-									$bgcouleur = "#DDEEDD";
-								}
-								else
-								{
-									$cpteur = 1;
-									$bgcouleur = "#dfeef3";
-								}
+function afficherProduits() {
+    const platSelect = document.getElementById('platSelect');
+    const platId = platSelect.value;
+    const produitsSection = document.getElementById('produitsSection');
+    const submitBtn = document.getElementById('submitBtn');
+    const produitsForm = document.getElementById('produitsForm');
 
-								echo " 	<tr class='rouge1' bgcolor='".$bgcouleur."'>";
-								echo " 	<td align='center'style='border-right: 2px solid #ffebcd; border-top: 2px solid #ffebcd;'>".$j.".</td>";
-								echo " 	<td align='' style='border-right: 2px solid #ffebcd; border-top: 2px solid #ffebcd;'>&nbsp;".$data['designation']."</td>";
-								echo " 	<td align='center'style='border-right: 2px solid #ffebcd; border-top: 2px solid #ffebcd;'>".$data['Qte_Stock']."</td>";
-								echo " 	<td align='center'style='border-right: 2px solid #ffebcd; border-top: 2px solid #ffebcd;'>".$data['PrixFrs']."</td>";
-								echo " 	<td align='center'style='border-right: 2px solid #ffebcd; border-top: 2px solid #ffebcd;'>".$data['QteCde']."</td>";
-								echo " 	<td align='center' style='border-right: 2px solid #ffebcd;border-top: 2px solid #ffebcd;'>";
-									//if(!isset($_GET['upd'])){		}	else{		}
-									echo " &nbsp;<a class='info' href='EstimPortion.php?menuParent=".$_SESSION['menuParenT']."&update=".$id_param."&Cde=1'><img src='logo/b_edit.png' alt='' width='16' height='16' border='0'><span style='font-size:0.8em;'>Modifier</span></a>";
-									echo " 	&nbsp;&nbsp;&nbsp;&nbsp;";
-									echo " 	<a class='info2' href='EstimPortion.php?menuParent=".$_SESSION['menuParenT']."&delete=".$id_param."&Cde=1'><img src='logo/b_drop.png' alt='Supprimer' width='16' height='16' border='0'><span style='font-size:0.8em;color:red;'>Supprimer</span></a>";
-									echo " 	</td>";
-									echo " 	</tr> ";
-							}
-						 echo "<tr></tr>
-						</table>";
-						}
-					?>
+    produitsForm.innerHTML = ''; // Réinitialiser la section des produits
+    produitsSection.style.display = platId ? 'block' : 'none'; // Afficher ou masquer la section des produits
 
+    fetch(`get_produits.php?plat_id=${platId}`)
+        .then(response => response.json())
+        .then(produits => {
+            if (produits.length > 0) {
+                let counter = 0; // Initialisation du compteur pour alterner les couleurs
 
-			<?php }
-			?>
-	</body>
+                produits.forEach(produit => {
+                    const produitDiv = document.createElement('div');
+                    produitDiv.classList.add('form-group', 'input-group');
+
+                    // Appliquer la couleur alternée directement dans le style en ligne
+                    if (counter % 2 === 0) {
+                        produitDiv.style.backgroundColor = '#f9f9f9'; // Couleur claire
+                    } else {
+                        produitDiv.style.backgroundColor = '#e9ecef'; // Couleur légèrement plus foncée
+                    }
+
+                    // Générer le HTML pour chaque produit
+					produitDiv.innerHTML = `
+						<span class="input-group-text">${produit.produit_nom}</span>
+						<span class="input-group-text" style='width:75px;'>${produit.produit_unite}</span>
+						<input type="number" class="form-control" id="${produit.produit_id}" name="${produit.produit_id}" style='background-color:white;' min="0" step="1" value="${produit.produit_qte}" placeholder="">
+						<select class="form-select" id="unite_${produit.produit_id}" name="unite_${produit.produit_id}">
+							<option value="">${produit.produit_unite}</option>
+							<?php foreach ($unites_mesure as $unite): ?>
+								<option value="<?= $unite['id']; ?>"><?= htmlspecialchars($unite['catPrd']); ?></option>
+							<?php endforeach; ?>
+						</select>
+					`;
+
+                    produitsForm.appendChild(produitDiv); // Ajouter le produit au formulaire
+
+                    // Incrémenter le compteur pour alterner la couleur
+                    counter++;
+                });
+
+                submitBtn.style.display = 'inline-block'; // Afficher le bouton de soumission
+            } else {
+                produitsForm.innerHTML = '<p>Aucun produit trouvé pour ce plat.</p>';
+            }
+        })
+        .catch(error => {
+            produitsForm.innerHTML = '<p>Erreur de chargement des produits.</p>';
+        });
+}
+
+function soumettreQuantites() {
+    const produitsForm = document.getElementById('produitsForm');
+    const quantites = {};
+    const unites = {}; // Objet pour stocker les unités de mesure
+    const inputs = produitsForm.querySelectorAll('input');
+    const selects = produitsForm.querySelectorAll('select');
+    let quantiteManquante = false; // Variable pour vérifier s'il manque une quantité
+
+    inputs.forEach(input => {
+        const produitId = input.name; // Assurez-vous que le nom de l'input est l'ID du produit
+        const quantite = input.value;
+
+        if (!quantite || quantite < 0) {
+            quantiteManquante = true; // Marquer qu'il manque une quantité valide
+            input.style.borderColor = "red"; // Optionnel: pour marquer les inputs invalides
+        } else {
+            quantites[produitId] = quantite; // Récupérer les quantités valides
+            input.style.borderColor = ""; // Réinitialiser la couleur du bord si la quantité est valide
+        }
+    });
+
+    selects.forEach(select => {
+        const produitId = select.id.split('_')[1]; // Extraire l'ID du produit de l'ID du select
+        const uniteId = select.value;
+
+        // Ne mettre à jour l'unité que si elle est définie et non vide
+        if (uniteId) {
+            unites[produitId] = uniteId; // Stocker l'unité pour ce produit
+        }
+    });
+
+    // Si une quantité est manquante, afficher un message d'erreur et ne pas soumettre
+    if (quantiteManquante) {
+        alert("Veuillez spécifier une quantité valide pour chaque produit.");
+        return; // Ne pas soumettre si la quantité est manquante
+    }
+
+    // Préparer les données à envoyer
+    const data = {
+        quantites: quantites,
+        unites: unites
+    };
+
+    // Envoi des données via Fetch (POST) à update_quantites.php
+    fetch('update_quantites.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Afficher un message de succès
+            alert("Quantités mises à jour avec succès!");
+
+            // Réinitialiser le formulaire sans supprimer la liste des produits
+            produitsForm.reset();
+
+            // Garder la section des produits visible
+            document.getElementById('produitsSection').style.display = 'block';
+        } else {
+            // Si une erreur est survenue, afficher un message d'erreur
+            alert("Erreur: " + data.error);
+        }
+    })
+    .catch(error => {
+        console.error("Erreur de requête : ", error);
+        alert("Erreur de mise à jour.");
+    });
+}
+
+        </script>
+
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+    </body>
 </html>

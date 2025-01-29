@@ -302,9 +302,9 @@ a.info {
     ?>
 		 	<tr class='rouge1' bgcolor=' <?=$data->QteStock<=0?"#D2B48C":$bgcouleur; ?>'>
 				<td align='center' style='padding:7px;border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'><?php echo $j; ?>.</td>
-				<td style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'><?php echo $data->LibCateg; ?> </td>
-				<td style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'> <?php echo $data->designation; ?></td>
-				<td align='' style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'> <?php echo $data->LibConditionne; ?></td>
+				<td style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'><?php echo ucfirst($data->LibCateg); ?> </td>
+				<td style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'> <?php echo ucfirst($data->designation); ?></td>
+				<td align='' style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'> <?php echo ucfirst($data->LibConditionne); ?></td>
 				<td align='center'  style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'> <?php echo $data->LibQte; ?></td>
 				<td align='center'  style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'> <?php echo "<span style='color:"; if($data->QteStock>0) echo "red"; echo ";'>".$data->QteStock."</span><span style='font-size:0.8em;'>".substr($data->Libellepc,0,1)."/".$data->qtepc."</span>"; ?></td>
 				<td align='center'  style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'> <?=$data->PrixPack!=0?$data->PrixPack:"-"; ?></td>

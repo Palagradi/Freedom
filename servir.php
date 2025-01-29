@@ -603,7 +603,7 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
 				else {
 				$NomClient="<g>Non renseigné</g>";		
 				}
-			echo $NomClient;
+			echo ucfirst($NomClient);
 				
 			echo"</td>
 			<td style='text-align: center;'>"; 

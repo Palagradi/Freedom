@@ -304,6 +304,8 @@ include_once 'menu.php';  //if(isset($_SESSION['quantify'])) echo $_SESSION['qua
 			
 		}else {
 		$reqTable=mysqli_query($con,"SELECT * FROM RTables WHERE NbreCV<>0"); $j=0;
+		$nbreResult=mysqli_num_rows($reqTable);
+		if($nbreResult<=12) $modulo=4; else $modulo=5;
 		while($dataT=mysqli_fetch_object($reqTable)){	$j++;	
 		$i=$dataT->nomTable ;  
 		//for($i=1;$i<=$Nbre;$i++){
@@ -314,7 +316,7 @@ include_once 'menu.php';  //if(isset($_SESSION['quantify'])) echo $_SESSION['qua
 			$query=mysqli_query($con,"SELECT serveur FROM tableEnCours WHERE numTable='".$i."' AND created_at='".$Jour_actuel."' AND Etat<> 'Desactive'"); $data1=mysqli_fetch_assoc($query);
 			$serveur=!empty($data1['serveur'])?$data1['serveur']:$data['serveur']; if(empty($serveur)) $serveur="&nbsp;";
 			echo "
-			<table  WIDTH='' style='border-spacing: 5px 5px;border:3px solid white;"; if($j%5!=0) echo "float:left;";  echo "' class=''>
+			<table  WIDTH='' style='border-spacing: 5px 5px;border:3px solid white;"; if($j%$modulo!=0) echo "float:left;";  echo "' class=''>
 				<tr>
 					<td style='padding: 10px;padding-bottom: 10px;'>";  if(!empty($serv)) echo "<span style='color:white;display:block;float:top;margin-left:20px;'>".$serveur."</span>"; //else echo "<span style='color:blue;display:block;float:top;margin-bottom:-25px;'>&nbsp;</span>";
 						echo "<input type='submit' class='bouton5' id='full' name='' value='"; if(!empty($dataT->RealNameTable)) echo $dataT->RealNameTable; else echo $ii; echo "' onclick='redirect();' style='width:90px;height:45px;font-size:1.2em;";

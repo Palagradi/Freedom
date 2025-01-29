@@ -3,8 +3,7 @@
 	$db   = 'efreedom';
 	$user = 'root';
 	$pass = 'eFreedom@123';
-	$charset = 'utf8mb4';
-	
+	$charset = 'utf8mb4';	
 	$con=mysqli_connect($host,$user,$pass,$db);
 	if (!$con)
 	  {

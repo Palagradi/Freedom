@@ -18,7 +18,7 @@
 				//Pour la ligne des Pack
 				$result=mysqli_query($con,"SELECT * FROM boisson,config_boisson,conditionnement,QteBoisson,casier WHERE QteBoisson.id=boisson.Qte AND conditionnement.id=boisson.Conditionne AND config_boisson.id=boisson.Categorie AND casier.id=boisson.pc AND pc<>0 AND Depot = '2' AND numero='".$numero."'");
 				//Pour vérifier si la ligne unitaire existe
-				$result0=mysqli_query($con,"SELECT * FROM boisson,config_boisson,conditionnement,QteBoisson WHERE QteBoisson.id=boisson.Qte AND conditionnement.id=boisson.Conditionne AND config_boisson.id=boisson.Categorie AND pc=0 AND Depot = '2' AND numero2='".$numero2."'");
+				$result0=mysqli_query($con,"SELECT * FROM boisson,config_boisson,conditionnement,QteBoisson WHERE QteBoisson.id=boisson.Qte AND conditionnement.id=boisson.Conditionne AND config_boisson.id=boisson.Categorie AND pc=0 AND numero2='".$numero2."'");
 				$data=mysqli_fetch_object($result);
 				$numero2=$data->numero2;$pc=0;$Seuil=0;
 				$Categorie=$data->Categorie;$Qte2=$data->Qte;
@@ -31,6 +31,8 @@
 				$RegimeTVA=$data->RegimeTVA;
 			
 				if(mysqli_num_rows($result0)==0){
+					 $rek1="INSERT INTO boisson SET numero2='".$numero2."',Categorie='".$Categorie."',pc='".$pc."',designation='".$designation."',Qte='".$Qte2."',Conditionne='".$Conditionne."',PrixUnitaire='".$PrixUnitaire."',PrixPack='".$PrixPack."',Seuil='".$Seuil."',QteStock='".$QteStock."',StockReel='".$QteStock."',created_at='".$Jour_actuel."',updated_at='".$Jour_actuel."',Depot = '1',RegimeTVA='".$RegimeTVA."'";	
+					 $query = mysqli_query($con,$rek1) or die (mysqli_error($con));
 					 $rek1="INSERT INTO boisson SET numero2='".$numero2."',Categorie='".$Categorie."',pc='".$pc."',designation='".$designation."',Qte='".$Qte2."',Conditionne='".$Conditionne."',PrixUnitaire='".$PrixUnitaire."',PrixPack='".$PrixPack."',Seuil='".$Seuil."',QteStock='".$QteStock."',StockReel='".$QteStock."',created_at='".$Jour_actuel."',updated_at='".$Jour_actuel."',Depot = '2',RegimeTVA='".$RegimeTVA."'";	
 					 $query = mysqli_query($con,$rek1) or die (mysqli_error($con));
 				}else {
@@ -65,8 +67,8 @@
 	$pvc = $checkpvc ;
 	
 	if(isset($_GET['pvc'])) $pvc= $_GET['pvc'];
-
-
+	
+	
 ?>
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr" style=''>
@@ -177,7 +179,7 @@
 <?php
 	mysqli_query($con,"SET NAMES 'utf8'");
 	if(!empty($pvc)&&($pvc==2)) 
-	$result=mysqli_query($con,"SELECT * FROM boisson,config_boisson,conditionnement,QteBoisson,casier WHERE QteBoisson.id=boisson.Qte AND conditionnement.id=boisson.Conditionne AND config_boisson.id=boisson.Categorie AND casier.id=boisson.pc AND pc<>0 AND Depot = '2' order by numero2 ");
+		$result=mysqli_query($con,"SELECT * FROM boisson,config_boisson,conditionnement,QteBoisson,casier WHERE QteBoisson.id=boisson.Qte AND conditionnement.id=boisson.Conditionne AND config_boisson.id=boisson.Categorie AND casier.id=boisson.pc AND pc<>0 AND Depot = '2' order by numero2 ");
 	else 
 		$result=mysqli_query($con,"SELECT * FROM boisson,config_boisson,conditionnement,QteBoisson WHERE QteBoisson.id=boisson.Qte AND conditionnement.id=boisson.Conditionne AND config_boisson.id=boisson.Categorie AND pc=0 AND Depot = '2' order by numero2 ");
 	$cpteur=1;
@@ -211,7 +213,7 @@
 				<td align="center" style='border-right: 1px solid #ffffff; border-top: 1px solid #ffffff'> <?php echo $data->LibQte; ?></td>
 				<td align="center" style='border-right: 1px solid #ffffff; border-top: 1px solid #ffffff;padding-right:3px;'><?php echo "<span style=''>".$data->Seuil."&nbsp;&nbsp;&nbsp;</span>";	?></td>	
 				<td align="center" style='border-right: 1px solid #ffffff; border-top: 1px solid #ffffff;padding-right:3px;'><?php if(!empty($pvc)&&($pvc==2)) echo "<span style='color:red;'>".$data->QteStock."</span><span style='font-size:0.8em;'>".substr($data->Libellepc,0,1)."/".$data->qtepc."</span>"; else echo "<span style='color:maroon;'>".$data->QteStock."&nbsp;&nbsp;&nbsp;</span>";	?></td>								
-				<td align="center" style='border-right: 1px solid #ffffff; border-top: 1px solid #ffffff'><?php if(!empty($pvc)&&($pvc==2)) {if($data->PrixPack==0) echo "-"; else echo $data->PrixPack."<span style='font-size:0.6em;'> ".$devise."</span>&nbsp;"; }else echo $data->PrixUnitaire."<span style='font-size:0.6em;'> ".$devise."</span>&nbsp;"; ?></td>
+				<td align="center" style='border-right: 1px solid #ffffff; border-top: 1px solid #ffffff'><?php if(!empty($pvc)&&($pvc==2)) {if($data->PrixPack==0) echo "-"; else echo $data->PrixPack."<span style='font-size:0.6em;'> </span>&nbsp;"; }else echo $data->PrixUnitaire."<span style='font-size:0.6em;'> </span>&nbsp;"; ?></td>
 				<?php if(!empty($pvc)&&($pvc==2)) {  if(substr($data->Libellepc,0,1)=="P")$pack=1;else $pack=0;
 				echo "<td align='center' style='border-right: 1px solid #ffffff; border-top: 1px solid #ffffff'>"; 
 				if($data->QteStock>0) {?>

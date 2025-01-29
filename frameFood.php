@@ -75,7 +75,7 @@ if(($numero>0)&&($Qte>0)){echo "&nbsp;";
 		$re="INSERT INTO operation VALUES(NULL,'".$ref."','Vente ','".$numero."','".$Qte_Stock."','".$Qte."','".$quantiteF."','".$Jour_actuel."','".$Heure_actuelle."','','".$Qte."')";
 		$req=mysqli_query($con,$re);
 
-		$update="UPDATE plat SET NbreC=NbreC+'".$Qte."',Nbre=Nbre-'".$Qte."' WHERE numero='".$_GET['numero']."' AND state=1 ";
+		$update="UPDATE plat SET NbreC=NbreC+'".$Qte."',Nbre=Nbre-'".$Qte."' WHERE numero='".$_GET['numero']."'";
 		$Query=mysqli_query($con,$update);
 		
   		echo "<script language='javascript'>";
@@ -300,8 +300,8 @@ function JSalertQte(param, param2) {
     ?>
 		 	<tr class='rouge1' bgcolor=' <?=$data->Nbre<=0?"#D2B48C":$bgcouleur; ?>'>
 			  <td align='center' style='padding:7px;border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'><?php echo $j; ?>.</td>
-				<td style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'><?php echo $data->catPlat; ?> </td>
-				<td style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'> <?php echo $data->designation; ?></td>
+				<td style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'><?php echo ucfirst($data->catPlat); ?> </td>
+				<td style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'> <?php echo ucfirst($data->designation); ?></td>
 				<td align='center'  style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'> <?php echo $data->Nbre; ?></td>
 				<td align='center'  style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'> <?php echo $data->prix; ?></td>				
 				<td align='center'  style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'> 

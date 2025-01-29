@@ -9,7 +9,8 @@
 
 	//$sqlF=mysqli_query($con,"SELECT DISTINCT CategoriePlat FROM plat ");
 	if(!empty($plat)){
-	$sqlPi=mysqli_query($con,"SELECT numero,designation,prix,ListeProduits FROM plat WHERE numero='".$plat."'");
+	$sql="SELECT numero,designation,prix,ListeProduits FROM plat WHERE numero='".$plat."'";
+	$sqlPi=mysqli_query($con,$sql);
 	$data = mysqli_fetch_object($sqlPi);
 	}
 	if(isset($update)){
@@ -160,7 +161,7 @@
 				?> 
 				<select name='plat' required style='margin-bottom:8px;font-family:sans-serif;font-size:100%;border:1px solid gray;width:300px;' id='trie' onchange="document.forms['chgdept1'].submit();">		
 					<?php 
-					  $result=mysqli_query($con,"SELECT * FROM plat order by designation");
+					  $result=mysqli_query($con,"SELECT * FROM plat  order by designation");
 					  if(!empty($plat)||!empty($update))
 						echo "<option value ='".$data->numero."'>".ucfirst($data->designation)."</option>";
 					  else
@@ -304,6 +305,7 @@
 				echo "<td style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff' align='left'>";
 				if(!empty($data->ListeProduitsP))
 				echo "<a class='info2' href='#' style=''>
+				<img title='' src='logo/add3.png' width='14' height='14' style=''/>
 				<span style='font-size:0.9em;font-style:normal;color:green;'>Liste des produits alimentaires constituant la portion :<br/> 
 				<g style='color:red;'>";
 				if(!empty($data->ListeProduitsP)){
@@ -321,9 +323,8 @@
 				echo "</g>				
 				</span>"; 				
 				 echo ucfirst($data->libellePortion);
-					if(!empty($data->ListeProduitsP)) echo "</a>
-				<span style='float:right;color:gray;'>
-				 <i class='fa fa-plus-square' aria-hidden='true'></i></span>";			 
+					if(!empty($data->ListeProduitsP)) echo "</a>";
+				//echo "<span style='float:right;color:gray;'> <i class='fa fa-plus-square' aria-hidden='true'></i></span>";			 
 				echo "</td>
 				<td style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff' align='center'> ".$data->prixPortion."&nbsp;<span style='font-size:0.6em;'>".$devise."</span></td>";
 				echo "<td align='center' style='border-right: 0px solid #ffffff; border-top: 2px solid #ffffff'> 

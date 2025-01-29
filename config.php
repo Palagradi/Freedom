@@ -11,7 +11,7 @@
 				$adresse .= ($i == 0 ? '?' : '&').$cle.($valeur ? '='.$valeur : '');
 				$i++;
 			}
-			return utf8_decode($adresse);
+			return mb_convert_encoding($adresse, 'ISO-8859-1', 'UTF-8') ; //return utf8_decode($adresse);
 		}
 		function getURI_(){
 			$adresse = $_SERVER['PHP_SELF'];
@@ -27,11 +27,9 @@
 			// Redirige vers la page de connexion si l'utilisateur n'est pas connecté
 			header('Location: index.php');
 			exit();
-		} else {
+		} else { $inactivity_limit = 30; // Définir le délai d'inactivité en secondes (par exemple, 900s = 15 minutes)
 			// Vérifie si un timestamp d'activité existe
-			if (isset($_SESSION['timestamp'])) {
-				// Définir le délai d'inactivité en secondes (par exemple, 900s = 15 minutes)
-				$inactivity_limit = 900;
+/* 			if (isset($_SESSION['timestamp'])) {
 				// Si l'utilisateur a été inactif trop longtemps
 				if (time() - $_SESSION['timestamp'] > $inactivity_limit) {
 					// Mettre à jour l'état de l'utilisateur comme déconnecté dans la base de données
@@ -41,8 +39,8 @@
 					// Détruit la session et redirige vers la page de connexion
 					session_unset();
 					session_destroy();
-					header('Location: index.php');
-					exit();
+					header('Location: index.php'); exit();
+					//echo '<meta http-equiv="refresh" content="900; url=index.php"/>';
 				} else {
 					// Réinitialise le timestamp si l'utilisateur est actif
 					$_SESSION['timestamp'] = time();
@@ -50,7 +48,22 @@
 			} else {
 				// Initialise le timestamp au moment de la connexion
 				$_SESSION['timestamp'] = time();
-			}
+			} */
+			
+			 if(isset($_SESSION['timestamp'])){ // si $_SESSION['timestamp'] existe
+					 if($_SESSION['timestamp'] + 900 > time()){ //unset($_SESSION['login']);
+							$_SESSION['timestamp'] = time();
+					 }else{
+						$_SESSION['lien']= getURI();
+						 $cx=getURI();
+						 //if($cx="/SYGHOG/planning.php")
+						 $uri = urlencode(getURI());
+						 $re = "UPDATE utilisateur SET etatconnect='" . $uri . "' WHERE login='" . $_SESSION['login'] . "'";
+						 $ret=mysqli_query($con,$re);
+						//header("Location: index.php");
+						echo '<meta http-equiv="refresh" content="900; url=index.php"/>';
+					 }
+			 }else{  $_SESSION['timestamp'] = time(); }
 		}
 
 		$date = new DateTime("now"); // 'now' n'est pas n�c�ssaire, c'est la valeur par d�faut

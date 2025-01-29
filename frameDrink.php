@@ -301,9 +301,9 @@ function JSalertQte(param, param2) {
     ?>
 		 	<tr class='rouge1' bgcolor=' <?=$data->QteStock<=0?"#D2B48C":$bgcouleur; ?>'>
 			  <td align='center' style='padding:7px;border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'><?php echo $j; ?>.</td>
-				<td style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'><?php echo $data->LibCateg; ?> </td>
-				<td style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'> <?php echo $data->designation; ?></td>
-				<td align='' style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'> <?php echo $data->LibConditionne; ?></td>
+				<td style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'><?php echo ucfirst($data->LibCateg); ?> </td>
+				<td style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'> <?php echo ucfirst($data->designation); ?></td>
+				<td align='' style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'> <?php echo ucfirst($data->LibConditionne); ?></td>
 				<td align='center'  style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'> <?php echo $data->LibQte; ?></td>
 				<td align='center'  style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'> <?php echo $data->QteStock; ?></td>
 				<td align='center'  style='border-right: 2px solid #ffffff; border-top: 2px solid #ffffff'> <?=$data->PrixUnitaire!=0?$data->PrixUnitaire:"-"; ?></td>

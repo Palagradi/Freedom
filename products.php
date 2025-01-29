@@ -12,6 +12,8 @@
 	$result=mysqli_fetch_object($sql); $Numero=$result->Numero;$Famille=$result->Famille;$UnitStockage=$result->UnitStockage;$PoidsNet1=$result->PoidsNet;
 	$TypePrdts=$result->TypePrdts;$DateService=$result->DateService;$DatePeremption=$result->DatePeremption;$Fournisseur1=$result->Fournisseur;$PrixFournisseur1=$result->PrixFournisseur;$StockAlerte=$result->StockAlerte;$PrixVente=$result->PrixVente;
 
+
+
 if(isset($_POST['ENREGISTRER'])&& ($_POST['ENREGISTRER']=="Enrégistrer")){$code=(int)$_POST['code'];
 	$famille=ucfirst(addslashes($_POST['famille']));$designation=ucfirst(addslashes($_POST['designation']));$UniteStockage=$_POST['UniteStockage'];$PoidsNet=!empty($_POST['Poids'])?$_POST['Poids']:0;$Fournisseur=!empty($_POST['Fournisseur'])?$_POST['Fournisseur']:0;$Seuil=!empty($_POST['Seuil'])?$_POST['Seuil']:0; $PrixFrs=!empty($_POST['Prix'])?$_POST['Prix']:0;
 	$req="SELECT * FROM produits WHERE Designation='".$designation."' AND Famille ='".$famille."' AND PoidsNet='".$PoidsNet."' AND UniteStockage='".$UniteStockage."' AND Type='".$_POST['menuParenT']."'";
@@ -128,9 +130,9 @@ if(isset($_POST['ENREGISTRER'])&& ($_POST['ENREGISTRER']=="Modifier")){
 		<link href="fontawesome/web-fonts-with-css/css/fontawesome-all.min.css" rel="stylesheet">
 		<link rel="stylesheet" href="js/alertify.js/themes/alertify.core.css" />
 		<link rel="stylesheet" href="js/alertify.js/themes/alertify.default.css" id="toggleCSS" />
-		
+		<link rel="Stylesheet" type="text/css"  href='css/input.css' />
 		<link href="js/datatables/dataTables.bootstrap4.css" rel="stylesheet">
-		
+		<script type="text/javascript" src="js/fonctions_utiles.js"></script>
 		<link href="js/editableSelect/jquery-editable-select.min.css" rel="stylesheet">
 		
 		<meta name="viewport" content="width=device-width">
@@ -298,13 +300,33 @@ if(isset($_POST['ENREGISTRER'])&& ($_POST['ENREGISTRER']=="Modifier")){
 			echo "</script>";
 		}
 		
+	if(isset($_GET['checkapp']))
+		{ $checkapp=$_GET['checkapp'];$app=$checkapp;}
+	else 	
+		 $checkapp=isset($_POST['checkapp'])?$_POST['checkapp']:NULL;
+
+	if(isset($checkapp))
+		$checkapp=2;
+	else 
+		$checkapp=1;
+	$rek="UPDATE configresto SET app2='".$checkapp."'";
+	$query = mysqli_query($con,$rek) or die (mysqli_error($con));
+	$app = $checkapp ;	
+	if(isset($_GET['app'])) $app= $_GET['app'];	
 	?>	
 	<div class="table-responsive" style=''>
+	<form action="" method="POST" id="chgdept">
 		<table id="dataTable"  align='center' width='a' border='0' cellspacing='1' style='margin-top:0px;border-collapse: collapse;font-family:Cambria;'>
 	<thead>
-	<tr><td colspan='6' > <span style="float:left;font-family:Cambria;font-weight:bold;font-size:1.3em;margin-bottom:5px;color:#4C767A;" >Liste des produits <?php  if($_SESSION['menuParenT1']=="Restauration") echo "alimentaires"; ?>  </span>
-
+	
+	<tr><td colspan='13' > <span style="float:left;font-family:Cambria;font-weight:bold;font-size:1.3em;margin-bottom:5px;color:#4C767A;">Liste des produits <?php  if($_SESSION['menuParenT1']=="Restauration") echo "alimentaires"; ?>  </span>
+		<span style='float:right;'>
+		<input type='checkbox' <?php if(isset($app)&&($app==2)) echo "checked='checked'"; ?>
+		name='checkapp' id='button_checkbox1' onchange="document.forms['chgdept'].submit();"
+		<?php if(isset($app)&&($app==1)) echo "value='2'"; else {echo "value='1'"; }?>  >
+		<label for='button_checkbox1' style='color:maroon;'>APPROVISIONNEMENT</label></span>
 	</td></tr>
+
 	<?php
 	//mysqli_query($con,"SET NAMES 'utf8'");
 	//$result =   mysqli_query($con, 'SELECT *  FROM boisson	LIMIT 0,10' );
@@ -349,7 +371,12 @@ if(isset($_POST['ENREGISTRER'])&& ($_POST['ENREGISTRER']=="Modifier")){
 			<?php } ?>
 			<?php if($PrixFournisseur1==1)  { ?> <td rowspan='2' style="border-right: 1px solid #ffffff;border-top: 1px solid #ffffff;" align="center" >&nbsp;Prix de <br/>Livraison<span style='font-size:0.8em;'></span></td><?php } ?>
 			<?php if($PrixVente==1)  { ?> <td rowspan='2' style="border-right: 1px solid #ffffff;border-top: 1px solid #ffffff;" align="center" >&nbsp;Prix de<br/> Vente<span style='font-size:0.8em;'></span></td><?php } ?>
+
+			<?php if(isset($app)&&($app==2))  { ?>
+			<td colspan='2' style="border-right: 1px solid #ffffff;border-top: 1px solid #ffffff;" align="center" align="center" >&nbsp;Qté en <br/>Stock<span style='font-size:0.8em;'></span></td>
+			<?php } else {	?>
 			<td rowspan='2' style="border-right: 1px solid #ffffff;border-top: 1px solid #ffffff;" align="center" align="center" >Actions</td>
+			<?php } ?>
 		</tr>
 		<tr  style='background-color:#3EB27B;color:white;font-size:1.2em; padding-bottom:5px;'>
 			<?php if($DatePeremption==1)  { ?>
@@ -364,7 +391,19 @@ if(isset($_POST['ENREGISTRER'])&& ($_POST['ENREGISTRER']=="Modifier")){
 			</td>
 			<?php
 			}
+			?>				
+			
+			<?php if(isset($app)&&($app==2))  { ?>
+			<td style="border-right: 1px solid #ffffff;border-top: 1px solid #ffffff;" align="center" >
+			&nbsp;Stock interne<span style='font-size:0.8em;'></span>
+			</td>			
+			<td style="border-right: 1px solid #ffffff;border-top: 1px solid #ffffff;" align="center" >
+			&nbsp;Cuisine&nbsp;<span style='font-size:0.8em;'></span>
+			</td>
+			<?php
+			}
 			?>
+
 		</tr>
 </thead>
 <tbody id="">
@@ -415,11 +454,42 @@ if(isset($_POST['ENREGISTRER'])&& ($_POST['ENREGISTRER']=="Modifier")){
 				echo "<td align='center' style='border-right: 1px solid #ffffff; border-top: 1px solid #ffffff'>
 				 &nbsp;<a class='info2' href='products.php?menuParent=".$_SESSION['menuParenT']."&update=".$data->Num."'  style='color:#FC7F3C;'><img src='logo/b_edit.png' alt='' width='16' height='16' border='0'><span style='color:#FC7F3C;font-size:0.9em;'>Modifier</span></a>";
 				echo "&nbsp;&nbsp;&nbsp;&nbsp;<a class='info2' href='products.php?menuParent=".$_SESSION['menuParenT']."&delete=".$data->Num."'  style='color:#B83A1B;'><img src='logo/b_drop.png' alt='Supprimer' width='16' height='16' border='0'><span style='color:#B83A1B;font-size:0.9em;'>Supprimer</span></a>
-				</td></tr>";
+				</td>";
+				?>	
+				
+				<?php if(!empty($app)&&($app==2)) { 
+				$QteStock=isset($data->QteStock)?$data->QteStock:0; $QteStock2=isset($data2->QteStock)?$data2->QteStock:0;
+				?>
+				<td align="center" style='border-right: 1px solid #ffffff; border-top: 1px solid #ffffff'>
+				<?php //href='DpInterne.php?menuParent=".$_SESSION['menuParenT']."&add=".$nbre."&checkpvc=".$checkpvc."'
+				echo "<a class='info2' onclick='provide(1,".$nbre.",\"".addslashes($data->designation)."\",".$QteStock.",".$QteStock.",".$nbre.",".$checkpvc.",".$checkapp."); return false;' href='#' style='color:gray'>";
+				echo "<img title='' src='logo/add4.png' width='22' height='22' style=''/><span style='color:green;font-size:1em;'>Approvisionner le Dépôt <br/>en <g style='color:red;'>".$data->designation."</g>";
+				if(!empty($pvc)&&($pvc==2)) echo "<g style=''> [".substr($data->Libellepc,0,1)."/".$data->qtepc."] </g></span>";
+				echo "</a>";
+				?></td>
+				<td align="center" style='border-right: 1px solid #ffffff; border-top: 1px solid #ffffff'>
+				<?php //href='DpInterne.php?menuParent=".$_SESSION['menuParenT']."&ap=".$numero."&adp=".$nbre."&checkpvc=".$checkpvc."'
+				echo "<a class='info2' onclick='provide(2,".$numero.", \"".addslashes($data->designation)."\",".$QteStock.",".$QteStock2.",".$nbre.",".$checkpvc.",".$checkapp."); return false;' href='#' style='color:gray;'>";
+				echo "<img title='' src='logo/add5.png' width='22' height='22' style=''/><span style='color:green;'>Approvisionner<br/> le Bar en <g style='color:red;'>".$data->designation."</g></span>";
+				echo "&nbsp;<span style='color:green;'>Approvisionner le Bar<br/> en <g style='color:red;'>".$data->designation."</g>";
+				if(!empty($pvc)&&($pvc==2)) echo "<g style=''> [".substr($data->Libellepc,0,1)."/".$data->qtepc."] </g></span>";
+				echo "</a>";
+				?></td> <?php } 
+				else {
+				echo "<td align='center' style='border-right: 1px solid #ffffff; border-top: 1px solid #ffffff'>
+				<a class='info2' href='DpInterne.php?menuParent=".$_SESSION['menuParenT']."&update2=".$numero."&update=".$nbre."&checkpvc=".$checkpvc."'  style='color:#FC7F3C;'><img src='logo/b_edit.png' alt='' width='16' height='16' border='0'><span style='color:#FC7F3C;font-size:0.9em;'>Modifier</span></a>";
+				echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class='info2' href='DpInterne.php?menuParent=".$_SESSION['menuParenT']."&delete=".$nbre."'  style='color:#B83A1B;'><img src='logo/b_drop.png' alt='Supprimer' width='16' height='16' border='0'><span style='color:#B83A1B;font-size:0.9em;'>Supprimer</span></a>
+				</td>";}
+				?>
+				
+				
+				</tr>
+<?php
 	}
 	?>			
 			</tbody>
 		<tfoot></tfoot>
+			</form>
 	</table>
 </div>
 </div>

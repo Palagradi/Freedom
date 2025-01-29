@@ -33,7 +33,9 @@
 	$reqCateg = mysqli_query($con,"SELECT * FROM categorieplat") or die (mysqli_error($con));
 	
 	if(isset($update)) {
-		$reqk=mysqli_query($con,"SELECT * FROM plat,categorieplat,menu WHERE categorieplat.id=plat.categPlat AND menu.id=plat.categMenu AND numero='".$update."'");
+		$update=(int)($update);
+		$sql="SELECT * FROM plat,categorieplat,menu WHERE categorieplat.id=plat.categPlat AND menu.id=plat.categMenu AND numero='".$update."'";
+		$reqk=mysqli_query($con,$sql);
 		while($dataP = mysqli_fetch_object($reqk)){
 			$nbre = $dataP->numero;$CategorieMenu=$dataP->TypeMenu;$CategoriePlat=$dataP->catPlat;
 			$CategMenu=$dataP->categMenu;$CategPlat=$dataP->categPlat;$designation=$dataP->designation;
@@ -50,18 +52,38 @@ if(isset($_POST['ENREGISTRER'])){
         $selectedStates = $_POST['ListeProduits'];
         foreach ($selectedStates as $state) {
 			$dataT.="|".htmlspecialchars($state);
+			//$query = "SHOW TABLE STATUS LIKE 'plat'";
+			//$result = mysqli_query($con,$query);
+			//$row = mysqli_fetch_object($result); $id_plat=$row->Auto_increment;
+			$sql="INSERT INTO `plat_produit` SET id_prd='".$state."'";
+			$query = mysqli_query($con,$sql);
         }
     }
 	if($_POST['ENREGISTRER']=="Enrégistrer"){
-	$sql="INSERT INTO `plat`(`numero`, `CategMenu`, `CategPlat`, `designation`, `designation2`, `ListeProduits`, `composition`, `prix`, `NbreJ`, `NbreC`, `Nbre`, `state`, `RegimeTVA`, `created_at`, `updated_at`) VALUES (NULL,'".$categorie."','".$CategoriePlat."','".$designation."','".$designation2."','".$dataT."',NULL,'".$Prix."',0,0,0,NULL,'".$TPS_2."','" . $Jour_actuel. "','".$Jour_actuel."')";
- 	$query = mysqli_query($con,$sql);
-		if($query){ $designation="";
-		echo "<script language='javascript'>";
-		echo 'alertify.success(" Enrégistrement effectué avec succès");';
-		echo "</script>";
-		//echo '<meta http-equiv="refresh" content="1; url=food.php?menuParent=Enrégistrement />'; 
-		echo '<meta http-equiv="refresh" content="0; url=food.php?menuParent='.$_SESSION['menuParenT'].'" />';
-	}
+		
+		$sql0="SELECT * FROM plat WHERE designation='".$designation."' OR designation2='".$designation2."'";
+		$reqsel=mysqli_query($con,$sql0);
+		if(mysqli_num_rows($reqsel)>0){
+			echo "<script language='javascript'>";
+			echo 'alertify.error("Ce type de plat existe déjà dans la liste.");';
+			echo "</script>";
+			echo '<meta http-equiv="refresh" content="0; url=food.php?menuParent='.$_SESSION['menuParenT'].'" />';	
+		}else {
+			$sql="INSERT INTO `plat`(`numero`, `CategMenu`, `CategPlat`, `designation`, `designation2`, `ListeProduits`, `composition`, `prix`, `NbreJ`, `NbreC`, `Nbre`, `state`, `RegimeTVA`, `created_at`, `updated_at`) VALUES (NULL,'".$categorie."','".$CategoriePlat."','".$designation."','".$designation2."','".$dataT."',NULL,'".$Prix."',0,0,0,NULL,'".$TPS_2."','" . $Jour_actuel. "','".$Jour_actuel."')";
+			$query = mysqli_query($con,$sql);
+				if($query){ $designation="";
+					$query = "SELECT MAX(numero) AS numero FROM plat";
+					$result = mysqli_query($con,$query);
+					$row = mysqli_fetch_object($result); 
+					$sql="UPDATE `plat_produit` SET id_plat='".$row->numero."' WHERE id_plat=''";
+					$query = mysqli_query($con,$sql);
+					
+				echo "<script language='javascript'>";
+				echo 'alertify.success(" Enrégistrement effectué avec succès");';
+				echo "</script>";
+				echo '<meta http-equiv="refresh" content="0; url=food.php?menuParent='.$_SESSION['menuParenT'].'" />';
+			}
+		}
 	}
 	if($_POST['ENREGISTRER']=="Modifier"){ $update=(int)$update;
 			$rek="UPDATE plat SET CategMenu='".$categorie."',CategPlat='".$CategoriePlat."',designation='".$designation."',designation2='".$designation2."',ListeProduits='".$dataT."',prix='".$Prix."',updated_at ='".$Jour_actuel."' WHERE numero='".$update."'";			
@@ -225,8 +247,8 @@ if(isset($_POST['ENREGISTRER'])){
 					<td colspan='2' style='padding-left:25px;'> Type de repas : &nbsp;&nbsp;&nbsp;<span class='rouge'>*</span></td>
 					<td colspan='2'>";
 				echo "<select name='Libmenu' style='font-family:sans-serif;font-size:90%;border:1px solid gray;width:250px;' required='required'>";
-				if(isset($CategoriePlat))
-					echo "<option value='".$CategPlat."'>".$CategoriePlat."</option>";
+				if(isset($CategorieMenu))
+					echo "<option value='".$CategMenu."'>".$CategorieMenu."</option>";
 				else 
 					echo "<option value=''></option>";
 				while($data=mysqli_fetch_array($reqMenu))
@@ -240,8 +262,8 @@ if(isset($_POST['ENREGISTRER'])){
 				<tr>
 				<td colspan='2' style='padding-left:25px;'>Catégorie du plat :&nbsp;&nbsp;&nbsp;<span class='rouge'>*</span></td>
 				<td colspan='2' style=''><select name='categorie' style='font-family:sans-serif;font-size:90%;border:1px solid gray;width:250px;' required='required'>";
-				if(isset($CategorieMenu))
-					echo "<option value='".$CategMenu."'>".$CategorieMenu."</option>";
+				if(isset($CategoriePlat))
+					echo "<option value='".$CategPlat."'>".$CategoriePlat."</option>";
 				else 
 					echo "<option value=''></option>";
 				while($data=mysqli_fetch_array($reqCateg))
@@ -256,7 +278,9 @@ if(isset($_POST['ENREGISTRER'])){
 			</tr>
 			<tr>
 				<td colspan='2' style='padding-left:25px;'>Nom complet du plat :&nbsp;&nbsp;<span class='rouge'>*</span>&nbsp;</td>
-				<td colspan='2'><input type='text' id='' name='designation' value='".$designation."' style='width:250px;font-family:sans-serif;font-size:90%;' required='required' onblur='ucfirst(this);' onkeypress=''/>
+				<td colspan='2'><input type='text' id='' name='designation' 
+				value='" . htmlspecialchars($designation, ENT_QUOTES, 'UTF-8') . "' 
+				style='width:250px;font-family:sans-serif;font-size:90%;' required='required' onblur='ucfirst(this);' onkeypress=''/>
 				<a class='info2' href='#' style='color:#B83A1B;'>
 				<span style='font-size:0.9em;font-style:normal;color:green;'>Veuillez donner ci-possible des noms qui vous permettront <br/>d'avoir des différentes portions d'un même plat.<br/>
 				Dans le Nom complet du plat, utilisez des séparateurs comme : 
@@ -268,7 +292,9 @@ if(isset($_POST['ENREGISTRER'])){
 			</tr>
 			<tr>
 				<td colspan='2' style='padding-left:25px;'>Désignation du plat :&nbsp;&nbsp;<span class='rouge'></span>&nbsp;</td>
-				<td colspan='2'><input type='text' id='' name='designation2' value='".$designation2."' style='width:250px;font-family:sans-serif;font-size:90%;'  onblur='ucfirst(this);' onkeypress=''/>
+				<td colspan='2'><input type='text' id='' name='designation2' 
+				value='" . htmlspecialchars($designation2, ENT_QUOTES, 'UTF-8') . "'
+				style='width:250px;font-family:sans-serif;font-size:90%;'  onblur='ucfirst(this);' onkeypress=''/>
 				<a class='info2' href='#' style='color:#B83A1B;'>
 				<span style='font-size:0.9em;font-style:normal;color:green;'>Cette information est optionnelle. Si vous<br/> ne renseignez pas ce champ,
 				le <g style='color:red;'>Nom complet<br/> du plat</g> sera considéré pas défaut.</span>
@@ -310,7 +336,8 @@ if(isset($_POST['ENREGISTRER'])){
 <tbody id="">
 <?php
 	mysqli_query($con,"SET NAMES 'utf8'");
-	$result=mysqli_query($con,"SELECT * FROM plat,categorieplat,menu WHERE categorieplat.id=plat.categPlat AND menu.id=plat.categMenu");
+	$sql="SELECT * FROM plat,categorieplat,menu WHERE categorieplat.id=plat.categPlat AND menu.id=plat.categMenu";
+	$result=mysqli_query($con,$sql);
 	$cpteur=1;
     // parcours et affichage des résultats
     while( $data = mysqli_fetch_object($result))
@@ -336,6 +363,7 @@ if(isset($_POST['ENREGISTRER'])){
 				<?php  
 				if(!empty($data->ListeProduits))
 				echo "<a class='info2' href='#' style=''>
+				<img title='' src='logo/add3.png' width='14' height='14' style=''/>
 				<span style='font-size:0.9em;font-style:normal;color:green;'>Liste des produits alimentaires constituant le plat :<br/> 
 				<g style='color:red;'>";
 				if(!empty($data->ListeProduits)){
@@ -345,22 +373,23 @@ if(isset($_POST['ENREGISTRER'])){
 							mysqli_query($con,"SET NAMES 'utf8'");
 							$resultP=mysqli_query($con,"SELECT Designation FROM produits WHERE Num='".$produits[$i]."'");
 							$dataP = mysqli_fetch_object($resultP);
-							echo $dataP->Designation;
+							echo isset($dataP->Designation)?$dataP->Designation:"";
 							if($i<count($produits)-1)
 								echo " ; ";							
 						}
 				}
 				echo "</g>				
 				</span>"; 
-				
+				if(empty($data->ListeProduits))  echo "&nbsp;&nbsp;&nbsp;";
 				 echo ucfirst($data->designation);
 					if(!empty($data->ListeProduits)) echo "</a>
 				<span style='float:right;color:gray;'>
-				 <i class='fa fa-plus-square' aria-hidden='true'></i></span>";
+				
+				</span>"; // <i class='fa fa-plus-square' aria-hidden='true'></i>
 				?>				
 				</td>
-					<td style='border-right: 1px solid #ffffff;border-top: 1px solid #ffffff;; border-top: 2px solid #ffffff'> &nbsp;<?php echo !empty($data->designation2)?$data->designation2:$data->designation; echo "</span>";?></td>
-				<td style='border-right: 1px solid #ffffff;border-top: 1px solid #ffffff;; border-top: 2px solid #ffffff'> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php echo $data->prix; echo "&nbsp;<span style='font-size:0.6em;'>".$devise."</span>";?></td>
+				<td style='border-right: 1px solid #ffffff;border-top: 1px solid #ffffff;; border-top: 2px solid #ffffff'> &nbsp;<?php echo !empty($data->designation2)?ucfirst($data->designation2):ucfirst($data->designation); echo "</span>";?></td>
+				<td style='border-right: 1px solid #ffffff;border-top: 1px solid #ffffff;; border-top: 2px solid #ffffff'> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php echo $data->prix; echo "&nbsp;<span style='font-size:0.6em;'></span>";?></td>
 				<?php
 				echo "<td align='center' style='border-right: 0px solid #ffffff; border-top: 2px solid #ffffff'> 
 				&nbsp;<a class='info2' href='food.php?menuParent=".$_SESSION['menuParenT']."&update=".$nbre."'  style='color:#FC7F3C;'><img src='logo/b_edit.png' alt='' width='16' height='16' border='0'><span style='color:#FC7F3C;font-size:0.9em;'>Modifier</span></a>";

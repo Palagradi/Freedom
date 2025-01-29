@@ -1,12 +1,8 @@
 <?php
 	include_once'menu.php';  //$req = mysqli_query($con,"DELETE FROM QteBoisson WHERE qte='Hhhh'");
 	$reqCat = mysqli_query($con,"SELECT * FROM config_boisson ORDER BY LibCateg") or die (mysqli_error($con));
-	//$nbre=mysqli_num_rows($req);
-	$reqsel=mysqli_query($con,"SELECT MAX(numero) AS numero FROM boisson WHERE Depot = '1' ");
-	$dataP = mysqli_fetch_object($reqsel);$nbre=$dataP->numero+1;
-	$nbreBoisson=mysqli_num_rows($reqsel);//$nbre=$nbreBoisson+1;  
 
-		if(isset($_GET['ok'])){ 
+	if(isset($_GET['ok'])){ 
 		echo "<script language='javascript'>";  
 		if(isset($_SESSION['ok'])&&($_SESSION['ok']==1)){
 			if($_GET['ok']==1){
@@ -31,7 +27,7 @@
 			//echo 'alertify.error("Pour passer au mode Pack [P] et Casier [C], Veuillez repartir dans le menu Dépôt principal.");';
 		}else {}
 		echo "</script>";
-	}
+	}$_SESSION['ok']=0;
 	
 	$update=isset($_GET['update'])?$_GET['update']:NULL; $delete=isset($_GET['delete'])?$_GET['delete']:NULL; $ap=isset($_GET['ap'])?$_GET['ap']:NULL;
 	$add=isset($_GET['add'])?$_GET['add']:NULL; $adp=isset($_GET['adp'])?$_GET['adp']:NULL; $update2=isset($_GET['update2'])?$_GET['update2']:NULL;
@@ -46,9 +42,9 @@
 	if(isset($update)|| isset($ap)|| isset($add)) $checkpvc=$_GET['checkpvc'];
 	else {
 	if((isset($checkpvc))||isset($checkpvc0))
-		{   $checkpvc=1;
-		}else 
 		{   $checkpvc=2;
+		}else 
+		{   $checkpvc=1;
 		} 
 	$rek="UPDATE configresto SET pvc='".$checkpvc."'";
 	$query = mysqli_query($con,$rek) or die (mysqli_error($con));
@@ -56,6 +52,36 @@
 		
 	}
 	if(isset($_GET['pvc'])) $pvc= $_GET['pvc'];
+	
+	if(isset($_GET['checkapp']))
+		{$checkapp=$_GET['checkapp'];$app=$checkapp;}
+	else 	
+		$checkapp=isset($_POST['checkapp'])?$_POST['checkapp']:NULL;
+
+	if(isset($checkapp))
+		$checkapp=2;
+	else 
+		$checkapp=1;
+
+	$rek="UPDATE configresto SET app='".$checkapp."'";
+	$query = mysqli_query($con,$rek) or die (mysqli_error($con));
+	$app = $checkapp ;
+	
+	if(isset($_GET['app'])) $app= $_GET['app'];
+	
+	if(!empty($pvc)&&($pvc==2))
+		$sql="SELECT MAX(numero2) AS numero FROM boisson WHERE Depot = '1' ";	
+	else 
+		$sql="SELECT MAX(numero2) AS numero FROM boisson WHERE Depot = '2' ";
+	$reqsel=mysqli_query($con,$sql);
+	$dataP = mysqli_fetch_object($reqsel);$nbre=$dataP->numero+1; 	$nbreBoisson=mysqli_num_rows($reqsel); 
+
+	if(!empty($pvc)&&($pvc==2))
+		$sql="SELECT * FROM boisson,config_boisson,conditionnement,QteBoisson,casier WHERE QteBoisson.id=boisson.Qte AND conditionnement.id=boisson.Conditionne AND config_boisson.id=boisson.Categorie AND casier.id=boisson.pc AND pc<>0 AND Depot = '1' order by numero2 ";
+	else 
+		 $sql="SELECT * FROM boisson,config_boisson,conditionnement,QteBoisson WHERE QteBoisson.id=boisson.Qte AND conditionnement.id=boisson.Conditionne AND config_boisson.id=boisson.Categorie AND pc=0 AND Depot = '1' order by numero2 ";
+	$result=mysqli_query($con,$sql);
+	$nbre=mysqli_num_rows($result); $nbre++;
 	
 	if(isset($NQteI)&&(!empty($NQteI))&&($NQteI!="null")) {
 		$QteInd=ucfirst(trim(strtoupper($NQteI)));
@@ -119,7 +145,7 @@
 	else if(isset($ap)) //Ici le bar
 	{
 	 if($ap==0){
-		echo $reqX="SELECT * FROM boisson,config_boisson,conditionnement,QteBoisson,casier WHERE QteBoisson.id=boisson.Qte AND conditionnement.id=boisson.Conditionne AND config_boisson.id=boisson.Categorie AND casier.id=boisson.pc AND pc<>0 AND numero='".$adp."' AND Depot = '1'";
+		 $reqX="SELECT * FROM boisson,config_boisson,conditionnement,QteBoisson,casier WHERE QteBoisson.id=boisson.Qte AND conditionnement.id=boisson.Conditionne AND config_boisson.id=boisson.Categorie AND casier.id=boisson.pc AND pc<>0 AND numero='".$adp."' AND Depot = '1'";
 		$result0=mysqli_query($con,$reqX);$response=mysqli_fetch_object($result0);
 		$numero2=$response->numero2;$pc=$response->pc;
 		$Categorie=$response->Categorie;$Qte=$response->Qte;
@@ -201,18 +227,18 @@
 			echo "</script>"; */
 			$req = mysqli_query($con,"SELECT * FROM config_boisson ORDER BY LibCateg") or die (mysqli_error($con));
  			if($_POST['pvc']==2){
-				header("Location: DpInterne.php?menuParent=$menuParent&ok=5");
+				header("Location: DpInterne.php?menuParent=$menuParent&pvc=2&ok=5");
 				exit;							
 				//echo '<meta http-equiv="refresh" content="0; url=DpInterne.php?menuParent='.$_SESSION['menuParenT'].'" />';				
 			}
 			else {
-				header("Location: DpInterne.php?menuParent=$menuParent&pvc=1&ok=5");
+				header("Location: DpInterne.php?menuParent=$menuParent&ok=5");
 				exit;	
 				//echo '<meta http-equiv="refresh" content="0; url=DpInterne.php?menuParent='.$_SESSION['menuParenT'].'&pvc=1" />';	
 				}				
 			}
 	}
-	if(isset($_POST['Enregistrer'])&&($_POST['Enregistrer']=="Enrégistrer")){
+/* 	if(isset($_POST['Enregistrer'])&&($_POST['Enregistrer']=="Enrégistrer")){
 			$menuParent = $_SESSION['menuParenT'];$checkpvc=$_GET['checkpvc'];
 			$numero=isset($_GET['add'])?$_GET['add']:NULL;$adp=isset($_GET['adp'])?$_GET['adp']:$numero;
 			if($_POST['pvc']==2) 
@@ -250,9 +276,6 @@
 			$req=mysqli_query($con,$re);
 
 			if($query){
-/* 			echo "<script language='javascript'>";
-			echo 'alertify.success(" L\'approvisionnement du Bar a été effectué avec succès !");';
-			echo "</script>"; */
 			$req = mysqli_query($con,"SELECT * FROM config_boisson ORDER BY LibCateg") or die (mysqli_error($con));$_SESSION['ok']=1;
 			if($_POST['pvc']==2){
 				header("Location: DpInterne.php?menuParent=$menuParent&ok=2");
@@ -270,10 +293,6 @@
 				echo 'alertify.error("La quantité à affecter est supérieure au stock disponible dans le Dépôt");';
 				echo "</script>";
 				$req = mysqli_query($con,"SELECT * FROM config_boisson ORDER BY LibCateg") or die (mysqli_error($con));
-/* 				if($_POST['pvc']==2)
-					echo '<meta http-equiv="refresh" content="1; url=DpInterne.php?menuParent='.$_SESSION['menuParenT'].'" />';
-				else 
-					echo '<meta http-equiv="refresh" content="2; url=DpInterne.php?menuParent='.$_SESSION['menuParenT'].'&pvc=1" />'; */
 			}
 		}
 		if(!empty($_POST['add'])){  //Pour le dépot
@@ -289,9 +308,6 @@
 			$req=mysqli_query($con,$re);
 
 			if($query){
-/* 			echo "<script language='javascript'>"; 
-			echo 'alertify.success(" L\'approvisionnement du Dépôt a été effectué avec succès !");';
-			echo "</script>"; */
 			$req = mysqli_query($con,"SELECT * FROM config_boisson ORDER BY LibCateg") or die (mysqli_error($con));$_SESSION['ok']=1;
  			if($_POST['pvc']==2){
 				header("Location: DpInterne.php?menuParent=$menuParent&ok=1");
@@ -305,7 +321,7 @@
 				}
 			} 
 		}
-	}
+	} */
 	if(isset($_POST['ENREGISTRER'])&& ($_POST['ENREGISTRER']=="Enrégistrer")){
 		$menuParent = $_SESSION['menuParenT'];$checkpvc=$_GET['checkpvc'];	$_SESSION['ok']=1;	
 		$code=(int)$_POST['code']; $categorie=$_POST['Libellepc'];
@@ -322,10 +338,9 @@
 		$PrixUnitaire=!empty($_POST['Prixvente'])?$_POST['Prixvente']:0;$PrixPack=!empty($_POST['PrixventeP'])?$_POST['PrixventeP']:0;  $Seuil=!empty($_POST['Seuil'])?$_POST['Seuil']:0; 
 		$pack=!empty($_POST['pack'])?$_POST['pack']:0; 
 		if($_POST['pvc']==2)  //Gestion des Pack de boissons
-		{   //$PrixPack=$PrixUnitaire; $PrixUnitaire=0;$SeuilPack=$Seuil; $Seuil=0; $QteStock=$QteStock; $QteStock=0;
-			$sql0="SELECT * FROM boisson WHERE Depot = '1' AND designation='".$designation."' AND Qte ='".$Qte."' AND Conditionne='".$Conditionne."' AND pc='".$pack."'";
+		{  	 $sql0="SELECT * FROM boisson WHERE Depot = '1' AND designation='".$designation."' AND Qte ='".$Qte."' AND Conditionne='".$Conditionne."' AND Categorie='".$categorie."' AND pc='".$pack."'";
 		}else {
-			$sql0="SELECT * FROM boisson WHERE Depot = '1' AND designation='".$designation."' AND Qte ='".$Qte."' AND Conditionne='".$Conditionne."'";
+			 $sql0="SELECT * FROM boisson WHERE Depot = '1' AND designation='".$designation."' AND Qte ='".$Qte."' AND Conditionne='".$Conditionne."' AND Categorie='".$categorie."' AND pc=0";
 		}		
 		$reqsel=mysqli_query($con,$sql0);
 		if(mysqli_num_rows($reqsel)>0){
@@ -343,8 +358,8 @@
 				//echo '<meta http-equiv="refresh" content="0; url=DpInterne.php?menuParent='.$_SESSION['menuParenT'].'&ok=3&checkpvc='.$_GET['checkpvc'].'" />'; 
 				}
 		}else{
-		 $rek ="INSERT INTO boisson SET numero2='".$code."',categorie='".$categorie."',pc='".$pack."',designation='".$designation."',Qte='".$Qte."',Conditionne='".$Conditionne."',PrixUnitaire='".$PrixUnitaire."',PrixPack='".$PrixPack."',Seuil='".$Seuil."',QteStock='".$QteStock."',StockReel='".$QteStock."',created_at='".$Jour_actuel."',updated_at='".$Jour_actuel."',Depot = '1',RegimeTVA='".$RegimeTVA."'";
-		 $rek1="INSERT INTO boisson SET numero2='".$code."',categorie='".$categorie."',pc='".$pack."',designation='".$designation."',Qte='".$Qte."',Conditionne='".$Conditionne."',PrixUnitaire='".$PrixUnitaire."',PrixPack='".$PrixPack."',Seuil='".$Seuil."',QteStock='".$QteStock."',StockReel='".$QteStock."',created_at='".$Jour_actuel."',updated_at='".$Jour_actuel."',Depot = '2',RegimeTVA='".$RegimeTVA."'";
+		 $rek ="INSERT INTO boisson SET numero2='".$code."',categorie='".$categorie."',pc='".$pack."',designation='".$designation."',Qte='".$Qte."',Conditionne='".$Conditionne."',PrixUnitaire='".$PrixUnitaire."',PrixPack='".$PrixPack."',Seuil='".$Seuil."',QteStock=0,StockReel=0,created_at='".$Jour_actuel."',updated_at='".$Jour_actuel."',Depot = '1',RegimeTVA='".$RegimeTVA."'";
+		 $rek1="INSERT INTO boisson SET numero2='".$code."',categorie='".$categorie."',pc='".$pack."',designation='".$designation."',Qte='".$Qte."',Conditionne='".$Conditionne."',PrixUnitaire='".$PrixUnitaire."',PrixPack='".$PrixPack."',Seuil='".$Seuil."',QteStock=0,StockReel=0,created_at='".$Jour_actuel."',updated_at='".$Jour_actuel."',Depot = '2',RegimeTVA='".$RegimeTVA."'";
 		 $query = mysqli_query($con,$rek) or die (mysqli_error($con)); $query = mysqli_query($con,$rek1) or die (mysqli_error($con));
 			if($query){
 /* 			echo "<script language='javascript'>";
@@ -373,6 +388,7 @@
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 		<link rel="stylesheet" media="screen" type="text/css" title="design" href="design.css"/>
 		<link rel="Stylesheet" href='css/table.css' />
+		<script type="text/javascript" src="js/fonctions_utiles.js"></script>
 		<link rel="Stylesheet" type="text/css"  href='css/input.css' />
 		<link href="fontawesome/web-fonts-with-css/css/fontawesome-all.min.css" rel="stylesheet">
 		<link rel="stylesheet" href="js/alertify.js/themes/alertify.core.css" />
@@ -474,7 +490,7 @@
 				<input type='hidden' name='pvc' value='".$pvc."'>		
 				<tr>
 					<td colspan='8'>
-						<h2 style='text-align:center; font-family:Cambria;color:Maroon;font-weight:bold;'>"; if(isset($update)) echo "MISE A JOUR D'INFORMATIONS SUR UNE BOISSON"; else if(isset($ap))  echo "APPROVISIONNEMENT DU BAR"; else if(isset($add)) echo "APPROVISIONNEMENT DU DEPOT"; else echo "ENREGISTREMENT DES BOISSONS"; echo "</h2>
+						<h2 style='text-align:center; font-family:Cambria;color:Maroon;font-weight:bold;'>"; if(isset($update)) echo "MISE A JOUR D'INFORMATIONS SUR UNE BOISSON"; else if(isset($ap))  echo "APPROVISIONNEMENT DU BAR"; else if(isset($add)) echo "APPROVISIONNEMENT DU DEPOT"; else { if(!empty($pvc)&&($pvc==2)) echo "ENREGISTREMENT DES PACKS ET CASIERS DE BOISSONS"; else echo "ENREGISTREMENT DES BOISSONS"; }echo "</h2>
 					</td>
 				</tr>
 				<tr>
@@ -523,7 +539,8 @@
 
 		echo "<tr>
 				<td colspan='2' style='padding-left:25px;'>Désignation boisson :&nbsp;&nbsp;<span class='rouge'>*</span>&nbsp;&nbsp;</td>
-				<td colspan='2'><input type='text' id='' name='designation' style='width:250px;font-family:sans-serif;font-size:90%;'"; if(isset($ap)||isset($add)) echo "readonly='readonly'"; else echo " required='required'";  echo " onkeypress='' value='";   if(isset($designation)) echo $designation;  echo "'/></td>
+				<td colspan='2'>
+				<input type='text' id='' name='designation' style='width:250px;font-family:sans-serif;font-size:90%;'"; if(isset($ap)||isset($add)) echo "readonly='readonly'"; else echo " required='required'";  ?> onKeyup="ucfirst(this)"  <?php echo " onkeypress='' value='";  echo htmlspecialchars(isset($designation) ? $designation : '', ENT_QUOTES);  echo "'/></td>
 			</tr>
 			<tr>
 				<td colspan='2' style='padding-left:25px;'>Quantité indiquée :&nbsp;&nbsp;&nbsp;<span class='rouge'>*</span></td>
@@ -653,17 +670,17 @@
 			<td colspan='6' align='center' ><br/><input type='submit' value='"; if(isset($update)) echo "Modifier"; else  echo "Enrégistrer";
 			echo "' id='' class='bouton2'  name='"; if(isset($ap)||isset($add)) echo "Enregistrer"; else echo "ENREGISTRER"; echo "' style=''/>
 			&nbsp;&nbsp;<input type='reset' value='Annuler' id='' class='bouton2'  name='ANNULER' style=''/> <br/>&nbsp;";
-			//echo $pvc;
 		?>
 		<span style='float:left; margin-left:10px;'>
-		<input type='checkbox' <?php if(isset($pvc)&&($pvc==1)) echo "checked='checked'"; ?>
-		name='checkpvc0' id='button_checkbox0' onchange="document.forms['chgdept'].submit();"
+		<input type='checkbox' <?php if(isset($pvc)&&($pvc==2)) echo "checked='checked'"; ?>
+		name='checkpvc' id='button_checkbox0' onchange="document.forms['chgdept'].submit();"
 		<?php if(isset($pvc)&&($pvc==1)) echo "value='2'"; else echo "value='1'"; ?> >
-		<label for='button_checkbox0' style='color:#444739;'>Mode Unitaire</label></span>
-		<span style='float:right; margin-right:25px;'><input type='checkbox' <?php if(isset($pvc)&&($pvc==2)) echo "checked='checked'"; ?>
-		name='checkpvc' id='button_checkbox1' onchange="document.forms['chgdept'].submit();"
-		<?php if(isset($pvc)&&($pvc==2)) echo "value='2'"; else {echo "value='1'"; echo "disabled"; }?>  >
-		<label for='button_checkbox1' style='color:#444739;'>Pack [P] et Casier [C]</label></span>
+		<label for='button_checkbox0' style='color:#444739;'><?php  echo "<span style='color:maroon;'>"; if(isset($pvc)&&($pvc==2)) echo "Par Unité de boisson"; else echo "Pack [P] et Casier [C]"; echo "</span>";?> </label></span>
+		<span style='float:right; margin-right:25px;'>
+		<input type='checkbox' <?php if(isset($app)&&($app==2)) echo "checked='checked'"; ?>
+		name='checkapp' id='button_checkbox1' onchange="document.forms['chgdept'].submit();"
+		<?php if(isset($app)&&($app==1)) echo "value='2'"; else {echo "value='1'"; }?>  >
+		<label for='button_checkbox1' style='color:maroon;'>APPROVISIONNEMENT</label></span>
 		</td>
 		</tr>
 		</table>
@@ -685,33 +702,40 @@
 <thead>
 <tr><td colspan='10' > <span style="float:left;font-family:Cambria;font-weight:bold;font-size:1.3em;margin-bottom:5px;color:#4C767A;" >Liste des boissons </span>
 <span style="float:right;font-family:Cambria;font-size:1em;margin-bottom:5px;color:#4C767A;" ><?php if(!empty($pvc)&&($pvc==2)) echo "4P/24 => Lire : 4 Packs de 24; &nbsp;&nbsp;&nbsp; 5C/24 => Lire : 5 Casiers de 24";  ?></span></td></tr>
-		<tr  style='background-color:#3EB27B;color:white;font-size:1.2em;'>
+		<tr  style='background-color:#3EB27B;color:white;font-size:1.1em;'>
 			<td rowspan='2' style="border-right: 1px solid #ffffff;border-top: 1px solid #ffffff;border-left: 1px solid #ffffff;" align="center" ><label for='1' style=''>N° d'Enrég.</label><span style='font-size:0.8em;'></span></td>
 			<td rowspan='2' style="border-right: 1px solid #ffffff;border-top: 1px solid #ffffff;" align="center" ><label for='2' style=''>Catégorie</label><span style='font-size:0.8em;'></span></td>
 			<td rowspan='2' style="border-right: 1px solid #ffffff;border-top: 1px solid #ffffff;" align="center" ><label for='3' style=''>Désignation</label><span style='font-size:0.8em;'></span></td>
 			<td rowspan='2' style="border-right: 1px solid #ffffff;border-top: 1px solid #ffffff;" align="center" ><label for='5' style=''>Conditionnement</label><span style='font-size:0.8em;'></span></td>
 			<td rowspan='2' style="border-right: 1px solid #ffffff;border-top: 1px solid #ffffff;" align="center" ><label for='6' style=''>Quantité <br/>indiquée (Qi)</label> <span style='font-size:0.8em;'></span></td>
-			<td rowspan='2' style="border-right: 1px solid #ffffff;border-top: 1px solid #ffffff;" align="center" ><label for='7' style=''>Seuil d'alerte</label><span style='font-size:0.8em;'></span></td>
+			<?php if(!empty($app)&&($app==1)) { ?> <td rowspan='2' style="border-right: 1px solid #ffffff;border-top: 1px solid #ffffff;" align="center" ><label for='7' style=''>Seuil d'alerte</label><span style='font-size:0.8em;'></span></td> <?php } ?>
 			<td colspan='2' style="border-right: 1px solid #ffffff;border-top: 1px solid #ffffff;" align="center" ><label for='8' style=''>Quantité <br/>en Stock (Qs)</label> <span style='font-size:0.8em;'></span></td>
 			<td rowspan='2' style="border-right: 1px solid #ffffff;border-top: 1px solid #ffffff;" align="center" ><label for='9' style=''><?php if(!empty($pvc)&&($pvc==2)) echo "Prix du Pack/<br/>Casier"; else echo "Prix Unitaire";  ?></label> <span style='font-size:0.8em;'></span></td>
-			<td rowspan='2' style="border-right: 1px solid #ffffff;border-top: 1px solid #ffffff;" align="center" >Actions</td>
+			<?php if(!empty($app)&&($app==2)) { ?> <td colspan='2' style="border-right: 1px solid #ffffff;border-top: 1px solid #ffffff;" align="center" ><label for='8' style=''>Approvisionnement <span style='font-size:0.8em;'></span></td> <?php }  else { ?>
+			<td rowspan='2' style="border-right: 1px solid #ffffff;border-top: 1px solid #ffffff;" align="center" >Actions</td><?php } ?> 
 		</tr>
-		<tr style='background-color:#3EB27B;color:white;font-size:1.2em;'>
+		<tr style='background-color:#3EB27B;color:white;font-size:1.1em;'>
 				<td align="center" style="border-top: 1px solid #ffffff">DEPOT</td>
 				<td align="center" style="border-top: 1px solid #ffffff;border-right: 1px solid #ffffff">BAR</td>
+		<?php if(!empty($app)&&($app==2)) { ?>
+				<td align="center" style="border-top: 1px solid #ffffff">DEPOT</td>
+				<td align="center" style="border-top: 1px solid #ffffff;border-right: 1px solid #ffffff">BAR</td>
+		 <?php } ?>
 		</tr>
+		
 </thead>
 <tbody id="">
 <?php
 	mysqli_query($con,"SET NAMES 'utf8'");
 	if(!empty($pvc)&&($pvc==2)) 
-	$result=mysqli_query($con,"SELECT * FROM boisson,config_boisson,conditionnement,QteBoisson,casier WHERE QteBoisson.id=boisson.Qte AND conditionnement.id=boisson.Conditionne AND config_boisson.id=boisson.Categorie AND casier.id=boisson.pc AND pc<>0 AND Depot = '1' order by numero2 ");
+		 $sql="SELECT * FROM boisson,config_boisson,conditionnement,QteBoisson,casier WHERE QteBoisson.id=boisson.Qte AND conditionnement.id=boisson.Conditionne AND config_boisson.id=boisson.Categorie AND casier.id=boisson.pc AND pc<>0 AND Depot = '1' order by numero ";
 	else 
-		$result=mysqli_query($con,"SELECT * FROM boisson,config_boisson,conditionnement,QteBoisson WHERE QteBoisson.id=boisson.Qte AND conditionnement.id=boisson.Conditionne AND config_boisson.id=boisson.Categorie AND pc=0 AND Depot = '1' order by numero2 ");
-	$cpteur=1;
+		 $sql="SELECT * FROM boisson,config_boisson,conditionnement,QteBoisson WHERE QteBoisson.id=boisson.Qte AND conditionnement.id=boisson.Conditionne AND config_boisson.id=boisson.Categorie AND pc=0 AND Depot = '1' order by numero ";
+	$result=mysqli_query($con,$sql);
+	$cpteur=1;$cpteur0=0;
     // parcours et affichage des résultats
     while($data = mysqli_fetch_object($result))
-    {
+    {   $cpteur0++;
 		if($cpteur == 1)
 			{
 				$cpteur = 0;
@@ -722,31 +746,39 @@
 				$cpteur = 1;
 				$bgcouleur = "#dfeef3";$color = "#FC7F3C";
 			}
-	$nbre=$data->numero2;
+	$nbre=$cpteur0; //$nbre=$data->numero2;
 	if(($nbre>=0)&&($nbre<=9)) $nbre="0000".$nbre ; else if(($nbre>=10)&&($nbre <=99)) $nbre="000".$nbre ;else $nbre="00".$nbre ;  $Nbre=$data->numero2;
-	
+
+/* 			$reqsel=mysqli_query($con,"SELECT * FROM ConfigResto");
+		$data0=mysqli_fetch_object($reqsel);
+		echo "<br>".$data0->pvc; 
+		$pvc=$data0->pvc; */
 	if(!empty($pvc)&&($pvc==2)){
-		$result2=mysqli_query($con,"SELECT * FROM boisson,config_boisson,conditionnement,QteBoisson,casier WHERE QteBoisson.id=boisson.Qte AND conditionnement.id=boisson.Conditionne AND config_boisson.id=boisson.Categorie AND casier.id=boisson.pc AND pc<>0 AND Depot = '2' AND numero2='".$data->numero2."'");
+		 $sql2="SELECT * FROM boisson,config_boisson,conditionnement,QteBoisson,casier WHERE QteBoisson.id=boisson.Qte AND conditionnement.id=boisson.Conditionne AND config_boisson.id=boisson.Categorie AND casier.id=boisson.pc AND pc<>0 AND Depot = '2' AND numero2='".$data->numero2."'";
 	}
-	else 
-		$result2=mysqli_query($con,"SELECT * FROM boisson,config_boisson,conditionnement,QteBoisson WHERE QteBoisson.id=boisson.Qte AND conditionnement.id=boisson.Conditionne AND config_boisson.id=boisson.Categorie AND Depot = '2' AND pc=0 AND numero2='".$data->numero2."'");
+	else //La ligne suivante ne s'exécute pas
+		 $sql2="SELECT * FROM boisson,config_boisson,conditionnement,QteBoisson WHERE QteBoisson.id=boisson.Qte AND conditionnement.id=boisson.Conditionne AND config_boisson.id=boisson.Categorie AND pc=0 AND Depot = '2' AND numero2='".$data->numero2."'";
+
+	$result2=mysqli_query($con,$sql2);
 	$data2 = mysqli_fetch_object($result2);	
     ?>
 		 	<tr class='rouge1' bgcolor=' <?php echo $bgcouleur; ?>'>
 				<td align="center" style='border-right: 1px solid #ffffff; border-top: 1px solid #ffffff'><?php echo $nbre;  $nbre=$data->numero; ?></td>
-				<td style='border-right: 1px solid #ffffff; border-top: 1px solid #ffffff'><?php echo $data->LibCateg; ?> </td>
-				<td style='border-right: 1px solid #ffffff; border-top: 1px solid #ffffff'><?php echo $data->designation ; ?></td>
-				<td align='' style='border-right: 1px solid #ffffff; border-top: 1px solid #ffffff'><?php echo $data->LibConditionne; ?></td>
+				<td style='border-right: 1px solid #ffffff; border-top: 1px solid #ffffff'><?php echo ucfirst($data->LibCateg); ?> </td>
+				<td style='border-right: 1px solid #ffffff; border-top: 1px solid #ffffff'><?php echo ucfirst($data->designation) ; ?></td>
+				<td align='' style='border-right: 1px solid #ffffff; border-top: 1px solid #ffffff'><?php echo ucfirst($data->LibConditionne); ?></td>
 				<td align="center" style='border-right: 1px solid #ffffff; border-top: 1px solid #ffffff'> <?php echo $data->LibQte; ?></td>
-				<td align="center" style='border-right: 1px solid #ffffff; border-top: 1px solid #ffffff;padding-right:3px;'><?php echo "<span style=''>"; if(isset($data2->Seuil)) echo $data2->Seuil; else echo "0"; echo "&nbsp;&nbsp;&nbsp;</span>"; ?></td>
-				<td align="right" style='border-right: 1px solid #ffffff; border-top: 1px solid #ffffff;padding-right:3px;'><?php if(!empty($pvc)&&($pvc==2)) echo "<span style='color:red;'>".$data->QteStock."</span><span style='font-size:0.8em;'>".substr($data->Libellepc,0,1)."/".$data->qtepc."</span>"; else echo "<span style='color:maroon;'>".$data->QteStock."&nbsp;&nbsp;&nbsp;</span>";
-				echo "<a class='info2' href='DpInterne.php?menuParent=".$_SESSION['menuParenT']."&add=".$nbre."&checkpvc=".$checkpvc."' style='color:gray'>
+				<?php if(!empty($app)&&($app==1)) { ?> <td align="center" style='border-right: 1px solid #ffffff; border-top: 1px solid #ffffff;padding-right:3px;'><?php echo "<span style=''>"; if(isset($data2->Seuil)) echo $data2->Seuil; else echo "0"; echo "&nbsp;&nbsp;&nbsp;</span>"; ?></td> <?php } ?>
+				<td align="center" style='border-right: 1px solid #ffffff; border-top: 1px solid #ffffff;padding-right:3px;'>
+				<?php 
+				if(!empty($pvc)&&($pvc==2)) echo "<span style='color:red;'>".$data->QteStock."</span><span style='font-size:0.8em;'>".substr($data->Libellepc,0,1)."/".$data->qtepc."</span>"; else echo "<span style='color:maroon;'>".$data->QteStock."&nbsp;&nbsp;&nbsp;</span>";
+				/* echo "<a class='info2' href='DpInterne.php?menuParent=".$_SESSION['menuParenT']."&add=".$nbre."&checkpvc=".$checkpvc."' style='color:gray'>
 				<i class='fa fa-plus-square'></i><span style='color:green;font-size:1em;'>Approvisionner le Dépôt <br/>en <g style='color:red;'>".$data->designation."</g>";
 				if(!empty($pvc)&&($pvc==2)) echo "<g style=''> [".substr($data->Libellepc,0,1)."/".$data->qtepc."] </g></span>";
-				echo "</a>";
+				echo "</a>"; */
 				?></td>
 				
-	<td align="right" style='border-right: 1px solid #ffffff; border-top: 1px solid #ffffff;padding-right:3px;'><?php 
+	<td align="center" style='border-right: 1px solid #ffffff; border-top: 1px solid #ffffff;padding-right:3px;'><?php 
 	$numero=isset($data2->numero)?$data2->numero:0;
 	if(!empty($pvc)&&($pvc==2)) { echo "<span style='color:red;'>"; if(isset($data2->QteStock)) echo $data2->QteStock; else echo "0"; 
 		echo "</span><span style='font-size:0.8em;'>";echo substr($data->Libellepc,0,1)."/".$data->qtepc;  echo "</span>"; }
@@ -754,16 +786,36 @@
 	echo "</span>";
 				echo "<a class='info' href='DpInterne.php?menuParent=".$_SESSION['menuParenT']."&ap=".$numero."&adp=".$nbre."&checkpvc=".$checkpvc."' style='color:gray;'>";
 				//echo "<img title='' src='logo/resto/5.png' width='15' height='20' style=''/><span style='color:green;'>Approvisionner<br/> le Bar en <g style='color:red;'>".$data->designation."</g></span>";
-				echo "&nbsp;<i class='fa fa-plus-square'></i><span style='color:green;'>Approvisionner le Bar<br/> en <g style='color:red;'>".$data->designation."</g>";
+	/* 			echo "&nbsp;<i class='fa fa-plus-square'></i><span style='color:green;'>Approvisionner le Bar<br/> en <g style='color:red;'>".$data->designation."</g>";
+				if(!empty($pvc)&&($pvc==2)) echo "<g style=''> [".substr($data->Libellepc,0,1)."/".$data->qtepc."] </g></span>";
+				echo "</a>"; */
+				?></td>								
+				<td align="center" style='border-right: 1px solid #ffffff; border-top: 1px solid #ffffff'><?php if(!empty($pvc)&&($pvc==2)) {if($data->PrixPack==0) echo "-"; else echo $data->PrixPack."<span style='font-size:0.6em;'></span>&nbsp;"; }else echo $data->PrixUnitaire."<span style='font-size:0.6em;'></span>&nbsp;"; ?></td>
+				
+				<?php if(!empty($app)&&($app==2)) { 
+				$QteStock=isset($data->QteStock)?$data->QteStock:0; $QteStock2=isset($data2->QteStock)?$data2->QteStock:0;
+				?>
+				<td align="center" style='border-right: 1px solid #ffffff; border-top: 1px solid #ffffff'>
+				<?php //href='DpInterne.php?menuParent=".$_SESSION['menuParenT']."&add=".$nbre."&checkpvc=".$checkpvc."'
+				echo "<a class='info2' onclick='provide(1,".$nbre.",\"".addslashes($data->designation)."\",".$QteStock.",".$QteStock.",".$nbre.",".$checkpvc.",".$checkapp."); return false;' href='#' style='color:gray'>";
+				echo "<img title='' src='logo/add4.png' width='22' height='22' style=''/><span style='color:green;font-size:1em;'>Approvisionner le Dépôt <br/>en <g style='color:red;'>".$data->designation."</g>";
 				if(!empty($pvc)&&($pvc==2)) echo "<g style=''> [".substr($data->Libellepc,0,1)."/".$data->qtepc."] </g></span>";
 				echo "</a>";
-				?></td>								
-				<td align="center" style='border-right: 1px solid #ffffff; border-top: 1px solid #ffffff'><?php if(!empty($pvc)&&($pvc==2)) {if($data->PrixPack==0) echo "-"; else echo $data->PrixPack."<span style='font-size:0.6em;'> ".$devise."</span>&nbsp;"; }else echo $data->PrixUnitaire."<span style='font-size:0.6em;'> ".$devise."</span>&nbsp;"; ?></td>
-				<?php
+				?></td>
+				<td align="center" style='border-right: 1px solid #ffffff; border-top: 1px solid #ffffff'>
+				<?php //href='DpInterne.php?menuParent=".$_SESSION['menuParenT']."&ap=".$numero."&adp=".$nbre."&checkpvc=".$checkpvc."'
+				echo "<a class='info2' onclick='provide(2,".$numero.", \"".addslashes($data->designation)."\",".$QteStock.",".$QteStock2.",".$nbre.",".$checkpvc.",".$checkapp."); return false;' href='#' style='color:gray;'>";
+				echo "<img title='' src='logo/add5.png' width='22' height='22' style=''/><span style='color:green;'>Approvisionner<br/> le Bar en <g style='color:red;'>".$data->designation."</g></span>";
+				echo "&nbsp;<span style='color:green;'>Approvisionner le Bar<br/> en <g style='color:red;'>".$data->designation."</g>";
+				if(!empty($pvc)&&($pvc==2)) echo "<g style=''> [".substr($data->Libellepc,0,1)."/".$data->qtepc."] </g></span>";
+				echo "</a>";
+				?></td> <?php } 
+				else {
 				echo "<td align='center' style='border-right: 1px solid #ffffff; border-top: 1px solid #ffffff'>
 				<a class='info2' href='DpInterne.php?menuParent=".$_SESSION['menuParenT']."&update2=".$numero."&update=".$nbre."&checkpvc=".$checkpvc."'  style='color:#FC7F3C;'><img src='logo/b_edit.png' alt='' width='16' height='16' border='0'><span style='color:#FC7F3C;font-size:0.9em;'>Modifier</span></a>";
 				echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class='info2' href='DpInterne.php?menuParent=".$_SESSION['menuParenT']."&delete=".$nbre."'  style='color:#B83A1B;'><img src='logo/b_drop.png' alt='Supprimer' width='16' height='16' border='0'><span style='color:#B83A1B;font-size:0.9em;'>Supprimer</span></a>
-				</td>";
+				</td>";}				
+				
 	}
 	?>
 			</tr>
@@ -783,7 +835,102 @@
         <script src="js/sb-admin-datatables.min.js"></script>
         <script src="js/sb-admin-charts.min.js"></script>
         <script src="js/custom.js"></script>
-	</div>	
+		
+<script>
+function provide(db,drinkId,drinkname,currentStock=0,current_stock=0,nbre,checkpvc,checkapp)  {
+    const title = db === 1 ? "Approvisionnement du Dépôt en boisson " + drinkname : "Approvisionnement du Bar en boisson " + drinkname;
+    swal({
+        title: title,
+        content: {
+            element: "div",
+            attributes: {
+                innerHTML: `
+                <style>
+                    .swal-custom-form {
+                        display: flex;
+                        flex-direction: column;
+                        gap: 10px;
+                        font-family: Arial, sans-serif;
+                    }
+                    .swal-custom-form .row {
+                        display: flex;
+                        align-items: center;
+						margin-left: 15px;
+                    }
+                    .swal-custom-form label {
+                        width: 170px;
+                        font-weight: bold;
+                        color: maroon;
+                        margin-right: 10px;
+                        text-align: right;
+                    }
+                    .swal-custom-form select,
+                    .swal-custom-form input {
+                        flex: 1;
+                        padding: 5px;
+                        height: 25px;
+                        border: 1px solid #ccc;
+                        border-radius: 4px;
+                        
+                    }
+                </style>
+                <div class='swal-custom-form'>
+                    <div class='row' style=''>
+                        <fieldset>
+                            <div class='row'>
+                                <label for='QteDispo'>Quantité disponible :</label>
+                                <input id='QteDispo' type='text' value='${current_stock}' readonly placeholder=''/>
+                            </div><br/>
+                            <div class='row'>
+                                <label for='stock_to_add'>Quantité à ajouter :&nbsp;</label>
+                                <input id='stock_to_add' type='number' min='1' max=''  required='required'/>
+                            </div>
+                        </fieldset>
+                    </div>
+                </div>
+                `
+            }
+        },
+        buttons: true
+    }).then((willSubmit) => {
+        if (willSubmit) {
+            const stock_to_add = document.getElementById('stock_to_add').value.trim();
+            if (!stock_to_add) {
+                swal("Erreur", "Veuillez renseigner la quantité", "error");
+                return;
+            }
+            // Envoi des données en AJAX
+            const formData = new FormData();
+            formData.append('db', db);
+            formData.append('stock_to_add', stock_to_add);
+            formData.append('current_stock', current_stock);
+			formData.append('currentStock', currentStock);
+			formData.append('checkpvc', checkpvc);
+			formData.append('checkapp', checkapp);
+			formData.append('drinkId', drinkId);	
+			formData.append('nbre', nbre);			
+
+            fetch('provideDrink.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                     swal("Succès", data.message, "success").then(() => {
+						location.reload(); // Recharge la page après le message de succès
+					});
+                } else {
+                    swal("Erreur", data.message, "error");
+                }
+            })
+            .catch(error => swal("Erreur", "Une erreur s'est produite lors de l'ajout de la quantité.", "error"));
+        }
+    });
+
+}
+</script>
+</div>	
 </body>
 </html>
 <?php

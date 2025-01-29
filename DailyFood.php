@@ -505,7 +505,7 @@ function addQuantite(numero = 0, designation = "",param3=0) {
 				$cpteur = 1;
 				$bgcouleur = "#dfeef3";$color = "#FC7F3C";
 			}
-			$nbre=$data->numero; $QteCde=$data->Nbre;if(isset($pvp)&&($pvp==2)) $QteCde=$data->Nbrep;
+			$nbre=$data->numero; $QteCde=$data->NbreJ;if(isset($pvp)&&($pvp==2)) $QteCde=$data->NbreJP;
 			if(($nbre>=0)&&($nbre<=9)) $nbre="0000".$nbre ; else if(($nbre>=10)&&($nbre <=99)) $nbre="000".$nbre ;else $nbre="00".$nbre ;
 			
 /* 			if (isset($data->NbreJP) && isset($data->NbreJ) && isset($Jour_actuelp) && isset($data->Begin) && isset($data->End)) {
@@ -559,33 +559,33 @@ function addQuantite(numero = 0, designation = "",param3=0) {
 						if (isset($data->NbreJP) && isset($data->NbreJ) && isset($Jour_actuelp) && isset($data->Begin) && isset($data->End)) {
 							if (($data->NbreJP > 0) && ($data->NbreJ <= 0) && ($Jour_actuelp >= $data->Begin) && ($Jour_actuelp <= $data->End)) {
 								$NbreJ=$data->NbreJP;
-								$rek="UPDATE plat SET NbreJ='".$data->NbreJP."',Nbre='".$data->NbreJP."' WHERE numero='".$data->numero."' ";
+								$rek="UPDATE plat SET NbreJ='".$data->NbreJP."' WHERE numero='".$data->numero."' ";
 								$query = mysqli_query($con,$rek) or die (mysqli_error($con));
 							} else {
 								$NbreJ=$data->NbreJ;
 							}
-						} else {$NbreJ=$data->NbreJ; }
+						} else {$NbreJ=$data->NbreJ; } $NbreC=isset($data->NbreC)?$data->NbreC:0;
 						
 						if(isset($pvp)&&($pvp==2)){
 							if (isset($data->NbreJPp) && isset($data->NbreJJp) && isset($Jour_actuelp) && isset($data->Beginp) && isset($data->Endp)) {
 								if (($data->NbreJPp > 0) && ($data->NbreJJp <= 0) && ($Jour_actuelp >= $data->Beginp) && ($Jour_actuelp <= $data->Endp)) {
 									$NbreJJp=$data->NbreJPp;
-									$rek="UPDATE portion SET NbreJJp='".$data->NbreJPp."',Nbrep='".$data->NbreJPp."' WHERE id='".$data->portion_id."' ";
+									$rek="UPDATE portion SET NbreJJp='".$data->NbreJPp."' WHERE id='".$data->portion_id."' ";
 									$query = mysqli_query($con,$rek) or die (mysqli_error($con));
 								} else {
 									$NbreJJp=$data->NbreJJp;
 								}
 							} else {$NbreJJp=$data->NbreJJp; }
 							if($NbreJJp==0){
-									$rek="UPDATE portion SET NbreJJp='".$data->NbreJ."',Nbrep='".$data->NbreJ."' WHERE id='".$data->portion_id."' ";
+									$rek="UPDATE portion SET NbreJJp='".$data->NbreJ."' WHERE id='".$data->portion_id."' ";
 									$query = mysqli_query($con,$rek) or die (mysqli_error($con));
-							}else $NbreJ=$NbreJJp;							
+							}else $NbreJ=$NbreJJp;	$NbreC=isset($data->NbreCp)?$data->NbreCp:0;						
 						}						
 					  
 					  echo $NbreJ;
 					  ?></td>
-					  <td align='center' style='border-right: 1px solid #ffffff; border-top: 1px solid #ffffff'> <?php echo $QteCde; ?></td>
-					  <td align='center' style='border-right: 1px solid #ffffff; border-top: 1px solid #ffffff'> <?php echo $NbreJ-$QteCde;?></td>
+					  <td align='center' style='border-right: 1px solid #ffffff; border-top: 1px solid #ffffff'> <?php echo $NbreC; ?></td>
+					  <td align='center' style='border-right: 1px solid #ffffff; border-top: 1px solid #ffffff'> <?php echo $NbreJ-$NbreC;?></td>
 			  
 			  			 <td align='center' style='border-right: 1px solid #ffffff; border-top: 1px solid #ffffff'>
 						<?php
@@ -595,9 +595,9 @@ function addQuantite(numero = 0, designation = "",param3=0) {
 						echo "</span></a>&nbsp;&nbsp;&nbsp;
 						<a href='#' class='info2'";
 						if(isset($pvp)&&($pvp==2))
-							echo "onclick='JSalertQte(".$data->portion_id.", \"".addslashes(ucfirst($data->libellePortion))."\",1); return false;'";
+							echo "onclick='JSalertQte(".$data->portion_id.", \"".ucfirst(htmlspecialchars($data->libellePortion, ENT_QUOTES, 'UTF-8'))."\",1); return false;'";
 						else 
-							echo "onclick='JSalertQte(".$data->numero.", \"".addslashes(ucfirst($data->designation))."\"); return false;'";
+							echo "onclick='JSalertQte(".$data->numero.", \"".ucfirst(htmlspecialchars($data->designation, ENT_QUOTES, 'UTF-8'))."\"); return false;'";
 						echo "style='color:".$color.";'><i class='fa fa-plus-square'></i><span style='color:maroon;font-size:0.9em;'>";
 						echo "Redéfinir le nombre de <br/> ";
 						if(isset($pvp)&&($pvp==2)) echo ucfirst($data->libellePortion) ; else echo ucfirst($data->designation) ;
@@ -631,13 +631,20 @@ function addQuantite(numero = 0, designation = "",param3=0) {
 				<span style='font-size:0.9em;color:maroon;'>Réinitialiser le nombre de ".$names." de <br/> ".ucfirst($data->designation) ;
 				echo "</span></a>&nbsp;&nbsp;&nbsp;
 				<a href='#' class='info2'";
-				if(isset($pvp)&&($pvp==2))
-					echo "onclick='addQuantite(".$data->portion_id.", \"".addslashes(ucfirst($data->libellePortion))."\",1); return false;'";
-				else 
-					echo "onclick='addQuantite(".$data->numero.", \"".addslashes(ucfirst($data->designation))."\"); return false;'";
+				if (isset($pvp) && ($pvp == 2)) {
+					// For `libellePortion`, encode it properly for JavaScript context.
+					echo "onclick='addQuantite(".$data->portion_id.", \"".ucfirst(htmlspecialchars($data->libellePortion, ENT_QUOTES, 'UTF-8'))."\", 1); return false;'";
+				} else {
+					// For `designation`, encode it properly for JavaScript context.
+					echo "onclick='addQuantite(".$data->numero.", \"".ucfirst(htmlspecialchars($data->designation, ENT_QUOTES, 'UTF-8'))."\"); return false;'";
+				}
 				echo "style='color:".$color.";'><i class='fa fa-plus-square'></i><span style='color:maroon;font-size:0.9em;'>";
 				echo "Redéfinir le nombre de <br/> ";
-				if(isset($pvp)&&($pvp==2)) echo ucfirst($data->libellePortion) ; else echo ucfirst($data->designation) ;
+				if (isset($pvp) && ($pvp == 2)) {
+					echo ucfirst($data->libellePortion);
+				} else {
+					echo ucfirst($data->designation);
+				}
 				echo " pour la période</span></a>";
 				echo "</td>";
 				?>	

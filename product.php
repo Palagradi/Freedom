@@ -364,7 +364,7 @@ if(isset($_POST['ENREGISTRER'])&& ($_POST['ENREGISTRER']=="Modifier")){
 				$req = mysqli_query($con,"SELECT * FROM UniteStockage") or die (mysqli_error($con));
 				while($data=mysqli_fetch_array($req))
 				{
-					echo" <option value ='".$data['catPrd']."'> ".ucfirst($data['catPrd'])."&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</option>
+					echo" <option value ='".$data['catPrd']."'> ".($data['catPrd'])."&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</option>
 					<option></option> ";
 				}
 			echo "</select><a class='info' href='' style='color:#B83A1B;' onclick='JSalert();return false;' ><span style='font-size:0.8em;font-style:normal;'>Ajouter une nouvelle Unité</span>	 <i class='fa fa-plus-square' aria-hidden='true'></i></a>

@@ -214,7 +214,7 @@ href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="styl
 	  <ul class='navbar-nav animate side-nav'>
 	  <?php
 		//if(!empty($menuParenT))
-		{ $mParent=htmlspecialchars($mParent);
+		{ $mParent=isset($mParent)?htmlspecialchars($mParent):NULL;
 		mysqli_query($con,"SET NAMES 'utf8'");
 			$reqsel1=mysqli_query($con,"SELECT * FROM ".$role.",affectationrole WHERE ".$role.".nomrole=affectationrole.nomrole AND Profil='".$_SESSION['poste']."' AND menuParent='".$mParent."'");
 				$cpteur=1;
@@ -312,7 +312,7 @@ href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="styl
 			$reqsel=mysqli_query($con,"SELECT logo FROM autre_configuration");
 			$data=mysqli_fetch_assoc($reqsel);
 			$logo=$data['logo'];$title="e-Freedom";
-			$logo="logo/Sesy.png";
+			//$logo="logo/Sesy.png";
 			include('dashboard.php');
 			//echo "<center><img src='".$logo."' style='margin-top:0px;filter:alpha(opacity=25);opacity: 0.25;-moz-opacity:0.95;'/></center>";
 		//echo " <br/>";
@@ -401,17 +401,8 @@ href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="styl
 
 	$reqsel=mysqli_query($con,"SELECT backupDate FROM backup WHERE backup='".$previousDay."'");
 	if(mysqli_num_rows($reqsel)==0) {
-		include 'backup.php'; 
-		
-/* 		mysqli_query($con,"SET NAMES 'utf8'");
-		$result=mysqli_query($con,"SELECT numero,NbreJ,NbreC,archivesMensuel FROM plat ");
-		$cpteur=1;$month=11;
-		while( $data = mysqli_fetch_object($result))
-		{ $archivesMensuel = $data['archivesMensuel'];
-		  echo $archivesMensuel .= "|".$month.";".$data['NbreJ'].";".$data['NbreC'];
-		} */
-	
-	}
+		include 'backup.php'; 	
+	} include 'DailyUpdate.php'; 
 	
 	?>
 	

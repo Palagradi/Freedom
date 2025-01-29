@@ -1,11 +1,13 @@
 <?php
 		if(!empty($_GET['trie'])){
-			$req="(SELECT DISTINCT tableencours.numTable AS numTable,RTables.NbreCV AS NbreCV,tableencours.updated_at AS updated_at,RTables.status,RTables.id,RealNameTable FROM tableencours,RTables WHERE RTables.nomTable=tableencours.numTable AND created_at='".$Jour_actuel."' AND Etat <> 'Desactive' AND RTables.status=0 ORDER BY updated_at DESC)
+			$req="(SELECT DISTINCT tableencours.numTable AS numTable,NbreCV AS NbreCV,tableencours.updated_at AS updated_at,RTables.status,RTables.id,RealNameTable FROM tableencours,RTables WHERE RTables.nomTable=tableencours.numTable AND created_at='".$Jour_actuel."' AND Etat <> 'Desactive' AND RTables.status=0 ORDER BY updated_at DESC)
 			UNION 
 			(SELECT * FROM RTables WHERE nomTable NOT IN (SELECT numTable FROM tableencours,RTables WHERE RTables.nomTable=tableencours.numTable AND created_at='".$Jour_actuel."' AND Etat <> 'Desactive' AND RTables.status=1)
 			AND nomTable NOT IN (SELECT nomTable FROM RTables WHERE RTables.status=1) AND  NbreCV<>0
 			)"; 
 			$reqsel=mysqli_query($con,$req); $j=0; $array = array(); 
+			$nbreResult=mysqli_num_rows($reqsel);
+			if($nbreResult<=12) $modulo=4; else $modulo=5; 
 			while($data=mysqli_fetch_array($reqsel))
 				{
 				  $NbreCV=$data['NbreCV']; $Heure=$data['updated_at']; 	$j++; $status=$data['status'];
@@ -27,7 +29,7 @@
 				
 				  if(!empty($serveur)) $user="user0"; else $user="user";			  
 					if(($j==1)||(($j!=0)&&($array[$j-1]!=$i))){				
-					echo " <table  WIDTH='' style=' border-spacing: 5px 5px;border:3px solid white;"; if($j%5!=0) echo "float:left;";  echo "' class=''>
+					echo " <table  WIDTH=''  style='min-height:50px;border-spacing: 5px 5px;border:3px solid white;"; if($j%$modulo!=0) echo "float:left;";  echo "' class=''>
 					<tr>
 						<td style='padding: 10px;padding-bottom: 10px;'><a href='' class='info2' id='test'>";
 							if(count($checkFormaHour)!=3) $Heure="&nbsp;"; 
@@ -67,6 +69,8 @@
 			}			
 		}else { 
 		$reqTable=mysqli_query($con,"SELECT * FROM RTables WHERE NbreCV<>0"); $j=0;
+		$nbreResult=mysqli_num_rows($reqTable);
+		if($nbreResult<=12) $modulo=4; else $modulo=5; 
 		while($dataT=mysqli_fetch_object($reqTable)){	$j++;		
 		$i=$dataT->nomTable ;
 		//for($i=1;$i<=$Nbre;$i++){
@@ -84,7 +88,7 @@
 			$serveur=!empty($datax->nomserv)?($datax->nomserv." ".$datax->prenoms):$data['serveur']; 
 			}
 			echo "
-			<table  WIDTH='' style='border-spacing: 5px 5px;border:3px solid white;"; if($j%5!=0) echo "float:left;";  echo "' class=''>
+			<table  WIDTH='' style='min-height:50px;border-spacing: 5px 5px;border:3px solid white;"; if($j%$modulo!=0) echo "float:left;";  echo "' class=''>
 				<tr>
 					<td style='padding: 10px;padding-bottom: 10px;'><a href='' class='info2' id='test'>";  if(!empty($serveur)) $user="user0"; else $user="user"; //if(!empty($serv)) echo "<span style='color:white;display:block;float:top;margin-left:20px;'>".$serveur."</span>"; //else echo "<span style='color:blue;display:block;float:top;margin-bottom:-25px;'>&nbsp;</span>";
 						echo "<input type='submit'";  echo "class='bouton5' id='full' ";   echo "name='table' value='"; if(!empty($dataT->RealNameTable)) echo $dataT->RealNameTable; else echo $ii; echo "' onclick='redirect();' style='width:90px;height:45px;font-size:1.2em;";
